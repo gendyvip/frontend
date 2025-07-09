@@ -1,11 +1,13 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Package, Tag } from 'lucide-react';
+import { Calendar, Package, Tag, Pill, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/store/useAuth';
 
 function MedicineDealCard({ deal }) {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
     const handleViewDetails = (dealId) => {
       navigate(`/all-deals/${dealId}`);
@@ -18,6 +20,18 @@ function MedicineDealCard({ deal }) {
         month: '2-digit', 
         day: '2-digit', 
         year: 'numeric' 
+      });
+    };
+
+    // Helper function to format created date with time
+    const formatCreatedDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     };
 
@@ -36,38 +50,32 @@ function MedicineDealCard({ deal }) {
     };
 
     const status = getStatus(deal);
+    const isOwnDeal = deal.postedBy && deal.postedBy.id === user;
 
     return (
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full group relative">
         <div className="p-6 flex-1 flex flex-col">
           {/* Header with badge */}
           <div className="flex items-start justify-between mb-4">
-            <h2 className="font-bold text-lg text-gray-900 leading-tight pr-2">{deal.medicineName}</h2>
+            <div>
+              <h2 className="font-bold text-lg text-gray-900 leading-tight pr-2">{deal.medicineName}</h2>
+            </div>
             <div className="flex flex-col gap-2 items-end">
               <Badge className={`${
                 deal.dealType === 'sell' 
-                  ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                  ? 'bg-purple-50 text-purple-700 border-purple-200' 
                   : deal.dealType === 'exchange' 
-                  ? 'bg-orange-50 text-orange-700 border-orange-200' 
-                  : 'bg-purple-50 text-purple-700 border-purple-200'
+                  ? 'bg-amber-50 text-amber-400 border-amber-200' 
+                  : 'bg-zinc-50 text-zinc-700 border-zinc-200'
               } border font-medium capitalize text-xs px-3 py-1`}>
                 {deal.dealType === 'both' ? 'Sell / Exchange' : deal.dealType}
               </Badge>
             </div>
           </div>
 
-          {/* Deal info with icons */}
+          {/* Deal info with icons - rearranged by importance */}
           <div className="space-y-3 mb-4">
-            <div className="flex items-center text-gray-600 text-sm">
-              <Package size={16} className="mr-2 text-gray-400" />
-              <span className="font-medium">Quantity:</span>
-              <span className="ml-1 text-gray-900">{deal.quantity}</span>
-            </div>
-            <div className="flex items-center text-gray-600 text-sm">
-              <Calendar size={16} className="mr-2 text-gray-400" />
-              <span className="font-medium">Expires:</span>
-              <span className="ml-1 text-gray-900">{formatDate(deal.expiryDate)}</span>
-            </div>
+            {/* Price - most important for buyers */}
             {(deal.dealType === 'sell' || deal.dealType === 'exchange' || deal.dealType === 'both') && (
               <div className="flex items-center text-gray-600 text-sm">
                 <Tag size={16} className="mr-2 text-gray-400" />
@@ -75,6 +83,32 @@ function MedicineDealCard({ deal }) {
                 <span className="ml-1 text-gray-900 font-semibold">EGP {parseFloat(deal.price).toFixed(2)}</span>
               </div>
             )}
+            {/* Quantity - important for availability */}
+            <div className="flex items-center text-gray-600 text-sm">
+              <Package size={16} className="mr-2 text-gray-400" />
+              <span className="font-medium">Quantity:</span>
+              <span className="ml-1 text-gray-900">{deal.quantity}</span>
+            </div>
+            {/* Expiry Date - critical for medicine safety */}
+            <div className="flex items-center text-gray-600 text-sm">
+              <Calendar size={16} className="mr-2 text-gray-400" />
+              <span className="font-medium">Expires:</span>
+              <span className="ml-1 text-gray-900">{formatDate(deal.expiryDate)}</span>
+            </div>
+            {/* Dosage Form - important for medicine type */}
+            {deal.dosageForm && (
+              <div className="flex items-center text-gray-600 text-sm">
+                <Pill size={16} className="mr-2 text-gray-400" />
+                <span className="font-medium">Dosage Form:</span>
+                <span className="ml-1 text-gray-900">{deal.dosageForm.charAt(0).toUpperCase() + deal.dosageForm.slice(1)}</span>
+              </div>
+            )}
+            {/* Posted Date - less important, shown last */}
+            <div className="flex items-center text-gray-600 text-sm">
+              <Clock size={16} className="mr-2 text-gray-400" />
+              <span className="font-medium">Posted:</span>
+              <span className="ml-1 text-gray-900">{formatCreatedDate(deal.createdAt)}</span>
+            </div>
           </div>
 
           {/* Description */}
@@ -91,7 +125,7 @@ function MedicineDealCard({ deal }) {
                 className="w-8 h-8 rounded-full border-2 border-gray-200 object-cover" 
               />
               {deal.pharmacy.licenseNum && (
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                   <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
@@ -128,6 +162,8 @@ function MedicineDealCard({ deal }) {
             className="w-full transition-colors duration-200" 
             variant="outline"
             onClick={() => handleViewDetails(deal.id)}
+            disabled={isOwnDeal}
+            title={isOwnDeal ? 'You cannot view details of your own deal' : ''}
           >
             View Details
           </Button>

@@ -127,7 +127,7 @@ export default function PharmaciesForSale() {
     navigate(`/pharmacies-for-sale/${pharmacy.id}`);
   };
 
-  // Filter out pharmacies owned by the current user
+  // Only show pharmacies not owned by the current user
   const filteredPharmacies = pharmacies.filter(
     (pharmacy) => !(pharmacy.owner && pharmacy.owner.id === user)
   );

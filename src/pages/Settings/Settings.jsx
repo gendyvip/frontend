@@ -11,11 +11,13 @@ import { RiCapsuleLine } from "react-icons/ri";
 import { PiTagChevronBold } from "react-icons/pi";
 import { motion, AnimatePresence } from "framer-motion";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { MdPayment, MdCardMembership } from "react-icons/md";
 import SettingsHeader from "./SettingsHeader";
 import PersonalInfoCard from "./PersonalInfoCard";
 import ContactInfoCard from "./ContactInfoCard";
 import SecurityCard from "./SecurityCard";
 import PharmaciesCard from "./PharmaciesCard";
+import BillingPlansCard from "./BillingPlansCard";
 import { useAuth } from "../../store/useAuth";
 import { usePharmacist } from "../../store/usePharmacist";
 
@@ -23,6 +25,7 @@ const TABS = [
   { key: "info", label: "Info", icon: <FaUser size={18} className=" text-primary" /> },
   { key: "security", label: "Security", icon: <FaLock size={18} className=" text-primary" /> },
   { key: "pharmacies", label: "My Pharmacies", icon: <FaClinicMedical size={18} className="text-primary" /> },
+  { key: "billing", label: "Billing & Plans", icon: <MdPayment size={18} className="text-primary" /> },
 ];
 
 export default function Settings() {
@@ -143,6 +146,17 @@ export default function Settings() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
             <PharmaciesCard pharmacistDetails={pharmacistDetails} />
+          </motion.div>
+        )}
+        {activeTab === "billing" && (
+          <motion.div
+            key="billing"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            <BillingPlansCard pharmacistDetails={pharmacistDetails} />
           </motion.div>
         )}
       </AnimatePresence>

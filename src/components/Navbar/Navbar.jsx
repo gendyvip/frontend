@@ -193,7 +193,7 @@ export default function Navbar() {
               <motion.button
                 ref={userButtonRef}
                 type="button"
-                className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 relative"
+                className="flex text-xl bg-purple-800 rounded-full md:me-0 focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-600 relative"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 whileTap="tap"
                 whileHover="hover"
@@ -226,39 +226,48 @@ export default function Navbar() {
                     </div>
                     <ul className="py-2" aria-labelledby="user-menu-button">
                       <li>
-                        <Link
+                        {/* <Link
                           to="/chat"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Messages
+                          {unreadCount > 0 && (
+                            <Badge className="ml-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-semibold">
+                              {unreadCount}
+                            </Badge>
+                          )}
+                        </Link> */}
+                        <Link to="/profile"
+                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                          Profile
                         </Link>
                       </li>
                       <li>
                         <Link
-                          href="#"
+                          href="all-deals"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          Dashboard
+                          Deals
                         </Link>
                       </li>
                       <li>
+                        <Link
+                          href="pharmacies-for-sale"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        >
+                          Pharamacies
+                        </Link>
+                      </li>
+                                            <li>
                         <Link
                           to="/settings"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Settings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="#"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                        >
-                          Earnings
                         </Link>
                       </li>
                       <li>
@@ -389,34 +398,8 @@ export default function Navbar() {
         </AnimatePresence>
         <div className="hidden md:flex items-center justify-between w-full md:w-auto md:order-1">
           <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border  rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0  dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            {isAuthenticated ? (
-              <>
-                <li>
-                  <Link
-                    to="/all-deals"
-                    className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  >
-                    Deals
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/chat"
-                    className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  >
-                    Messages
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/profile"
-                    className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  >
-                    Profile
-                  </Link>
-                </li>
-              </>
-            ) : (
+            {!isAuthenticated ? 
+           (
               <>
                 <li>
                   <Link
@@ -444,7 +427,7 @@ export default function Navbar() {
                   </Link>
                 </li>
               </>
-            )}
+            ):""}
           </ul>
         </div>
       </div>
