@@ -4,12 +4,12 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { FaEnvelope } from "react-icons/fa";
+import { Badge } from "@/components/ui/badge";
+import { FaEnvelope, FaPhone, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { UpdateInfo } from "../../api/profile/UpdateInfo";
 import { useAuth } from "../../store/useAuth";
 import { usePharmacist } from "../../store/usePharmacist";
@@ -38,6 +38,7 @@ export default function ContactInfoCard({ pharmacistDetails }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Update form data when pharmacistDetails changes
   useEffect(() => {
@@ -124,6 +125,7 @@ export default function ContactInfoCard({ pharmacistDetails }) {
       
       toast.success("Contact information updated successfully!");
       setHasChanges(false);
+      setIsEditing(false);
       
       // Refresh pharmacist details to get updated data
       if (userId && token) {
@@ -138,70 +140,176 @@ export default function ContactInfoCard({ pharmacistDetails }) {
     }
   };
 
+  const getFieldStatus = (fieldName) => {
+    const value = formData[fieldName];
+    if (!value) return 'empty';
+    if (errors[fieldName]) return 'error';
+    if (value === details[fieldName]) return 'unchanged';
+    return 'changed';
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'changed':
+        return <FaCheckCircle className="text-green-500" size={16} />;
+      case 'error':
+        return <FaExclamationTriangle className="text-red-500" size={16} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card className="mb-8 p-6 max-sm:px-0 shadow-lg rounded-2xl border border-gray-200">
-      <CardHeader className="pb-2">
+    <Card className="mb-8 shadow-lg rounded-xl border border-gray-200 bg-white px-4 py-8">
+      <CardHeader>
         <CardTitle>
-          <span className="inline-flex items-center gap-3 font-bold text-lg tracking-wide">
-            <span
-              className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm"
-              style={{ width: 36, height: 36 }}
-            >
-              <FaEnvelope size={18} className="text-primary" />
+          <div className="inline-flex items-center gap-3 font-bold text-xl tracking-wide">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm" style={{ width: 48, height: 48 }}>
+              <FaEnvelope size={24} className="text-primary" />
             </span>
-            Contact Information
-          </span>
+            <div className="flex flex-col">
+            <span className="text-gray-900">
+              Contact Information
+            </span>
+            <p className="text-sm text-gray-600 font-normal">Manage your email and phone number for account communications</p>
+            </div>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="email" className="text-xs font-medium uppercase">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`mt-1 ${errors.email ? 'border-red-500' : ''}`}
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <span className="text-red-500 text-xs mt-1">{errors.email}</span>
-            )}
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Email Field */}
+            <div className="group relative">
+              <div className="flex items-center gap-3 mb-3">
+                <div>
+                  <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Email Address
+                  </Label>
+                </div>
+              </div>
+              <div className="relative">
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={`pl-12 pr-4 py-3 border-2 transition-all duration-200 ${
+                    errors.email 
+                      ? 'border-red-300 bg-red-50 focus:border-red-500' 
+                      : getFieldStatus('email') === 'changed'
+                      ? 'border-green-300 bg-green-50 focus:border-green-500'
+                      : 'border-gray-200 focus:border-primary'
+                  }`}
+                  disabled={isLoading || !isEditing}
+                  placeholder="Enter your email address"
+                />
+                <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              </div>
+              {errors.email && (
+                <div className="flex items-center gap-2 mt-2 text-red-500 text-xs">
+                  <FaExclamationTriangle size={12} />
+                  {errors.email}
+                </div>
+              )}
+            </div>
+
+            {/* Phone Field */}
+            <div className="group relative">
+              <div className="flex items-center gap-3 mb-3">
+                <div>
+                  <Label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Phone Number
+                  </Label>
+                </div>
+              </div>
+              <div className="relative">
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className={`pl-12 pr-4 py-3 border-2 transition-all duration-200 ${
+                    errors.phone 
+                      ? 'border-red-300 bg-red-50 focus:border-red-500' 
+                      : getFieldStatus('phone') === 'changed'
+                      ? 'border-green-300 bg-green-50 focus:border-green-500'
+                      : 'border-gray-200 focus:border-primary'
+                  }`}
+                  disabled={isLoading || !isEditing}
+                  placeholder="01XXXXXXXXX"
+                />
+                <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              </div>
+              {errors.phone && (
+                <div className="flex items-center gap-2 mt-2 text-red-500 text-xs">
+                  <FaExclamationTriangle size={12} />
+                  {errors.phone}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="phone" className="text-xs font-medium uppercase">
-              Phone Number
-            </Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className={`mt-1 ${errors.phone ? 'border-red-500' : ''}`}
-              disabled={isLoading}
-              placeholder="01XXXXXXXXX"
-            />
-            {errors.phone && (
-              <span className="text-red-500 text-xs mt-1">{errors.phone}</span>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center gap-4">
+              {!isEditing ? (
+                <Button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  variant="outline"
+                  className="px-6 py-2 rounded-md text-base"
+                >
+                  Edit Information
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData({
+                      email: details.email || "",
+                      phone: details.phone || "",
+                    });
+                    setErrors({});
+                  }}
+                  variant="outline"
+                  className="px-6 py-2 rounded-md text-base"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
+            
+            {isEditing && (
+              <Button 
+                type="submit"
+                disabled={isLoading || !hasChanges}
+                className={`px-6 py-2 rounded-md text-base transition-all duration-200 ${
+                  hasChanges 
+                    ? 'bg-primary hover:bg-primary/90 text-white' 
+                    : 'bg-gray-300 cursor-not-allowed'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Saving...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <FaCheckCircle size={16} />
+                    Save Changes
+                  </div>
+                )}
+              </Button>
             )}
           </div>
         </form>
       </CardContent>
-      <CardFooter className="justify-end pt-4">
-        <Button 
-          type="submit"
-          onClick={handleSubmit}
-          disabled={isLoading || !hasChanges}
-          className="px-6 py-2 rounded-md text-base max-sm:m-auto"
-        >
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

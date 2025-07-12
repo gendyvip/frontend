@@ -10,38 +10,6 @@ import { Input } from "@/components/ui/input";
 import { useInView } from "../../hooks/useInView";
 
 export default function Home() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = e => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallBtn(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(choiceResult => {
-        if (choiceResult.outcome === "accepted") {
-          console.log("User accepted the install prompt");
-        } else {
-          console.log("User dismissed the install prompt");
-        }
-        setDeferredPrompt(null);
-        setShowInstallBtn(false);
-      });
-    }
-  };
-
   const MotionLink = motion(Link);
   const buttonVariants = { tap: { scale: 0.95 }, hover: { scale: 1.05 } };
 
@@ -63,13 +31,13 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent(prev => (prev + 1) % testimonials.length);
+      setCurrent((prev) => (prev + 1) % testimonials.length);
     }, 3000);
 
     return () => clearInterval(interval); // تنظيف الانترفال عند إلغاء المكون
   }, []);
 
-  const toggleAccordion = index => {
+  const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -89,7 +57,7 @@ export default function Home() {
           style={{
             backgroundImage: `url(/imgs/drug-store.webp)`,
             backgroundSize: "cover",
-            backgroundPosition: "center"
+            backgroundPosition: "center",
           }}
         >
           <div className="absolute inset-0 bg-black opacity-60 z-10" />
@@ -98,8 +66,8 @@ export default function Home() {
               Optimize Your Pharmacy Inventory
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl mb-10 max-w-3xl mx-auto opacity-90 font-light drop-shadow-md">
-              Connect with companies to exchange or bid on near-expiry medications efficiently and
-              compliantly.
+              Connect with companies to exchange or bid on near-expiry
+              medications efficiently and compliantly.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <MotionLink
@@ -130,37 +98,6 @@ export default function Home() {
                 <span>Join as Pharmacy</span>
               </MotionLink>
 
-              {/* install button */}
-              {showInstallBtn &&
-                <motion.button
-                  className="bg-yellow-500 px-6 py-2 rounded-lg text-sm hover:bg-yellow-600 cursor-pointer flex items-center gap-2"
-                  onClick={handleInstallClick}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <svg
-                    className="w-5 h-5 text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z"
-                      clipRule="evenodd"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      d="M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-white font-medium">Install App</span>
-                </motion.button>}
               {/* <MotionLink to="/join-company" whileTap="tap" whileHover="hover" variants={buttonVariants} className="text-gray-900 bg-[#d0d2f8] hover:bg-gray-100 hover:text-primary focus:ring-4 focus:ring-gray-200 font-medium rounded-md text-sm px-6 py-2 w-auto">
                 Join as Company
               </MotionLink> */}
@@ -183,10 +120,11 @@ export default function Home() {
                 Bridging the Gap for Pharmaceutical Inventory
               </h2>
               <p className="text-lg md:text-xl text-[color:var(--muted-foreground)] max-w-3xl mx-auto leading-relaxed">
-                MediExchange is a secure online platform connecting pharmacies and companies for the
-                ethical and efficient handling of near-expiry and surplus medications through a
-                transparent exchange and bidding system. Reduce waste, recover value, and access
-                needed stock.
+                MediExchange is a secure online platform connecting pharmacies
+                and companies for the ethical and efficient handling of
+                near-expiry and surplus medications through a transparent
+                exchange and bidding system. Reduce waste, recover value, and
+                access needed stock.
               </p>
             </div>
           </section>
@@ -227,14 +165,15 @@ export default function Home() {
 
                 {/* Paragraphs */}
                 <p className="text-base md:text-lg leading-relaxed text-[color:var(--muted-foreground)] mb-4 order-3">
-                  Founded on the principles of sustainability and resource optimization within the
-                  pharmaceutical supply chain, MediExchange provides a trusted marketplace designed
-                  to extend the lifecycle of valuable medications and reduce the environmental and
-                  economic burden of disposal.
+                  Founded on the principles of sustainability and resource
+                  optimization within the pharmaceutical supply chain,
+                  MediExchange provides a trusted marketplace designed to extend
+                  the lifecycle of valuable medications and reduce the
+                  environmental and economic burden of disposal.
                 </p>
                 <p className="text-base md:text-lg leading-relaxed text-[color:var(--muted-foreground)] order-4">
-                  Our mission is to create a more resilient and efficient system for all
-                  stakeholders.
+                  Our mission is to create a more resilient and efficient system
+                  for all stakeholders.
                 </p>
               </div>
 
@@ -272,8 +211,8 @@ export default function Home() {
                 Discover Our Platform Features
               </h2>
               <p className="text-lg text-[color:var(--muted-foreground)] max-w-2xl mx-auto mb-16">
-                Explore a range of powerful tools designed to simplify, optimize, and scale your
-                pharmaceutical operations.
+                Explore a range of powerful tools designed to simplify,
+                optimize, and scale your pharmaceutical operations.
               </p>
 
               <motion.div
@@ -283,7 +222,7 @@ export default function Home() {
                 transition={{ duration: 1.5, ease: "easeOut" }}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4">
-                  {features.map((feature, idx) =>
+                  {features.map((feature, idx) => (
                     <div
                       key={idx}
                       className="group bg-white dark:bg-[color:var(--card)] p-8 rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 border border-gray-200 dark:border-[color:var(--border)] relative overflow-hidden"
@@ -303,7 +242,7 @@ export default function Home() {
                       {/* Bottom gradient hover line */}
                       <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-[3px] bg-[color:var(--primary)] transition-all duration-300 group-hover:w-2/3 rounded-full" />
                     </div>
-                  )}
+                  ))}
                 </div>
               </motion.div>
             </div>
@@ -327,12 +266,15 @@ export default function Home() {
                   Our Working Process
                 </Badge>
 
-                <h2 className="text-4xl text-[#2b2b64] font-bold mb-4">How We Work</h2>
+                <h2 className="text-4xl text-[#2b2b64] font-bold mb-4">
+                  How We Work
+                </h2>
 
                 <p className="text-base text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                  At MediExchange, our process is built for clarity and collaboration. From
-                  identifying your needs to delivering impactful results, we ensure every step is
-                  efficient, transparent, and aligned with your goals.
+                  At MediExchange, our process is built for clarity and
+                  collaboration. From identifying your needs to delivering
+                  impactful results, we ensure every step is efficient,
+                  transparent, and aligned with your goals.
                 </p>
               </div>
 
@@ -344,7 +286,7 @@ export default function Home() {
               >
                 {/* Steps Cards */}
                 <div className="flex flex-wrap justify-center gap-10 relative pt-5 z-10">
-                  {howWeWorkSteps.map((step, index) =>
+                  {howWeWorkSteps.map((step, index) => (
                     <div
                       className="w-full sm:w-[calc(50%-20px)] lg:w-[280px] text-center relative mb-10 z-10"
                       key={index}
@@ -381,11 +323,15 @@ export default function Home() {
                         {step.description}
                       </p>
                     </div>
-                  )}
+                  ))}
 
                   {/* SVG Curved Dotted Line */}
                   <div className="hidden lg:block absolute top-[120px] left-0 right-0 w-full z-0">
-                    <svg viewBox="0 0 1000 150" preserveAspectRatio="none" className="w-full h-12">
+                    <svg
+                      viewBox="0 0 1000 150"
+                      preserveAspectRatio="none"
+                      className="w-full h-12"
+                    >
                       <path
                         d="M 20 75
                Q 120 0, 250 75
@@ -430,7 +376,8 @@ export default function Home() {
                 </h3>
 
                 <p className="text-base lg:text-lg leading-relaxed text-[color:var(--muted-foreground)] break-words text-center md:text-left">
-                  At MediExchange, we are reimagining the pharmaceutical supply chain...
+                  At MediExchange, we are reimagining the pharmaceutical supply
+                  chain...
                 </p>
               </div>
 
@@ -489,7 +436,8 @@ export default function Home() {
                 </h2>
 
                 <p className="text-gray-700 text-base mb-6 leading-relaxed">
-                  We provide the best service nationwide. Here’s why patients choose our hospital:
+                  We provide the best service nationwide. Here’s why patients
+                  choose our hospital:
                 </p>
 
                 {/* Accordion */}
@@ -506,18 +454,18 @@ export default function Home() {
                           onClick={() => toggleAccordion(index)}
                           className="w-full flex justify-between items-center text-left px-5 py-4 bg-white hover:bg-[#eff1fb] transition-colors font-medium text-gray-900"
                         >
-                          <span>
-                            {item.question}
-                          </span>
+                          <span>{item.question}</span>
                           <span className="text-2xl font-bold text-[#2b2b64]">
                             {isOpen ? "−" : "+"}
                           </span>
                         </button>
 
                         <div
-                          className={`px-5 overflow-hidden transition-all duration-500 ease-in-out ${isOpen
-                            ? "max-h-40 py-4 opacity-100"
-                            : "max-h-0 opacity-0"} text-sm text-gray-600 bg-white`}
+                          className={`px-5 overflow-hidden transition-all duration-500 ease-in-out ${
+                            isOpen
+                              ? "max-h-40 py-4 opacity-100"
+                              : "max-h-0 opacity-0"
+                          } text-sm text-gray-600 bg-white`}
                         >
                           {item.answer}
                         </div>
@@ -554,7 +502,11 @@ export default function Home() {
                 </p>
               </blockquote>
               <figcaption className="flex items-center justify-center mt-6 space-x-3 rtl:space-x-reverse">
-                <img className="w-6 h-6 rounded-full" src={img} alt={`${name} profile picture`} />
+                <img
+                  className="w-6 h-6 rounded-full"
+                  src={img}
+                  alt={`${name} profile picture`}
+                />
                 <div className="flex items-center divide-x-2 rtl:divide-x-reverse divide-gray-500 dark:divide-gray-700">
                   <cite className="pe-3 font-medium text-gray-900 dark:text-white">
                     {name}
@@ -577,11 +529,12 @@ export default function Home() {
           {/* newaletter */}
           <section
             className="bg-cover bg-center py-20 text-white"
-            style={{
-              backgroundImage: "url('/imgs/newsletter.webp')",
-              backgroundColor: "rgba(175, 180, 240, 0.5)",
-              backgroundBlendMode: "multiply"
-            } // غيّري المسار حسب مكان الصورة
+            style={
+              {
+                backgroundImage: "url('/imgs/newsletter.webp')",
+                backgroundColor: "rgba(175, 180, 240, 0.5)",
+                backgroundBlendMode: "multiply",
+              } // غيّري المسار حسب مكان الصورة
             }
           >
             <div className="max-w-xl mx-auto text-center space-y-6 px-4">

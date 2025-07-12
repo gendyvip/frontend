@@ -1,28 +1,46 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./../pages/Home/Home";
 import Login from "./../pages/Login/Login";
 import SignUp from "./../pages/SignUp/SignUp";
-import Advertise from "../pages/Advertise/Advertise";
-import ContactUs from "./../pages/ContactUs/ContactUs";
 import ResetPassword from "./../pages/ResetPassword/ResetPassword";
 import Otp from "./../pages/OTP/Otp";
 import SharedLayout from "./SharedLayout";
-import Deals from "../pages/MyDeals/Deals";
-import Subscription from "../pages/Subscription/Subscription";
-import DealFormPage from "../pages/DealForm/DealFormPage";
 import ConfirmPassword from "../pages/ConfirmPassword/ConfirmPassword";
-import AddPharmacy from "../pages/AddPharmcy/AddPharmacy";
 import ProtectedRoute from "../components/ProtectedRoute";
-import AvailableDeals from "../pages/AvailableDeals/AvailableDeals";
-import DealDetails from "../pages/AvailableDeals/DealDetails";
-import PharmaciesForSale from "../pages/PharmaciesForSale/PharmaciesForSale";
-import PharmacyDetails from "../pages/PharmaciesForSale/PharmacyDetails";
-import Chat from "../pages/Chat/Chat";
-import Settings from "../pages/Settings/Settings";
-import Profile from "../pages/Profile/Profile";
+import ProfileRedirect from "../components/ProfileRedirect";
 import NotFound from "../pages/NotFound/NotFound";
-import SuccessPayment from './../pages/SuccessPayment/SuccessPayment';
-import FailedPayment from './../pages/FailedPayment/FailedPayment';
+
+const Advertise = React.lazy(() => import("../pages/Advertise/Advertise"));
+const ContactUs = React.lazy(() => import("../pages/ContactUs/ContactUs"));
+const Deals = React.lazy(() => import("../pages/MyDeals/Deals"));
+const Subscription = React.lazy(() =>
+  import("../pages/Subscription/Subscription")
+);
+const AddPharmacy = React.lazy(() => import("../pages/AddPharmcy/AddPharmacy"));
+const AvailableDeals = React.lazy(() =>
+  import("../pages/AvailableDeals/AvailableDeals")
+);
+const DealDetails = React.lazy(() =>
+  import("../pages/AvailableDeals/DealDetails")
+);
+const PharmaciesForSale = React.lazy(() =>
+  import("../pages/PharmaciesForSale/PharmaciesForSale")
+);
+const PharmacyDetails = React.lazy(() =>
+  import("../pages/PharmaciesForSale/PharmacyDetails")
+);
+const Chat = React.lazy(() => import("../pages/Chat/Chat"));
+const Settings = React.lazy(() => import("../pages/Settings/Settings"));
+const Profile = React.lazy(() => import("../pages/Profile/Profile"));
+const Favorites = React.lazy(() => import("../pages/Favorites/Favorites"));
+const SuccessPayment = React.lazy(() =>
+  import("./../pages/SuccessPayment/SuccessPayment")
+);
+const FailedPayment = React.lazy(() =>
+  import("./../pages/FailedPayment/FailedPayment")
+);
+const DealFormPage = React.lazy(() => import("../pages/DealForm/DealFormPage"));
 
 export default function MainLayout() {
   return (
@@ -43,8 +61,22 @@ export default function MainLayout() {
               }
             />
             <Route path="/subscription" element={<Subscription />} />
-            <Route path="/subscription/:id/success" element={<ProtectedRoute><SuccessPayment/></ProtectedRoute>} />
-            <Route path="/subscription/:id/failed" element={<ProtectedRoute><FailedPayment/></ProtectedRoute>} />
+            <Route
+              path="/subscription/:id/success"
+              element={
+                <ProtectedRoute>
+                  <SuccessPayment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/subscription/:id/failed"
+              element={
+                <ProtectedRoute>
+                  <FailedPayment />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/otp" element={<Otp message="Reset Password" />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route
@@ -122,10 +154,26 @@ export default function MainLayout() {
               }
             />
             <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfileRedirect />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile/:id"
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
                 </ProtectedRoute>
               }
             />

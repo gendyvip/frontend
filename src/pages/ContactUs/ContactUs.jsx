@@ -16,6 +16,9 @@ import { Mail, Phone, MapPin, Send, Clock, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { requestContact } from "@/api/contact";
 
+// Create motion version of Button
+const MotionButton = motion(Button);
+
 const ContactSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -403,7 +406,7 @@ export default function ContactUs() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1.2 }}
                       >
-                        <Button
+                        <MotionButton
                           type="submit"
                           className="w-full h-12 text-lg font-semibold mb-11"
                           disabled={isSubmitting}
@@ -428,7 +431,7 @@ export default function ContactUs() {
                               Send Message
                             </>
                           )}
-                        </Button>
+                        </MotionButton>
                       </motion.div>
                     </Form>
                   )}

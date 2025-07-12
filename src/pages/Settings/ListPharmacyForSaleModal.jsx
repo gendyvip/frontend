@@ -13,6 +13,8 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
   const [excelFile, setExcelFile] = useState(null);
   const [previewData, setPreviewData] = useState(null);
   const [price, setPrice] = useState("");
+  const [priceError, setPriceError] = useState("");
+  const [monthlySalesError, setMonthlySalesError] = useState("");
 
   const handleFilePreview = async (file) => {
     try {
@@ -69,15 +71,38 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
     setExcelFile(null);
     setPreviewData(null);
     setPrice("");
+    setPriceError("");
+    setMonthlySalesError("");
     onOpenChange(false);
+  };
+
+  const handlePriceChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    if (value.length > 10) {
+      setPriceError("Maximum 10 digits allowed");
+    } else {
+      setPriceError("");
+      setPrice(value);
+    }
+  };
+
+  const handleMonthlySalesChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    if (value.length > 10) {
+      setMonthlySalesError("Maximum 10 digits allowed");
+    } else {
+      setMonthlySalesError("");
+      setMonthlySales(value);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (priceError || monthlySalesError) return;
     const formData = new FormData();
+    formData.append("pharmacyPrice", price);
     formData.append("monthlySales", monthlySales);
     formData.append("saleType", saleType);
-    formData.append("price", price);
     if (excelFile) {
       formData.append("medicinesList", excelFile);
     }
@@ -95,15 +120,18 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
         <div className="px-6 py-4 overflow-y-auto flex-1">
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div>
-              <Label htmlFor="price" className="mb-2.5">Pharmacy Price</Label>
+              <Label htmlFor="pharmacyPrice" className="mb-2.5">Pharmacy Price</Label>
               <Input
-                id="price"
+                id="pharmacyPrice"
+                name="pharmacyPrice"
                 type="number"
                 value={price}
-                onChange={e => setPrice(e.target.value)}
+                onChange={handlePriceChange}
                 placeholder="Enter pharmacy price"
                 required
+                maxLength={10}
               />
+              {priceError && <p className="text-red-500 text-xs mt-1">{priceError}</p>}
             </div>
 
             <div>
@@ -112,10 +140,12 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
                 id="monthlySales"
                 type="number"
                 value={monthlySales}
-                onChange={e => setMonthlySales(e.target.value)}
+                onChange={handleMonthlySalesChange}
                 placeholder="Enter monthly sales"
                 required
+                maxLength={10}
               />
+              {monthlySalesError && <p className="text-red-500 text-xs mt-1">{monthlySalesError}</p>}
             </div>
 
             <div>
@@ -125,8 +155,8 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
                   <SelectValue placeholder="Select sale type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="with_meds">With Medicines</SelectItem>
-                  <SelectItem value="without_meds">Without Medicines</SelectItem>
+                  <SelectItem value="pharmacy_with_medicines">With Medicines</SelectItem>
+                  <SelectItem value="pharmacy_only">Without Medicines</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -224,7 +254,7 @@ export default function ListPharmacyForSaleModal({ open, onOpenChange, onSubmit,
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" className="bg-primary hover:bg-primary-hover text-white">
                 List for Sale
               </Button>
             </div>

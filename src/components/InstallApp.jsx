@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { FiDownload } from 'react-icons/fi';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { FiDownload } from "react-icons/fi";
+
+// Create motion version of Button
+const MotionButton = motion(Button);
 
 const InstallApp = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -23,12 +26,15 @@ const InstallApp = () => {
       setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -41,10 +47,10 @@ const InstallApp = () => {
     // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
     } else {
-      console.log('User dismissed the install prompt');
+      console.log("User dismissed the install prompt");
     }
 
     // Clear the deferredPrompt
@@ -61,15 +67,15 @@ const InstallApp = () => {
       exit={{ opacity: 0, y: -20 }}
       className="fixed bottom-4 right-4 z-50"
     >
-      <Button
+      <MotionButton
         onClick={handleInstallClick}
         className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
         <FiDownload className="w-5 h-5" />
-        <span className="font-semibold">تثبيت التطبيق</span>
-      </Button>
+        <span className="font-semibold">Install Application</span>
+      </MotionButton>
     </motion.div>
   );
 };

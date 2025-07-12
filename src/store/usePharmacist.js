@@ -6,30 +6,35 @@ export const usePharmacist = create((set, get) => ({
   isLoading: false,
   error: null,
 
-  // Get pharmacist details action
+  // Get pharmacist details action - stabilized to prevent recreation
   fetchPharmacistDetails: async (id, token) => {
     if (!token) {
-      throw new Error('No authentication token available');
+      set({ error: 'No authentication token available', isLoading: false });
+      return;
+    }
+
+    // Prevent multiple simultaneous calls
+    if (get().isLoading) {
+      return;
     }
 
     set({ isLoading: true, error: null });
-    
+
     try {
       const response = await getPharmacistDetails(id, token);
-      
+
       set({
         pharmacistDetails: response.data || response,
         isLoading: false,
         error: null,
       });
-      
+
       return response;
     } catch (error) {
       set({
         isLoading: false,
         error: error.message || 'Failed to fetch pharmacist details',
       });
-      throw error;
     }
   },
 

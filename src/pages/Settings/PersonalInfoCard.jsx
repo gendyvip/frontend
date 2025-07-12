@@ -1,42 +1,95 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { FaUserMd } from "react-icons/fa";
+import { Badge } from "@/components/ui/badge";
+import { FaUserMd, FaIdCard, FaBirthdayCake, FaVenusMars } from "react-icons/fa";
 
 export default function PersonalInfoCard({pharmacistDetails}) {
   // Add null check and default values
   const details = pharmacistDetails || {};
   
+  const infoFields = [
+    {
+      key: 'fullName',
+      label: 'Full Name',
+      value: details.fullName || 'Not available',
+      icon: <FaUserMd className="text-amber-500" />,
+    },
+    {
+      key: 'id',
+      label: 'ID Number',
+      value: details.id || 'Not available',
+      icon: <FaIdCard className="text-green-500" />,
+    },
+    {
+      key: 'birthOfDate',
+      label: 'Date of Birth',
+      value: details.birthOfDate || 'Not available',
+      icon: <FaBirthdayCake className="text-zinc-600" />,
+    },
+    {
+      key: 'gender',
+      label: 'Gender',
+      value: details.gender || 'Not available',
+      icon: <FaVenusMars className="text-red-400" />,
+    }
+  ];
+
+
+  
   return (
-    <Card className="mb-8 p-6 max-sm:px-0 shadow-lg rounded-2xl border border-gray-200">
-      <CardHeader className="pb-2">
+    <Card className="mb-8 shadow-lg rounded-xl border border-gray-200 bg-white px-4 py-8">
+      <CardHeader>
         <CardTitle>
-          <span className="inline-flex items-center gap-3 font-bold text-lg tracking-wide">
-            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm" style={{ width: 36, height: 36 }}>
-              <FaUserMd size={20} className="text-primary" />
+          <div className="inline-flex items-center gap-3 font-bold text-xl tracking-wide">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm" style={{ width: 48, height: 48 }}>
+              <FaUserMd size={24} className="text-primary" />
             </span>
-            Doctor Information
-          </span>
+            <div className="flex flex-col">
+            <span className="text-gray-900">
+              Personal Information
+            </span>
+            <p className="text-sm text-gray-600 font-normal">Your basic profile information and identification details</p>
+            </div>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <div className="flex flex-col gap-1 border-b pb-3 last:border-b-0 last:pb-0">
-            <span className="text-muted-foreground text-xs font-medium uppercase">Name</span>
-            <div className="font-semibold text-base text-gray-900">{details.fullName || 'Not available'}</div>
-          </div>
-          <div className="flex flex-col gap-1 border-b pb-3 last:border-b-0 last:pb-0">
-            <span className="text-muted-foreground text-xs font-medium uppercase">ID Number</span>
-            <div className="font-semibold text-base text-gray-900">{details.idNumber || 'Not available'}</div>
-          </div>
-          <div className="flex flex-col gap-1 border-b pb-3 last:border-b-0 last:pb-0">
-            <span className="text-muted-foreground text-xs font-medium uppercase">Date of Birth</span>
-            <div className="font-semibold text-base text-gray-900">{details.birthOfDate || 'Not available'}</div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-xs font-medium uppercase">Gender</span>
-            <div className="font-semibold text-base text-gray-900">{details.gender || 'Not available'}</div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {infoFields.map((field) => (
+            <div
+              key={field.key}
+              className="group relative p-4 rounded-xl border border-gray-200 bg-white hover:shadow-md hover:border-primary/30 transition-all duration-200"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gray-100 group-hover:bg-primary/10 transition-colors duration-200">
+                    {field.icon}
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      {field.label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="pl-11">
+                <div className={`font-semibold text-base transition-colors duration-200 ${
+                  field.value === 'Not available' 
+                    ? 'text-gray-400 italic' 
+                    : 'text-gray-900'
+                }`}>
+                  {field.value}
+                </div>
+                {field.value === 'Not available' && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Please update your profile to add this information
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
+      
       </CardContent>
     </Card>
   );

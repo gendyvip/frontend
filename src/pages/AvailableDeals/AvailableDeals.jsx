@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -37,14 +37,18 @@ export default function AvailableDeals() {
   const navigate = useNavigate();
 
   // Debounce search input
-  const debouncedSetSearch = useDebounce((value) => setSearch(value), 500);
-  const handleSearchInput = (e) => {
-    setSearchInput(e.target.value);
-    debouncedSetSearch(e.target.value);
-  };
+  const setSearchCallback = useCallback((value) => {
+    setSearch(value);
+  }, []);
+  const debouncedSetSearch = useDebounce(setSearchCallback, 500);
+  const handleSearchInput = useCallback((e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
 
   // Build query params for backend
-  const buildQueryParams = () => {
+  const buildQueryParams = useCallback(() => {
     const params = {
       page: currentPage,
       status: 'active',
@@ -60,13 +64,14 @@ export default function AvailableDeals() {
     if (sortBy) params.sort = sortOrder === 'desc' ? `-${sortBy}` : sortBy;
     // Exclude current user's deals to show only others' deals
     if (user?.id) params.excludeUserId = user.id;
+    
     return params;
-  };
+  }, [search, type, location, dosageForm, priceRange, dateRange, sortBy, sortOrder, currentPage, user?.id]);
 
   // Fetch deals from backend when filters/pagination change
   useEffect(() => {
     fetchDeals(buildQueryParams());
-  }, [search, type, location, dosageForm, priceRange, dateRange, sortBy, sortOrder, currentPage, fetchDeals]);
+  }, [buildQueryParams, fetchDeals]);
 
   // Update available types and locations whenever deals change
   useEffect(() => {
@@ -75,7 +80,7 @@ export default function AvailableDeals() {
   }, [deals]);
 
   // Clear all filters
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearch('');
     setSearchInput('');
     setType('');
@@ -86,12 +91,19 @@ export default function AvailableDeals() {
     setSortBy('');
     setSortOrder('asc');
     setCurrentPage(1);
-  };
+  }, []);
 
   // Active filter chips
-  const getActiveFilters = () => {
+  const getActiveFilters = useMemo(() => {
     const filters = [];
-    if (search) filters.push({ key: 'search', label: `"${search}"`, onRemove: () => { setSearch(''); setSearchInput(''); } });
+    if (search) filters.push({ 
+      key: 'search', 
+      label: `"${search}"`, 
+      onRemove: () => { 
+        setSearch(''); 
+        setSearchInput(''); 
+      } 
+    });
     if (type) filters.push({ key: 'type', label: type, onRemove: () => setType('') });
     if (location) filters.push({ key: 'location', label: location, onRemove: () => setLocation('') });
     if (dosageForm) filters.push({ key: 'dosageForm', label: dosageForm, onRemove: () => setDosageForm('') });
@@ -100,8 +112,8 @@ export default function AvailableDeals() {
     if (dateRange.from) filters.push({ key: 'fromDate', label: `From: ${format(dateRange.from, 'MMM dd')}`, onRemove: () => setDateRange(prev => ({ ...prev, from: null })) });
     if (dateRange.to) filters.push({ key: 'toDate', label: `To: ${format(dateRange.to, 'MMM dd')}`, onRemove: () => setDateRange(prev => ({ ...prev, to: null })) });
     return filters;
-  };
-  const activeFilters = getActiveFilters();
+  }, [search, type, location, dosageForm, priceRange, dateRange]);
+  const activeFilters = getActiveFilters;
 
   // Pagination page numbers (with ellipsis)
   const getPageNumbers = () => {
@@ -156,11 +168,10 @@ export default function AvailableDeals() {
     { value: 'medicineName-asc', label: 'Name (A to Z)' },
   ];
 
-  // Robust frontend filtering for type and location
-  const filteredDeals = (deals || [])
-    .filter(deal => !type || deal.dealType === type)
-    .filter(deal => !location || deal.pharmacy?.city === location)
-    .filter(deal => !search || deal.medicineName.toLowerCase().includes(search.toLowerCase()));
+  // Remove frontend filtering - let backend handle all filtering
+  const filteredDeals = useMemo(() => {
+    return deals || [];
+  }, [deals]);
 
   return (
     <div className="min-h-screen">

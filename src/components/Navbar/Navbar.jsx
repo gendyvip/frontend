@@ -7,6 +7,7 @@ import { useAuth } from "../../store/useAuth";
 import { usePharmacist } from "../../store/usePharmacist";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FiBell } from "react-icons/fi";
+import { Heart } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -15,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import useChat from "../../store/useChat";
 import { useOffline } from "../../hooks/useOffline";
+import { useFav } from "../../store/useFav";
 
 export default function Navbar() {
   const isOffline = useOffline();
@@ -24,6 +26,7 @@ export default function Navbar() {
   const { user, isAuthenticated, logout, initializeAuth, token } = useAuth();
   const userMenuRef = useRef(null);
   const userButtonRef = useRef(null);
+  const { favorites, fetchFavorites } = useFav();
 
   const navigate = useNavigate();
   const MotionLink = motion(Link);
@@ -64,6 +67,13 @@ export default function Navbar() {
       }
     }
   }, [isAuthenticated, initializeSocket, loadUserChats, getCurrentUserId]);
+
+  // Fetch favorites when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchFavorites();
+    }
+  }, [isAuthenticated, fetchFavorites]);
 
   // Handle clicking outside dropdown to close it
   useEffect(() => {
@@ -135,7 +145,7 @@ export default function Navbar() {
     >
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
-          href="https://flowbite.com/"
+          to="/all-deals"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
@@ -190,6 +200,19 @@ export default function Navbar() {
                   </div>
                 </PopoverContent>
               </Popover>
+
+              {/* Favorites Icon */}
+              <Link to="/favorites" className="relative mr-2 ">
+                <Button variant="ghost" size="icon">
+                  <Heart className="w-5 h-5 " />
+                  <span className="sr-only">Favorites</span>
+                </Button>
+                {favorites.deals.length + favorites.pharmacies.length > 0 && (
+                  <Badge className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-semibold min-w-[18px] h-[18px] flex items-center justify-center">
+                    {favorites.deals.length + favorites.pharmacies.length}
+                  </Badge>
+                )}
+              </Link>
               <motion.button
                 ref={userButtonRef}
                 type="button"
@@ -238,14 +261,16 @@ export default function Navbar() {
                             </Badge>
                           )}
                         </Link> */}
-                        <Link to="/profile"
-                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                        <Link
+                          to="/profile"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        >
                           Profile
                         </Link>
                       </li>
                       <li>
                         <Link
-                          href="all-deals"
+                          to="/all-deals"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
@@ -254,14 +279,15 @@ export default function Navbar() {
                       </li>
                       <li>
                         <Link
-                          href="pharmacies-for-sale"
+                          to="/pharmacies-for-sale"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          Pharamacies
+                          Pharmacies
                         </Link>
                       </li>
-                                            <li>
+
+                      <li>
                         <Link
                           to="/settings"
                           onClick={() => setIsUserMenuOpen(false)}
@@ -398,8 +424,7 @@ export default function Navbar() {
         </AnimatePresence>
         <div className="hidden md:flex items-center justify-between w-full md:w-auto md:order-1">
           <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border  rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0  dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            {!isAuthenticated ? 
-           (
+            {!isAuthenticated ? (
               <>
                 <li>
                   <Link
@@ -427,7 +452,9 @@ export default function Navbar() {
                   </Link>
                 </li>
               </>
-            ):""}
+            ) : (
+              ""
+            )}
           </ul>
         </div>
       </div>

@@ -109,9 +109,7 @@ export default function DealDetails() {
 
   const handleProfile = () => {
     navigate(
-      `/profile/${encodeURIComponent(
-        deal.postedBy.fullName.replace(/\s+/g, "-").toLowerCase()
-      )}`
+      `/profile/${deal.postedBy.id}`
     );
   };
 

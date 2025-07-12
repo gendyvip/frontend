@@ -17,10 +17,11 @@ import {
   MdUpgrade,
   MdCheckCircle,
   MdWarning,
-  MdInfo
+  MdInfo,
+  MdDownload,
+  MdTrendingUp
 } from "react-icons/md";
-import { FaCrown, FaStar, FaGem } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FaCrown, FaStar, FaGem, FaCheck, FaTimes } from "react-icons/fa";
 
 const BILLING_HISTORY = [
   {
@@ -70,105 +71,149 @@ export default function BillingPlansCard({ pharmacistDetails }) {
   return (
     <div className="space-y-8">
       {/* Current Plan Section */}
-      <Card className="p-6 shadow-lg rounded-2xl border border-gray-200">
+      <Card className="mb-6 rounded-xl border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow px-5 py-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-10 h-10">
-              <MdCardMembership size={20} className="text-primary" />
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-12 h-12">
+              <MdCardMembership size={24} className="text-primary" />
             </span>
-            <span className="font-bold text-lg">Current Plan</span>
+            <span className="font-bold text-xl text-gray-900">
+              Current Plan
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
               <div className="p-3 bg-primary/10 rounded-full">
-                <FaCrown size={24} className="text-primary" />
+                <FaCrown size={28} className="text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Plus Plan</h3>
-                <p className="text-gray-600">Limited Features</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline" className="text-xs">
+                <h3 className="font-bold text-xl text-gray-900">Plus Plan</h3>
+                <p className="text-gray-600 mb-2">Limited Features</p>
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
                     Current Plan
                   </Badge>
                   <span className="text-xs text-gray-500">Active since Jan 2024</span>
                 </div>
               </div>
             </div>
-            <Button variant="outline" onClick={() => handleUpgrade(PLANS[1])}>
+            <Button 
+              variant="outline" 
+              onClick={() => handleUpgrade({ name: 'Premium Plan' })}
+              className="bg-primary text-white hover:bg-primary-hover border-primary px-4 py-2 rounded-md shadow-sm w-full sm:w-auto"
+            >
               <MdUpgrade className="mr-2" />
               Upgrade Plan
             </Button>
           </div>
         </CardContent>
       </Card>
+
       {/* Usage Statistics */}
-      <Card className="p-6 shadow-lg rounded-2xl border border-gray-200">
+      <Card className="mb-6 rounded-xl border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow px-5 py-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-10 h-10">
-              <MdInfo size={20} className="text-primary" />
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-12 h-12">
+              <MdInfo size={24} className="text-primary" />
             </span>
-            <span className="font-bold text-lg">Usage Statistics</span>
+            <span className="font-bold text-xl text-gray-900">
+              Usage Statistics
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-blue-600">Pharmacies</h4>
-              <p className="text-2xl font-bold">1 / 2</p>
-              <p className="text-sm text-gray-500">50% used</p>
+            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-3 bg-blue-100 rounded-full w-14 h-14 mx-auto mb-3 flex items-center justify-center">
+                <FaCrown className="text-blue-600" size={22} />
+              </div>
+              <h4 className="font-semibold text-blue-900 mb-1">Pharmacies</h4>
+              <p className="text-2xl font-bold text-blue-600 mb-1">1 / 2</p>
+              <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+              </div>
+              <p className="text-xs text-blue-700">50% used</p>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <h4 className="font-semibold text-green-600">P2P Chats</h4>
-              <p className="text-2xl font-bold">60</p>
-              <p className="text-sm text-gray-500">This month</p>
+
+            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-3 bg-green-100 rounded-full w-14 h-14 mx-auto mb-3 flex items-center justify-center">
+                <MdTrendingUp className="text-green-600" size={22} />
+              </div>
+              <h4 className="font-semibold text-green-900 mb-1">P2P Chats</h4>
+              <p className="text-2xl font-bold text-green-600 mb-1">60</p>
+              <div className="flex items-center justify-center gap-1 text-green-600 mb-2">
+                <MdTrendingUp size={14} />
+                <span className="text-xs">+12% this month</span>
+              </div>
+              <p className="text-xs text-green-700">This month</p>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <h4 className="font-semibold text-purple-600">Storage</h4>
-              <p className="text-2xl font-bold">2.1 GB</p>
-              <p className="text-sm text-gray-500">Of 5 GB used</p>
+
+            <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-3 bg-purple-100 rounded-full w-14 h-14 mx-auto mb-3 flex items-center justify-center">
+                <FaGem className="text-purple-600" size={22} />
+              </div>
+              <h4 className="font-semibold text-purple-900 mb-1">Storage</h4>
+              <p className="text-2xl font-bold text-purple-600 mb-1">2.1 GB</p>
+              <div className="w-full bg-purple-200 rounded-full h-2 mb-2">
+                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '42%' }}></div>
+              </div>
+              <p className="text-xs text-purple-700">Of 5 GB used</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Billing History */}
-      <Card className="p-6 shadow-lg rounded-2xl border border-gray-200">
+      <Card className="mb-6 rounded-xl border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow px-5 py-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-10 h-10">
-              <MdReceipt size={20} className="text-primary" />
+            <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-12 h-12">
+              <MdReceipt size={24} className="text-primary" />
             </span>
-            <span className="font-bold text-lg">Billing History</span>
+            <span className="font-bold text-xl text-gray-900">
+              Billing History
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {BILLING_HISTORY.map((invoice) => (
-              <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gray-100 rounded-lg">
-                    <MdReceipt size={20} className="text-gray-600" />
+            {BILLING_HISTORY.map((invoice, index) => (
+              <div
+                key={invoice.id}
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 border rounded-lg bg-white hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <MdReceipt size={18} className="text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium">{invoice.description}</p>
-                    <p className="text-sm text-gray-500">{invoice.date} • {invoice.invoice}</p>
+                    <p className="font-semibold text-gray-900">{invoice.description}</p>
+                    <p className="text-xs text-gray-500">{invoice.date} • {invoice.invoice}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-semibold">{invoice.amount}</span>
-                  {getStatusBadge(invoice.status)}
-                  <Button variant="ghost" size="sm">Download</Button>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+                  <span className="font-bold text-gray-900">{invoice.amount}</span>
+                  <div className="flex flex-row items-center justify-between w-full gap-2">
+                    <div className="flex items-center">
+                      {getStatusBadge(invoice.status)}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="hover:bg-primary/10 hover:text-primary"
+                    >
+                      <MdDownload className="mr-1" size={14} />
+                      Download
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
-
-
     </div>
   );
 } 
