@@ -1,33 +1,71 @@
 import React, { useState } from "react";
+import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 
 export default function ImageGallery({ images = [] }) {
   const [mainIndex, setMainIndex] = useState(0);
-  if (!images.length)
+
+  if (!images.length) {
     return (
-      <div className="w-full aspect-video bg-gray-100 flex items-center justify-center rounded-xl">
-        <span className="text-gray-400">No Images Available</span>
+      <div className="w-full aspect-[4/3] bg-gray-100 flex items-center justify-center rounded-2xl border border-gray-200">
+        <div className="text-center">
+          <Camera className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+          <span className="text-gray-500 font-medium">No Images Available</span>
+        </div>
       </div>
     );
+  }
+
+  const nextImage = () => {
+    setMainIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setMainIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-4">
-      {/* Main Image */}
-      <div className="flex-1 min-w-0">
-        <img
-          src={images[mainIndex]}
-          alt="Pharmacy Main"
-          className="w-full aspect-video object-cover rounded-xl border shadow"
-        />
+    <div className="space-y-4">
+      {/* Main Image Container */}
+      <div className="relative group">
+        <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100">
+          <img
+            src={images[mainIndex]}
+            alt={`Pharmacy ${mainIndex + 1}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevImage}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <ChevronLeft className="w-5 h-5 text-gray-700" />
+        </button>
+        <button
+          onClick={nextImage}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <ChevronRight className="w-5 h-5 text-gray-700" />
+        </button>
+
+        {/* Image Counter */}
+        <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
+          {mainIndex + 1} / {images.length}
+        </div>
       </div>
-      {/* Thumbnails */}
-      <div className="flex md:flex-col gap-2 md:w-28 mt-2 md:mt-0">
-        {images.map((img, idx) => (
+
+      {/* Thumbnails Grid */}
+      <div className="grid grid-cols-5 gap-3">
+        {images.slice(0, 5).map((img, idx) => (
           <button
             key={img + idx}
             onClick={() => setMainIndex(idx)}
-            className={`focus:outline-none border-2 rounded-lg overflow-hidden transition-all duration-200 ${
-              mainIndex === idx ? "border-primary" : "border-transparent"
+            className={`aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
+              mainIndex === idx
+                ? "border-blue-500 shadow-lg"
+                : "border-gray-200 hover:border-gray-300"
             }`}
-            style={{ width: "64px", height: "64px" }}
           >
             <img
               src={img}

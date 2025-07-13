@@ -22,7 +22,7 @@ export default function Favorites() {
   const [dealsPage, setDealsPage] = useState(1);
   const [pharmaciesPage, setPharmaciesPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const ITEMS_PER_PAGE = 6; // Number of items to load at once
+  const ITEMS_PER_PAGE = 6;
 
   const { favorites, fetchFavorites, refreshFavorites, isLoading } = useFav();
   const { user } = useAuth();
@@ -195,7 +195,7 @@ export default function Favorites() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
                     >
                       {visibleDeals.map((deal, index) => (
                         <motion.div
@@ -219,7 +219,7 @@ export default function Favorites() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.2 }}
-                        className="flex justify-center pt-4"
+                        className="flex justify-center py-4"
                       >
                         <button
                           onClick={loadMoreDeals}

@@ -4,11 +4,14 @@ import { useAuth } from "../../store/useAuth";
 import { getPharmacyById } from "../../api/pharmacies";
 
 // Lazy load components for better performance
+const ListingHeader = lazy(() =>
+  import("../../components/PharmacyDetails/ListingHeader")
+);
 const ImageGallery = lazy(() =>
   import("../../components/PharmacyDetails/ImageGallery")
 );
-const PharmacyInfo = lazy(() =>
-  import("../../components/PharmacyDetails/PharmacyInfo")
+const PriceAndDetails = lazy(() =>
+  import("../../components/PharmacyDetails/PriceAndDetails")
 );
 const PharmacyDetailsTable = lazy(() =>
   import("../../components/PharmacyDetails/PharmacyDetailsTable")
@@ -16,14 +19,8 @@ const PharmacyDetailsTable = lazy(() =>
 const MapSection = lazy(() =>
   import("../../components/PharmacyDetails/MapSection")
 );
-const OwnerInfo = lazy(() =>
-  import("../../components/PharmacyDetails/OwnerInfo")
-);
-const ContactOptions = lazy(() =>
-  import("../../components/PharmacyDetails/ContactOptions")
-);
-const DownloadButton = lazy(() =>
-  import("../../components/PharmacyDetails/DownloadButton")
+const AdvertiserInfo = lazy(() =>
+  import("../../components/PharmacyDetails/AdvertiserInfo")
 );
 const AreaRatings = lazy(() =>
   import("../../components/PharmacyDetails/AreaRatings")
@@ -32,34 +29,41 @@ const RelatedListings = lazy(() =>
   import("../../components/PharmacyDetails/RelatedListings")
 );
 
+const ContactOptions = lazy(() =>
+  import("../../components/PharmacyDetails/ContactOptions")
+);
+
 // Loading Skeleton Component
 const LoadingSkeleton = () => (
-  <div className="min-h-screen bg-background py-6 px-2 sm:px-4 flex flex-col items-center">
-    <div className="w-full max-w-6xl flex flex-col gap-8">
-      {/* Image Gallery Skeleton */}
-      <div className="w-full h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+  <div className="min-h-screen bg-gray-50">
+    {/* Header Skeleton */}
+    <div className=" border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="h-4 bg-gray-200 rounded w-1/3 mb-4 animate-pulse"></div>
+        <div className="h-8 bg-gray-200 rounded w-2/3 mb-4 animate-pulse"></div>
+        <div className="h-6 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+      </div>
+    </div>
 
-      {/* Pharmacy Info and Owner Info Skeleton */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="flex-1">
-          <div className="h-32 bg-gray-200 rounded-xl animate-pulse"></div>
+    {/* Main Content Skeleton */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Top Row - Image Gallery and Advertiser Info */}
+      <div className="grid lg:grid-cols-3 gap-8 mb-8">
+        <div className="lg:col-span-2">
+          <div className="h-96 bg-gray-200 rounded-2xl animate-pulse"></div>
         </div>
-        <div className="lg:w-80 flex justify-end">
-          <div className="w-80 h-48 bg-gray-200 rounded-xl animate-pulse"></div>
+        <div>
+          <div className="h-96 bg-gray-200 rounded-2xl animate-pulse"></div>
         </div>
       </div>
 
-      {/* Details Table Skeleton */}
-      <div className="h-48 bg-gray-200 rounded-xl animate-pulse"></div>
-
-      {/* Map Skeleton */}
-      <div className="h-64 bg-gray-200 rounded-xl animate-pulse"></div>
-
-      {/* Download Button Skeleton */}
-      <div className="h-16 bg-gray-200 rounded-xl animate-pulse"></div>
-
-      {/* Related Listings Skeleton */}
-      <div className="h-64 bg-gray-200 rounded-xl animate-pulse"></div>
+      {/* Full Width Components */}
+      <div className="space-y-8">
+        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div className="h-80 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
+      </div>
     </div>
   </div>
 );
@@ -67,7 +71,9 @@ const LoadingSkeleton = () => (
 // Component Wrapper with Suspense
 const SuspenseWrapper = ({ children }) => (
   <Suspense
-    fallback={<div className="h-32 bg-gray-200 rounded-xl animate-pulse"></div>}
+    fallback={
+      <div className="h-32 bg-gray-200 rounded-2xl animate-pulse"></div>
+    }
   >
     {children}
   </Suspense>
@@ -97,7 +103,7 @@ export default function PharmacyDetails() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-blue-700 text-lg font-bold">
+      <div className="flex justify-center items-center min-h-[60vh] text-gray-600 text-lg font-medium">
         Checking authentication...
       </div>
     );
@@ -109,7 +115,7 @@ export default function PharmacyDetails() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-red-600 text-lg font-bold">
+      <div className="flex justify-center items-center min-h-[60vh] text-red-600 text-lg font-medium">
         {error}
       </div>
     );
@@ -117,60 +123,106 @@ export default function PharmacyDetails() {
 
   if (!pharmacy) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-gray-500 text-lg font-bold">
+      <div className="flex justify-center items-center min-h-[60vh] text-gray-500 text-lg font-medium">
         No pharmacy found with this ID.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background py-6 px-2 sm:px-4 flex flex-col items-center">
-      <div className="w-full max-w-6xl flex flex-col gap-8">
-        <SuspenseWrapper>
-          <ImageGallery images={pharmacy.imagesUrls} />
-        </SuspenseWrapper>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <SuspenseWrapper>
+        <ListingHeader pharmacy={pharmacy} />
+      </SuspenseWrapper>
 
-        {/* Pharmacy info and owner info side by side */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="flex-1">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Row - Image Gallery and Advertiser Info */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-8">
+          {/* Image Gallery - Takes 2/3 of the width */}
+          <div className="lg:col-span-2">
             <SuspenseWrapper>
-              <PharmacyInfo pharmacy={pharmacy} />
+              <ImageGallery images={pharmacy.imagesUrls} />
             </SuspenseWrapper>
           </div>
-          <div className="lg:w-80 flex justify-end">
+
+          {/* Advertiser Info - Takes 1/3 of the width */}
+          <div>
             <SuspenseWrapper>
-              <OwnerInfo owner={pharmacy.owner} />
+              <AdvertiserInfo owner={pharmacy.owner} />
             </SuspenseWrapper>
           </div>
         </div>
 
-        <SuspenseWrapper>
-          <PharmacyDetailsTable pharmacy={pharmacy} />
-        </SuspenseWrapper>
+        {/* Full Width Components Below */}
+        <div className="space-y-8">
+          {/* Price and Key Details */}
+          <SuspenseWrapper>
+            <PriceAndDetails pharmacy={pharmacy} />
+          </SuspenseWrapper>
 
-        <SuspenseWrapper>
-          <MapSection
-            location={pharmacy.location}
-            address={pharmacy.addressLine1}
-          />
-        </SuspenseWrapper>
+          {/* Detailed Information */}
+          <SuspenseWrapper>
+            <PharmacyDetailsTable pharmacy={pharmacy} />
+          </SuspenseWrapper>
 
-        <SuspenseWrapper>
-          <ContactOptions owner={pharmacy.owner} />
-        </SuspenseWrapper>
+          {/* Map Section */}
+          <SuspenseWrapper>
+            <MapSection
+              location={pharmacy.location}
+              address={pharmacy.addressLine1}
+            />
+          </SuspenseWrapper>
 
-        <SuspenseWrapper>
-          <DownloadButton saleFileUrl={pharmacy.saleFileUrl} />
-        </SuspenseWrapper>
+          {/* Area Ratings */}
+          <SuspenseWrapper>
+            <AreaRatings />
+          </SuspenseWrapper>
 
-        {/* <SuspenseWrapper>
-          <AreaRatings />
-        </SuspenseWrapper> */}
+          {/* Related Listings */}
+          <SuspenseWrapper>
+            <RelatedListings pharmacy={pharmacy} />
+          </SuspenseWrapper>
 
-        <SuspenseWrapper>
-          <RelatedListings pharmacy={pharmacy} />
-        </SuspenseWrapper>
+          {/* Download Button - if needed */}
+          {pharmacy.saleFileUrl && (
+            <SuspenseWrapper>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Documents
+                </h3>
+                <a
+                  href={pharmacy.saleFileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Download Details
+                </a>
+              </div>
+            </SuspenseWrapper>
+          )}
+        </div>
       </div>
+
+      {/* Floating Contact Button */}
+      <SuspenseWrapper>
+        <ContactOptions owner={pharmacy.owner} />
+      </SuspenseWrapper>
     </div>
   );
 }

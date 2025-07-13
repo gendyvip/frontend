@@ -32,7 +32,7 @@ export const useFav = create((set, get) => ({
           deals: favorites.deals || [],
           pharmacies: favorites.pharmacies || [],
         },
-        // isLoading: false,
+        isLoading: false,
         error: null,
         isInitialized: true,
       });

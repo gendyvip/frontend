@@ -137,11 +137,7 @@ export default function Chat() {
   }, [mode, currentMessages.length, activeChat?.roomId]);
 
   if (!isAuthenticated) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh] text-blue-700 text-lg font-bold">
-        Please login to access chat
-      </div>
-    );
+    return <></>;
   }
 
   const widgetVariants = {
@@ -383,12 +379,6 @@ export default function Chat() {
                   Start a chat by clicking "Chat with me" on any deal or
                   pharmacy listing
                 </p>
-                <Button
-                  onClick={() => window.history.back()}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-                >
-                  Browse Listings
-                </Button>
               </div>
             )}
           </div>
