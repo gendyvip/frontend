@@ -61,7 +61,7 @@ function MedicineDealCard({ deal }) {
   };
 
   const handleViewDetails = (dealId) => {
-    navigate(`/all-deals/${dealId}`);
+    navigate(`/deals/${dealId}`);
   };
 
   // Helper function to format date

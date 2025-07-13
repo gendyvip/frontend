@@ -4,17 +4,18 @@ import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "../components/Footer/Footer";
 import OfflineIndicator from "../components/OfflineIndicator";
 import { Suspense } from "react";
-import { LoaderPinwheelIcon } from "lucide-react";
+import { LoadingPage } from "../components/ui/loading";
 
 export default function SharedLayout() {
   return (
-    <Suspense fallback={<LoaderPinwheelIcon/>}>
+    <>
       <Navbar />
       <OfflineIndicator />
-
-      <Outlet />
+      <Suspense fallback={<></>}>
+        <Outlet />
+      </Suspense>
       <Toaster />
       {/* <Footer /> */}
-    </Suspense>
+    </>
   );
 }

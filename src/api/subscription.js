@@ -1,13 +1,6 @@
-/**
- * Subscribe a user to a plan
- * @param {Object} params
- * @param {string} params.userId
- * @param {string} params.planName // 'regular' or 'premium'
- * @param {string} params.planType // 'monthly' or 'yearly'
- * @returns {Promise<Object>} response data
- */
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 export async function subscribeToPlan({ userId, planName, planType }) {
-  const response = await fetch("https://dawaback.com/api/v1/paymob/subscribe", {
+  const response = await fetch(`${API_BASE_URL}/api/v1/paymob/subscribe`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -23,7 +23,7 @@ export default function ProfileRedirect() {
       }
 
       if (userId) {
-        navigate(`/profile/${userId}`, { replace: true });
+        navigate(`/me/${userId}`, { replace: true });
       } else {
         // If we can't get the user ID, redirect to login
         navigate('/login', { replace: true });

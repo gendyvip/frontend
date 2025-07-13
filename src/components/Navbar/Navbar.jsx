@@ -145,7 +145,7 @@ export default function Navbar() {
     >
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
-          to="/all-deals"
+          to="/deals"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
@@ -262,7 +262,7 @@ export default function Navbar() {
                           )}
                         </Link> */}
                         <Link
-                          to="/profile"
+                          to="/me"
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Profile
@@ -270,7 +270,7 @@ export default function Navbar() {
                       </li>
                       <li>
                         <Link
-                          to="/all-deals"
+                          to="/deals"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
@@ -279,7 +279,7 @@ export default function Navbar() {
                       </li>
                       <li>
                         <Link
-                          to="/pharmacies-for-sale"
+                          to="/pharmacies"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
@@ -312,7 +312,7 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center space-x-4 max-md:hidden">
               <MotionLink
-                to="login"
+                to="/auth/login"
                 whileTap="tap"
                 whileHover="hover"
                 variants={buttonVariants}
@@ -321,7 +321,7 @@ export default function Navbar() {
                 Login
               </MotionLink>
               <MotionLink
-                to="SignUp"
+                to="/auth/signup"
                 whileTap="tap"
                 whileHover="hover"
                 variants={buttonVariants}
@@ -398,7 +398,7 @@ export default function Navbar() {
                   <li className={`flex space-x-4 ${styles.centerBtns}`}>
                     <div className={`flex space-x-4 ${styles.centerBtns}`}>
                       <MotionLink
-                        to={"login"}
+                        to={"/auth/login"}
                         whileTap="tap"
                         whileHover="hover"
                         variants={buttonVariants}
@@ -407,7 +407,7 @@ export default function Navbar() {
                         Login
                       </MotionLink>
                       <MotionLink
-                        to={"SignUp"}
+                        to={"/auth/signup"}
                         whileTap="tap"
                         whileHover="hover"
                         variants={buttonVariants}

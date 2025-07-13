@@ -10,17 +10,32 @@ import {
   Map,
   User2,
   Pill,
+  Clock,
+  AlertCircle,
+  Phone,
+  Mail,
+  ArrowLeft,
+  Box as BoxIcon,
+  Hash,
+  Tag,
+  Info,
+  Layers,
+  List,
+  Building2,
+  Globe,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useDeals } from "@/store/useDeals";
 import { shallow } from "zustand/shallow";
 import useChat from "../../store/useChat";
 import { useAuth } from "../../store/useAuth";
 
 export default function DealDetails() {
-  const { dealId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const deal = useDeals((state) => state.currentDeal);
   const isLoading = useDeals((state) => state.isLoading);
@@ -38,10 +53,10 @@ export default function DealDetails() {
     useChat();
 
   useEffect(() => {
-    if (dealId) {
-      fetchDeal(dealId);
+    if (id) {
+      fetchDeal(id);
     }
-  }, [dealId]);
+  }, [id]);
 
   // Avatar logic (same as ProfileHeader)
   const getInitials = (name) => {
@@ -54,22 +69,35 @@ export default function DealDetails() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-primary text-lg font-bold">
-        Loading
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">
+            Loading deal details...
+          </p>
+        </div>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-red-600 text-lg font-bold">
-        {error}
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 text-lg font-bold">{error}</p>
+        </div>
       </div>
     );
   }
   if (!deal) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-gray-500 text-lg font-bold">
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-center">
+          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-500 text-lg font-bold">
         No Data With This Deal_ID
+          </p>
+        </div>
       </div>
     );
   }
@@ -91,7 +119,7 @@ export default function DealDetails() {
       // Refresh chat list
       await loadUserChats();
 
-      // Find the new chat in the list (by dealId or userId)
+      // Find the new chat in the list (by id or userId)
       const chatToSelect = chats.find(
         (c) => c.deal?.id === deal.id || c.otherUser?.id === deal.postedBy.id
       );
@@ -108,9 +136,7 @@ export default function DealDetails() {
   };
 
   const handleProfile = () => {
-    navigate(
-      `/profile/${deal.postedBy.id}`
-    );
+    navigate(`/pharmacists/${deal.postedBy.id}`);
   };
 
   // Google Maps direction link
@@ -119,201 +145,406 @@ export default function DealDetails() {
     pharmacyAddress
   )}`;
 
+  // Calculate time since posting
+  const getTimeSincePosted = () => {
+    const postedDate = new Date(deal.createdAt);
+    const now = new Date();
+    const diffInHours = Math.floor((now - postedDate) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  };
+
   return (
-    <div className="min-h-screen py-6 px-2 sm:px-4 flex  justify-center items-start">
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        {/* Left Column: Medicine & Pharmacy Info */}
-        <main className="md:col-span-2 flex flex-col gap-6 md:gap-8 order-1 md:order-1">
-          {/* Medicine Info Section */}
-          <section className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 flex flex-col gap-4 border-b-4 border-primary/20">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 sm:gap-3 sm:mb-6">
+            <Button
+              onClick={() => navigate(-1)}
+              className="bg-primary p-2 sm:p-3"
+            >
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+            <div className="h-4 sm:h-6 w-px bg-gray-300"></div>
+            <span className="text-xs sm:text-sm text-gray-500">
+              Deal Details
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {/* Medicine Information */}
+            <Card className="shadow-sm border border-gray-200">
+              <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 p-4 sm:p-6">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-blue-100">
+                    <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                  </div>
               <div>
-                <h1 className="text-2xl font-bold text-primary mb-1">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   {deal.medicineName}
-                </h1>
-                <span className="inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
-                  {deal.dealType}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      Medicine Information
+                    </p>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Medicine Information */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900  flex items-center gap-2">
+                      <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                      <span className="sm:inline">Medicine Information</span>
+                    </h3>
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <List className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Quantity
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-2 md:mt-0">
-                <ShieldCheck
-                  className={`w-5 h-5 ${
-                    deal.isValid ? "text-green-500" : "text-gray-400"
-                  }`}
-                />
-                <span className="text-xs text-gray-600 font-medium">
-                  {deal.isValid ? "Valid" : "Not Valid"}
+                        <span className="font-bold text-primary text-sm sm:text-base">
+                          {deal.quantity}
                 </span>
-                <span className="ml-4 text-xs text-gray-500">
-                  {deal.dosageForm}
+                      </div>
+
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Price
                 </span>
               </div>
+                        <span className="font-bold text-green-600 text-sm sm:text-base">
+                        EGP{Number(deal.price).toFixed(2)} 
+                        </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Package className="w-5 h-5" />
-                  <span className="font-semibold">Quantity:</span>
-                  <span>{deal.quantity}</span>
+
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <CalendarX className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Expiry
+                          </span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Banknote className="w-5 h-5" />
-                  <span className="font-semibold">Price:</span>
-                  <span>{deal.price} EGP</span>
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">
+                          {new Date(deal.expiryDate).toLocaleDateString()}
+                        </span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <CalendarX className="w-5 h-5" />
-                  <span className="font-semibold">Expiry:</span>
-                  <span>{new Date(deal.expiryDate).toLocaleDateString()}</span>
+
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <BoxIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Box Status
+                          </span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="font-semibold">Box Status:</span>
-                  <span
-                    className={
+                        <Badge
+                          variant={
                       deal.boxStatus === "damaged"
-                        ? "text-red-500"
-                        : "text-green-600"
+                              ? "destructive"
+                              : "default"
                     }
+                          className={`font-medium text-xs ${
+                            deal.boxStatus === "damaged"
+                              ? "bg-red-100 text-red-700 border-red-200"
+                              : "bg-green-100 text-green-700 border-green-200"
+                          }`}
                   >
                     {deal.boxStatus}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="font-semibold">Status:</span>
-                  <span
-                    className={
-                      deal.isClosed ? "text-red-500" : "text-green-600"
-                    }
-                  >
-                    {deal.isClosed ? "Closed" : "Open"}
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="bg-primary/5 rounded-lg p-4 h-full flex flex-col justify-center">
-                  <h2 className="text-lg font-semibold text-primary mb-2">
-                    Description
-                  </h2>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {deal.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Mobile Chat Button */}
-            <Button
-              onClick={handleChat}
-              className="flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-6 py-3 rounded-xl shadow transition-all text-base mt-4 w-full justify-center block md:hidden"
-            >
-              <MessageCircle className="w-5 h-5" />
-              CHAT WITH DOCTOR
-            </Button>
-          </section>
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
 
-          {/* Pharmacy Info Section */}
-          <section className="bg-gray-50 rounded-2xl p-4 sm:p-6 flex flex-col gap-3 border border-primary/20">
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-5 h-5 text-primary" />
-              <span className="font-bold text-primary text-lg">
-                Pharmacy Info
-              </span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-2">
-              <div>
-                <span className="font-semibold">Name:</span>{" "}
-                {deal.pharmacy.name}
+                  {/* Additional Details */}
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900  flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                      <span className="sm:inline">Deal Details</span>
+                    </h3>
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Type
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">
+                          {deal.dealType}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Pill className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Form
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">
+                          {deal.dosageForm}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                          <span className="font-medium text-gray-700 text-sm sm:text-base">
+                            Posted
+                  </span>
+                </div>
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">
+                          {getTimeSincePosted()}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="font-semibold">License #:</span>{" "}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pharmacy Information */}
+            <Card className="shadow-sm border border-gray-200">
+              <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <CardTitle className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </div>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                      Pharmacy Information
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      Location and contact details
+                    </p>
+            </div>
+                </CardTitle>
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-sm transition-all text-xs sm:text-sm mt-4 sm:mt-0 ml-auto"
+                >
+                  <Map className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Get Directions</span>
+                  <span className="sm:hidden">Directions</span>
+                </a>
+              </CardHeader>
+              <CardContent className="mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <User2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          Name
+              </span>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                          {deal.pharmacy.name}
+                        </p>
+            </div>
+              </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          License #
+                        </span>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                 {deal.pharmacy.licenseNum}
+                        </p>
+                      </div>
               </div>
-              <div>
-                <span className="font-semibold">Phone:</span>{" "}
-                {deal.pharmacy.pharmacyPhone}
-              </div>
-              <div>
-                <span className="font-semibold">Working Hours:</span>{" "}
-                {deal.pharmacy.startHour} - {deal.pharmacy.endHour}
-              </div>
-              <div className="col-span-2">
-                <span className="font-semibold">Address:</span>{" "}
-                {deal.pharmacy.addressLine1} {deal.pharmacy.addressLine2}
-              </div>
-              <div>
-                <span className="font-semibold">City:</span>{" "}
-                {deal.pharmacy.city}
-              </div>
-              <div>
-                <span className="font-semibold">Governorate:</span>{" "}
-                {deal.pharmacy.governorate}
-              </div>
-              <div>
-                <span className="font-semibold">Zip Code:</span>{" "}
-                {deal.pharmacy.zipCode}
-              </div>
-            </div>
-            <div className="flex justify-end mt-2">
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-5 py-2 rounded-lg shadow transition-all text-sm"
-              >
-                <Map className="w-4 h-4" />
-                Get Directions
-              </a>
-            </div>
-          </section>
-        </main>
 
-        {/* Right Column: Doctor Info (on mobile: order-last) */}
-        <aside className="md:col-span-1 flex flex-col items-center md:items-stretch gap-6 order-2 md:order-2 mt-8 md:mt-0 md:sticky md:top-8">
-          <section className="bg-white border rounded-2xl p-6 flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2 mb-2">
-              <User2 className="w-5 h-5 text-primary" />
-              <span className="font-bold text-primary text-lg">
-                Doctor Info
-              </span>
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          Phone
+                        </span>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                {deal.pharmacy.pharmacyPhone}
+                        </p>
+                      </div>
+              </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          Hours
+                        </span>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                {deal.pharmacy.startHour} - {deal.pharmacy.endHour}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          Address
+                        </span>
+                        <p className="font-semibold text-gray-900 text-xs sm:text-sm leading-relaxed">
+                          {deal.pharmacy.addressLine1}{" "}
+                          {deal.pharmacy.addressLine2}
+                        </p>
+              </div>
+              </div>
+
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600 mb-5" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                            City
+                          </span>
+                          <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
+                {deal.pharmacy.city}
+                          </p>
+                        </div>
+              </div>
+
+                      <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                        <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-teal-600 mb-5" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                            Governorate
+                          </span>
+                          <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
+                {deal.pharmacy.governorate}
+                          </p>
+                        </div>
+                      </div>
+              </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
+                      <Map className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 mb-5" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
+                          Zip Code
+                        </span>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                {deal.pharmacy.zipCode}
+                        </p>
+                      </div>
+                    </div>
+              </div>
             </div>
-            <Avatar className="size-20 shadow-md mb-2">
+              </CardContent>
+            </Card>
+            </div>
+
+          {/* Sidebar - Doctor Information */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-4 sm:top-8">
+              <Card className="shadow-sm border border-gray-200">
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 p-4 sm:p-6">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <User2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                        Pharmacist Information
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Deal posted by
+                      </p>
+            </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4">
+                    {/* Avatar with Status */}
+                    <div className="relative">
+                      <Avatar className="size-16 sm:size-20 shadow-md border-2 border-white">
               {deal.postedBy.profilePhotoUrl ? (
                 <AvatarImage
                   src={deal.postedBy.profilePhotoUrl}
                   alt={deal.postedBy.fullName}
                 />
               ) : (
-                <AvatarFallback>{initials}</AvatarFallback>
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-primary-hover text-white text-sm sm:text-lg font-bold">
+                            {initials}
+                          </AvatarFallback>
               )}
             </Avatar>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-lg font-bold text-primary">
-                {deal.postedBy.fullName}
-              </span>
               {deal.postedBy.isIdVerified && (
+                        <div className="absolute -bottom-1 -right-1 bg-transparent rounded-full  p-1  ">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
                 <CheckCircle2
-                  className="w-5 h-5 text-green-500"
-                  title="Verified"
-                />
+                              size={10}
+                              className="text-white sm:w-3 sm:h-3"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Doctor Name and Verification */}
+                    <div className="space-y-1 sm:space-y-2">
+                      <div className="flex items-center justify-center gap-1 sm:gap-2">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-900">
+                          {deal.postedBy.fullName}
+                        </h3>
+                        {deal.postedBy.isIdVerified && (
+                          <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
+                            <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 mr-1" />
+                            <span className="sm:inline">Verified</span>
+                          </Badge>
               )}
             </div>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Professional Pharmacist
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="w-full space-y-2 sm:space-y-3">
             <Button
               onClick={handleChat}
-              className="flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-semibold px-6 py-3 rounded-xl shadow transition-all text-base mt-3 w-full justify-center hidden md:flex"
+                        className="w-full bg-primary hover:bg-primary/80 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-sm transition-all text-xs sm:text-base flex items-center justify-center gap-2"
             >
-              <MessageCircle className="w-5 h-5" />
+                        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="xl:inline">
               Chat with {deal.postedBy.fullName.split(" ")[0]}
+                        </span>
             </Button>
+
             <Button
               onClick={handleProfile}
-              className="flex items-center gap-2 border border-primary text-primary hover:bg-primary/5 font-semibold px-6 py-3 rounded-xl shadow-sm transition-all text-base mt-2 w-full justify-center"
+                        variant="outline"
+                        className="w-full border border-primary text-primary hover:bg-primary/5 font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-sm transition-all text-xs sm:text-base flex items-center justify-center gap-2"
               title="View all deals by this doctor"
-              variant="outline"
             >
-              <User2 className="w-5 h-5" />
-              View Doctor Profile
+                        <User2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">View Profile</span>
+                        <span className="sm:hidden">Profile</span>
             </Button>
-          </section>
-        </aside>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

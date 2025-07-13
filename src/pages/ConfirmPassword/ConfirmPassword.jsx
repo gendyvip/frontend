@@ -61,7 +61,7 @@ export default function ConfirmPassword() {
                     className="flex flex-col items-center gap-2 font-medium"
                   >
                     <div className="flex size-8 items-center justify-center rounded-md">
-                      <img src="DawabackNewLogo.png" className="w-16" />
+                      <img src="/DawabackNewLogo.png" className="w-16" />
                     </div>
                     <span className="sr-only">Acme Inc.</span>
                   </a>

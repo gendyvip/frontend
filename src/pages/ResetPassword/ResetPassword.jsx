@@ -26,7 +26,7 @@ export default function ResetPassword() {
       setIsLoading(true);
       await resetPassword({ email: values.email });
       toast.success("Password reset instructions sent to your email");
-      navigate("/otp", {
+      navigate("/auth/reset-password/verify-otp", {
         state: {
           email: values.email,
           purpose: "reset-password",
@@ -60,14 +60,14 @@ export default function ResetPassword() {
                     className="flex flex-col items-center gap-2 font-medium"
                   >
                     <div className="flex size-8 items-center justify-center rounded-md">
-                      <img src="DawabackNewLogo.png" className="w-16"/>
+                      <img src="/DawabackNewLogo.png" className="w-16"/>
                     </div>
                     <span className="sr-only">Acme Inc.</span>
                   </a>
                   <h1 className="text-xl font-bold">Reset Password</h1>
                   <div className="text-center text-sm">
                     Don&apos;t have an account?{" "}
-                    <Link to="/signup" className="underline underline-offset-4">
+                    <Link to="/auth/signup" className="underline underline-offset-4">
                       Sign up
                     </Link>
                   </div>
@@ -96,7 +96,7 @@ export default function ResetPassword() {
                   </Button>
                   <div className="text-center text-sm">
                     Remember your password?{" "}
-                    <Link to="/login" className="underline underline-offset-4">
+                    <Link to="/auth/login" className="underline underline-offset-4">
                       Back to login
                     </Link>
                   </div>

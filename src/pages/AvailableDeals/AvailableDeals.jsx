@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Tag, Filter, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Package, Tag, Filter, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Search, User2 } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { useNavigate } from 'react-router-dom';
 import { useDeals } from '../../store/useDeals';
@@ -31,10 +31,20 @@ export default function AvailableDeals() {
   const [currentPage, setCurrentPage] = useState(1);
   const [availableTypes, setAvailableTypes] = useState([]);
   const [availableLocations, setAvailableLocations] = useState([]);
+  const [showMyDeals, setShowMyDeals] = useState(false);
 
   const { deals, fetchDeals, isLoading, error, totalDeals, totalPages } = useDeals();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Get current user ID from localStorage
+  const currentUserId = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  })();
 
   // Debounce search input
   const setSearchCallback = useCallback((value) => {
@@ -62,11 +72,18 @@ export default function AvailableDeals() {
     if (dateRange.from) params.startExpiry = format(dateRange.from, 'yyyy-MM-dd');
     if (dateRange.to) params.endExpiry = format(dateRange.to, 'yyyy-MM-dd');
     if (sortBy) params.sort = sortOrder === 'desc' ? `-${sortBy}` : sortBy;
-    // Exclude current user's deals to show only others' deals
-    if (user?.id) params.excludeUserId = user.id;
+    
+    // Handle my deals vs others deals
+    if (showMyDeals) {
+      // Show only my deals
+      if (currentUserId) params.userId = currentUserId;
+    } else {
+      // Show only others' deals (exclude my deals)
+      if (currentUserId) params.excludeUserId = currentUserId;
+    }
     
     return params;
-  }, [search, type, location, dosageForm, priceRange, dateRange, sortBy, sortOrder, currentPage, user?.id]);
+  }, [search, type, location, dosageForm, priceRange, dateRange, sortBy, sortOrder, currentPage, currentUserId, showMyDeals]);
 
   // Fetch deals from backend when filters/pagination change
   useEffect(() => {
@@ -91,6 +108,13 @@ export default function AvailableDeals() {
     setSortBy('');
     setSortOrder('asc');
     setCurrentPage(1);
+    setShowMyDeals(false);
+  }, []);
+
+  // Toggle show my deals
+  const handleToggleMyDeals = useCallback(() => {
+    setShowMyDeals(prev => !prev);
+    setCurrentPage(1); // Reset to first page when switching
   }, []);
 
   // Active filter chips
@@ -111,8 +135,13 @@ export default function AvailableDeals() {
     if (priceRange.max) filters.push({ key: 'maxPrice', label: `Max: EGP ${priceRange.max}`, onRemove: () => setPriceRange(prev => ({ ...prev, max: '' })) });
     if (dateRange.from) filters.push({ key: 'fromDate', label: `From: ${format(dateRange.from, 'MMM dd')}`, onRemove: () => setDateRange(prev => ({ ...prev, from: null })) });
     if (dateRange.to) filters.push({ key: 'toDate', label: `To: ${format(dateRange.to, 'MMM dd')}`, onRemove: () => setDateRange(prev => ({ ...prev, to: null })) });
+    if (showMyDeals) filters.push({ 
+      key: 'showMyDeals', 
+      label: 'My Deals Only', 
+      onRemove: () => setShowMyDeals(false) 
+    });
     return filters;
-  }, [search, type, location, dosageForm, priceRange, dateRange]);
+  }, [search, type, location, dosageForm, priceRange, dateRange, showMyDeals]);
   const activeFilters = getActiveFilters;
 
   // Pagination page numbers (with ellipsis)
@@ -177,7 +206,9 @@ export default function AvailableDeals() {
     <div className="min-h-screen">
       <section className="py-5 px-4 text-foreground">
         <div className="max-w-7xl mx-auto flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">Available Medicine Deals</h1>
+          <h1 className="text-3xl font-bold">
+            {showMyDeals ? "My Medicine Deals" : "Available Medicine Deals"}
+          </h1>
           <Button onClick={() => navigate('/my-deals')} className="text-xl text-white bg-primary">
             My Deals
           </Button>
@@ -196,6 +227,15 @@ export default function AvailableDeals() {
                   <p className="text-sm text-gray-500">Refine your search results</p>
         </div>
                 <div className="flex gap-2">
+                  <Button
+                    onClick={handleToggleMyDeals}
+                    variant={showMyDeals ? "default" : "outline"}
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <User2 className="h-4 w-4" />
+                    Show My Deals
+                  </Button>
                   <Button
                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                     variant="outline"

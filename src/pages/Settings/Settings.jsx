@@ -10,6 +10,7 @@ import PharmaciesCard from "./PharmaciesCard";
 import BillingPlansCard from "./BillingPlansCard";
 import { useAuth } from "../../store/useAuth";
 import { usePharmacist } from "../../store/usePharmacist";
+import { LoadingPage } from "../../components/ui/loading";
 
 const TABS = [
   { key: "info", label: "Info", icon: <FaUser size={16} /> },
@@ -81,12 +82,7 @@ export default function Settings() {
         {activeTab === "info" && (
           <div className="space-y-6">
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-gray-600 text-sm">Loading personal information...</p>
-                </div>
-              </div>
+              <LoadingPage message="Loading personal information..." />
             ) : error ? (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -111,12 +107,7 @@ export default function Settings() {
         {activeTab === "security" && (
           <div>
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-gray-600 text-sm">Loading security settings...</p>
-                </div>
-              </div>
+             <LoadingPage message="Loading security settings..." />
             ) : error ? (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -138,12 +129,7 @@ export default function Settings() {
         {activeTab === "pharmacies" && (
           <div>
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-gray-600 text-sm">Loading pharmacies...</p>
-                </div>
-              </div>
+              <LoadingPage message="Loading pharmacies..." />
             ) : error ? (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -165,12 +151,7 @@ export default function Settings() {
         {activeTab === "billing" && (
           <div>
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-gray-600 text-sm">Loading billing information...</p>
-                </div>
-              </div>
+              <LoadingPage message="Loading billing information..." />
             ) : error ? (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">

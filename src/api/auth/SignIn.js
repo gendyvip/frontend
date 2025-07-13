@@ -1,8 +1,8 @@
-  const API_BASE_URL = "https://dawaback.com/api/v1";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/";
 
   export const signIn = async (credentials) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}api/v1/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

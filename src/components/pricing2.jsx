@@ -69,7 +69,7 @@ const Pricing2 = ({
 
   const handleSubscribe = async (planId) => {
     if (!user) {
-      navigate("/login");
+      navigate("/auth/login");
       return;
     }
     try {

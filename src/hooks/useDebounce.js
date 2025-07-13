@@ -10,11 +10,9 @@ import debounce from "lodash.debounce";
 export const useDebounce = (callback, delay = 500) => {
   const debouncedFnRef = useRef();
 
-  // Create the debounced function only once and store it in ref
   useEffect(() => {
     debouncedFnRef.current = debounce(callback, delay);
 
-    // Cleanup function to cancel any pending debounced calls
     return () => {
       if (debouncedFnRef.current) {
         debouncedFnRef.current.cancel();
@@ -22,7 +20,6 @@ export const useDebounce = (callback, delay = 500) => {
     };
   }, [callback, delay]);
 
-  // Return a stable function that calls the debounced function
   const debouncedCallback = useCallback((...args) => {
     if (debouncedFnRef.current) {
       return debouncedFnRef.current(...args);

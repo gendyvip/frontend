@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import ListPharmacyForSaleModal from "./ListPharmacyForSaleModal";
 import { toast } from "sonner";
 import { listPharmaciesForSale, unlistPharmacyFromSale, unlistPharmacyFromSaleJson } from "../../api/pharmacies";
+import { LoadingPage } from "../../components/ui/loading";
 
 export default function PharmaciesCard({ pharmacistDetails }) {
   // Add null check and default values
@@ -230,17 +231,12 @@ export default function PharmaciesCard({ pharmacistDetails }) {
               <span className="text-gray-900">
                 My Pharmacies
               </span>
-              <p className="text-sm text-gray-600 font-normal">Manage your registered pharmacies and their details</p>
+              <p className="text-sm text-gray-600 font-normal">Manage your added pharmacies and their details</p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex items-center justify-center h-32">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p className="text-gray-600 text-sm">Loading pharmacies...</p>
-            </div>
-          </div>
+          <LoadingPage message="Loading pharmacies..." />
         </CardContent>
       </Card>
     );

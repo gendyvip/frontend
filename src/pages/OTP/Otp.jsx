@@ -33,7 +33,7 @@ export default function Otp({ message }) {
       const email = sessionStorage.getItem("resetEmail");
       if (!email) throw new Error("No email found in session");
       await confirmOtp({ email, otp });
-      navigate("/confirm-password");
+      navigate("/auth/reset-password/confirm");
     } catch (error) {
       console.error("Error verifying OTP:", error);
     } finally {
