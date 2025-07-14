@@ -58,9 +58,10 @@ export const disconnectSocket = () => {
 // These functions are not used by the backend
 // The backend handles room joining through startChat event
 
-export const startChat = (user1Id, user2Id, dealId) => {
+// Updated: Accepts user1Id, user2Id, targetId, targetType
+export const startChat = (user1Id, user2Id, targetId, targetType) => {
   const socket = getSocket();
-  socket.emit("startChat", { user1Id, user2Id, dealId });
+  socket.emit("startChat", { user1Id, user2Id, targetId, targetType });
 };
 
 export const sendMessage = (roomId, senderId, text) => {

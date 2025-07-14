@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowUpDown, Search } from "lucide-react";
 import DealCard from "../../components/DealCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDeals } from "../../store/useDeals";
 import { Label } from "@/components/ui/label";
@@ -24,8 +24,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function Deals() {
+  const [searchInput, setSearchInput] = useState("");
   const [searchDeal, setSearchDeal] = useState("");
   const [status, setStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -33,6 +35,7 @@ export default function Deals() {
   
   // Advanced filters
   const [dealType, setDealType] = useState("");
+  const [dosageForm, setDosageForm] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [dateRange, setDateRange] = useState({ from: null, to: null });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -44,6 +47,15 @@ export default function Deals() {
   // Use store
   const { deals, isLoading, error, fetchUserDeals, updateDealStatus, totalDeals, totalPages } = useDeals();
 
+  // Sorting options
+  const sortOptions = [
+    { value: 'expiryDate-asc', label: 'Expiry Date (Nearest First)' },
+    { value: 'price-asc', label: 'Price (Low to High)' },
+    { value: 'quantity-asc', label: 'Quantity (Low to High)' },
+    { value: 'createdAt-asc', label: 'Created Date (Oldest First)' },
+    { value: 'medicineName-asc', label: 'Name (A to Z)' },
+  ];
+
   // Fetch deals with pagination
   const fetchDealsWithPagination = async (page = 1) => {
     const queryParams = {
@@ -52,6 +64,7 @@ export default function Deals() {
       search: searchDeal || undefined,
       status: status || undefined,
       dealType: dealType || undefined,
+      dosageForm: dosageForm || undefined,
       minPrice: priceRange.min || undefined,
       maxPrice: priceRange.max || undefined,
       fromDate: dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
@@ -76,7 +89,7 @@ export default function Deals() {
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
     fetchDealsWithPagination(1);
-  }, [searchDeal, status, dealType, priceRange, dateRange, sortBy, sortOrder]);
+  }, [searchDeal, status, dealType, dosageForm, priceRange, dateRange, sortBy, sortOrder]);
 
   let filteredDeals = (deals || []).filter((deal) => {
     const dealStatus = deal.isClosed ? "Closed" : 
@@ -88,6 +101,7 @@ export default function Deals() {
     
     // Advanced filters
     const matchesDealType = !dealType || deal.dealType === dealType;
+    const matchesDosageForm = !dosageForm || deal.dosageForm === dosageForm;
     
     const dealPrice = parseFloat(deal.price || 0);
     const matchesPriceRange = (!priceRange.min || dealPrice >= parseFloat(priceRange.min)) &&
@@ -97,7 +111,7 @@ export default function Deals() {
     const matchesDateRange = (!dateRange.from || dealDate >= dateRange.from) &&
                             (!dateRange.to || dealDate <= dateRange.to);
     
-    return matchesSearch && matchesStatus && matchesDealType && matchesPriceRange && matchesDateRange;
+    return matchesSearch && matchesStatus && matchesDealType && matchesDosageForm && matchesPriceRange && matchesDateRange;
   });
 
   // Enhanced sorting
@@ -141,9 +155,16 @@ export default function Deals() {
 
   filteredDeals = sortDeals(filteredDeals);
 
-  const handleSearch = (e) => {
-    setSearchDeal(e.target.value);
-  };
+  // Debounced search input
+  const setSearchCallback = useCallback((value) => {
+    setSearchDeal(value);
+  }, []);
+  const debouncedSetSearch = useDebounce(setSearchCallback, 500);
+  const handleSearchInput = useCallback((e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
   
   const handleStatuses = (val) => {
     val === "all" ? setStatus("") : setStatus(val);
@@ -162,8 +183,21 @@ export default function Deals() {
     }
   };
 
+  // Handle sort selection from dropdown
+  const handleSortSelection = (value) => {
+    if (!value) {
+      setSortBy('');
+      setSortOrder('asc');
+    } else {
+      const [newSortBy, newSortOrder] = value.split('-');
+      setSortBy(newSortBy);
+      setSortOrder(newSortOrder);
+    }
+  };
+
   const handleClearFilters = () => {
     setSearchDeal("");
+    setSearchInput("");
     setStatus("");
     setSortOrder("asc");
     setSortBy("expiryDate");
@@ -201,9 +235,10 @@ export default function Deals() {
   // Get active filters for chips
   const getActiveFilters = () => {
     const filters = [];
-    if (searchDeal) filters.push({ key: 'search', label: `"${searchDeal}"`, onRemove: () => setSearchDeal("") });
+    if (searchDeal) filters.push({ key: 'search', label: `"${searchDeal}"`, onRemove: () => { setSearchDeal(""); setSearchInput(""); } });
     if (status) filters.push({ key: 'status', label: status, onRemove: () => setStatus("") });
     if (dealType) filters.push({ key: 'type', label: dealType, onRemove: () => setDealType("") });
+    if (dosageForm) filters.push({ key: 'dosageForm', label: dosageForm, onRemove: () => setDosageForm("") });
     if (priceRange.min) filters.push({ key: 'minPrice', label: `Min: EGP ${priceRange.min}`, onRemove: () => setPriceRange(prev => ({ ...prev, min: "" })) });
     if (priceRange.max) filters.push({ key: 'maxPrice', label: `Max: EGP ${priceRange.max}`, onRemove: () => setPriceRange(prev => ({ ...prev, max: "" })) });
     if (dateRange.from) filters.push({ key: 'fromDate', label: `From: ${format(dateRange.from, "MMM dd")}`, onRemove: () => setDateRange(prev => ({ ...prev, from: null })) });
@@ -316,53 +351,12 @@ export default function Deals() {
           {/* Enhanced Filters */}
           <Card className="p-4 mb-8">
             <div className="space-y-4">
-              {/* Basic Filters Row */}
-              <div className="flex flex-col lg:flex-row gap-4">
-                {/* Search */}
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      onChange={handleSearch}
-                      value={searchDeal}
-                      placeholder="Search medicine name..."
-                      className="pl-10"
-                    />
-                  </div>
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                  <p className="text-sm text-gray-500">Refine your search results</p>
                 </div>
-
-                {/* Status Filter */}
-        <div className="flex flex-row gap-2">
-                  <div>
-                  <Select onValueChange={handleStatuses} value={status || "all"}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="expired">Expired</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Deal Type Filter */}
-                <div className="w-full lg:w-48">
-                  <Select onValueChange={handleDealType} value={dealType || "all"}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="sell">Sell</SelectItem>
-                      <SelectItem value="exchange">Exchange</SelectItem>
-                      <SelectItem value="both">Both</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-        </div>
-                {/* Action Buttons */}
                 <div className="flex gap-2">
                   <Button
                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
@@ -372,7 +366,7 @@ export default function Deals() {
                     <Filter className="h-4 w-4" />
                     Advanced
                     {activeFilters.length > 0 && (
-                      <Badge variant="secondary" className="ml-1">
+                      <Badge className="bg-zinc-600 text-white ml-1">
                         {activeFilters.length}
                       </Badge>
                     )}
@@ -389,30 +383,103 @@ export default function Deals() {
                 </div>
               </div>
 
+              {/* Basic Filters Row - rearranged to match AvailableDeals */}
+              <div>
+                <div className="flex flex-col gap-3 md:flex-row md:gap-4">
+                  {/* Search */}
+                  <div className="flex-1 min-w-[180px]">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        onChange={handleSearchInput}
+                        value={searchInput}
+                        placeholder="Search medicine name..."
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  {/* Deal Type Filter */}
+                  <div className="w-full md:w-44">
+                    <Select onValueChange={handleDealType} value={dealType || "all"}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="sell">Sell</SelectItem>
+                        <SelectItem value="exchange">Exchange</SelectItem>
+                        <SelectItem value="both">Both</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* Dosage Form Filter */}
+                  <div className="w-full md:w-44">
+                    <Select value={dosageForm || "all"} onValueChange={val => setDosageForm(val === "all" ? "" : val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Forms" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Forms</SelectItem>
+                        <SelectItem value="tablet">Tablet</SelectItem>
+                        <SelectItem value="syrup">Syrup</SelectItem>
+                        <SelectItem value="injection">Injection</SelectItem>
+                        <SelectItem value="capsule">Capsule</SelectItem>
+                        <SelectItem value="powder">Powder</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* Sort By Filter */}
+                  <div className="w-full md:w-44">
+                    <Select value={sortBy ? `${sortBy}-${sortOrder}` : ''} onValueChange={handleSortSelection}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Sort By" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortOptions.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
               {/* Active Filter Chips */}
               {activeFilters.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2 border-t">
-                  {activeFilters.map((filter) => (
-                    <Badge
-                      key={filter.key}
-                      variant="secondary"
-                      className="flex items-center gap-1 cursor-pointer hover:bg-secondary/80"
-                      onClick={filter.onRemove}
-                    >
-                      {filter.label}
-                      <X className="h-3 w-3" />
+                <div className="border-t pt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm font-medium text-gray-700">Active Filters:</span>
+                    <Badge className="bg-zinc-600 text-white font-bold  text-xs">
+                      {activeFilters.length}
                     </Badge>
-                  ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {activeFilters.map((filter) => (
+                      <Badge
+                        key={filter.key}
+                        className="flex items-center gap-1 bg-zinc-600 text-white font-bold  cursor-pointer hover:bg-zinc-800/30 transition-colors"
+                        onClick={filter.onRemove}
+                      >
+                        {filter.label}
+                        <X className="h-3 w-3" />
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Advanced Filters */}
               {showAdvancedFilters && (
-                <div className="border-t pt-4 space-y-4">
+                <div className="border-t pt-6">
+                  <div className="mb-4">
+                    <h4 className="text-md font-semibold text-gray-900 mb-2">Advanced Filters</h4>
+                    <p className="text-sm text-gray-500">Set price range and expiry date filters</p>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Price Range */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium">Price Range (EGP)</Label>
+                      <Label className="text-sm font-medium text-gray-700">Price Range (EGP)</Label>
                       <div className="flex gap-3">
                         <div className="flex-1">
                           <Input
@@ -437,7 +504,7 @@ export default function Deals() {
 
                     {/* Date Range */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium">Expiry Date Range</Label>
+                      <Label className="text-sm font-medium text-gray-700">Expiry Date Range</Label>
                       <div className="flex gap-3">
                         <Popover>
                           <PopoverTrigger asChild>
@@ -474,60 +541,6 @@ export default function Deals() {
                   </div>
                 </div>
               )}
-
-              {/* Sorting */}
-              <div className="border-t pt-4">
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium">Sort by</Label>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant={sortBy === "expiryDate" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSort("expiryDate")}
-                      className="flex items-center gap-2"
-                    >
-                      Expiry Date
-                      {sortBy === "expiryDate" && (sortOrder === "asc" ? "↑" : "↓")}
-                    </Button>
-                    <Button
-                      variant={sortBy === "price" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSort("price")}
-                      className="flex items-center gap-2"
-                    >
-                      Price
-                      {sortBy === "price" && (sortOrder === "asc" ? "↑" : "↓")}
-                    </Button>
-                    <Button
-                      variant={sortBy === "quantity" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSort("quantity")}
-                      className="flex items-center gap-2"
-                    >
-                      Quantity
-                      {sortBy === "quantity" && (sortOrder === "asc" ? "↑" : "↓")}
-                    </Button>
-                    <Button
-                      variant={sortBy === "createdAt" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSort("createdAt")}
-                      className="flex items-center gap-2"
-                    >
-                      Created Date
-                      {sortBy === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
-                    </Button>
-                    <Button
-                      variant={sortBy === "medicineName" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSort("medicineName")}
-                      className="flex items-center gap-2"
-                    >
-                      Name
-                      {sortBy === "medicineName" && (sortOrder === "asc" ? "↑" : "↓")}
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </div>
           </Card>
 
@@ -544,20 +557,6 @@ export default function Deals() {
             <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="text-sm text-muted-foreground">
                 Showing {deals?.length || 0} of {totalDeals || 0} deals (Page {currentPage} of {totalPages || 1})
-              </div>
-              <div className="flex items-center gap-2">
-                <Label className="text-sm">Items per page:</Label>
-                <Select value={pageSize.toString()} onValueChange={(value) => handlePageSizeChange(parseInt(value))}>
-                  <SelectTrigger className="w-20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="6">6</SelectItem>
-                    <SelectItem value="9">9</SelectItem>
-                    <SelectItem value="12">12</SelectItem>
-                    <SelectItem value="18">18</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           )}
@@ -582,7 +581,6 @@ export default function Deals() {
               <div className="text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages}
               </div>
-              
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -593,7 +591,6 @@ export default function Deals() {
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                
                 <div className="flex items-center gap-1">
                   {getPageNumbers().map((page, index) => (
                     <div key={index}>
@@ -612,7 +609,6 @@ export default function Deals() {
                     </div>
                   ))}
                 </div>
-                
                 <Button
                   variant="outline"
                   size="sm"

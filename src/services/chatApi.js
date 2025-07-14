@@ -44,7 +44,12 @@ export const getChatHistory = async (chatRoomId) => {
   }
 };
 
-export const getOrCreateChatRoom = async (user1Id, user2Id, dealId) => {
+export const getOrCreateChatRoom = async (
+  user1Id,
+  user2Id,
+  targetId,
+  targetType
+) => {
   try {
     const token = (() => {
       try {
@@ -54,7 +59,7 @@ export const getOrCreateChatRoom = async (user1Id, user2Id, dealId) => {
       }
     })();
     const response = await fetch(
-      `${API_BASE_URL}/chat/room-id?user1=${user1Id}&user2=${user2Id}&dealId=${dealId}`,
+      `${API_BASE_URL}/chat/room-id?user1=${user1Id}&user2=${user2Id}&targetId=${targetId}&targetType=${targetType}`,
       {
         method: "GET",
         headers: {

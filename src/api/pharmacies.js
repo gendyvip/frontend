@@ -34,7 +34,6 @@ export async function getPharmacyById(id) {
   return res.json();
 }
 
-
 export async function listPharmaciesForSale(id, saleData) {
   const url = `${baseURL}/pharmacies/${id}/list-for-sale`;
 
@@ -92,5 +91,21 @@ export async function unlistPharmacyFromSaleJson(id) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Failed to unlist pharmacy from sale");
   }
+  return res.json();
+}
+
+export async function getRelatedPharmacies(id, params = {}) {
+  const url = new URL(`${baseURL}/pharmacies/${id}/related`);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "")
+      url.searchParams.append(key, value);
+  });
+  const res = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch related pharmacies");
   return res.json();
 }

@@ -12,7 +12,10 @@ export default function PharmaciesList({ pharmacies, loading, onViewDetails }) {
           >
             {/* Image skeleton */}
             <div className="relative aspect-video w-full bg-gray-200">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-[shimmer_1.5s_infinite]" style={{backgroundSize:'200% 100%'}} />
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-[shimmer_1.5s_infinite]"
+                style={{ backgroundSize: "200% 100%" }}
+              />
             </div>
             {/* Content skeleton */}
             <div className="p-4 flex flex-col gap-2 flex-1">
@@ -48,16 +51,25 @@ export default function PharmaciesList({ pharmacies, loading, onViewDetails }) {
         <div className="bg-primary/10 rounded-full p-4 mb-4">
           <Package className="w-12 h-12 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-primary mb-2">No Pharmacies Found</h2>
-        <p className="text-gray-500 text-base mb-2 text-center max-w-md">We couldn't find any pharmacies for sale matching your criteria. Try adjusting your filters or check back later!</p>
+        <h2 className="text-2xl font-bold text-primary mb-2">
+          No Pharmacies Found
+        </h2>
+        <p className="text-gray-500 text-base mb-2 text-center max-w-md">
+          We couldn't find any pharmacies for sale matching your criteria. Try
+          adjusting your filters or check back later!
+        </p>
       </div>
     );
   }
   return (
     <>
-      {pharmacies.map(pharmacy => (
-        <PharmacyCard key={pharmacy.id} pharmacy={pharmacy} onViewDetails={onViewDetails} />
+      {pharmacies.map((pharmacy) => (
+        <PharmacyCard
+          key={pharmacy.id}
+          pharmacy={pharmacy}
+          onViewDetails={onViewDetails}
+        />
       ))}
     </>
   );
-} 
+}

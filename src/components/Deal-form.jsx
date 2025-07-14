@@ -83,7 +83,6 @@ export function DealForm({ className, ...props }) {
 
   const isEditMode = !!id;
 
-  // Memoized search function to prevent infinite re-renders
   const searchDrugs = React.useCallback(
     async (searchValue) => {
       if (!token) {

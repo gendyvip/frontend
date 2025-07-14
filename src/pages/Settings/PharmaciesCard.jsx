@@ -503,7 +503,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                   Your Pharmacies ({validatedPharmacies.length})
                 </h3>
                 <Button asChild>
-                  <Link to="/pharmacy/register">
+                  <Link to="/pharmacies/new">
                     Add New Pharmacy
                   </Link>
                 </Button>

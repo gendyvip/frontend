@@ -68,6 +68,7 @@ const useChat = create((set, get) => ({
     socket.off("messageSeen");
     socket.off("roomMarkedAsSeen");
     socket.off("lastMessageUpdated");
+    socket.off("newChatRoom"); // Remove previous newChatRoom listener
 
     // Listen for new messages
     socket.on("newMessage", (message) => {
@@ -255,14 +256,24 @@ const useChat = create((set, get) => ({
       console.error("Socket error:", error);
       set({ error: error.message });
     });
+
+    // Listen for new chat room creation (for receiver)
+    socket.on("newChatRoom", () => {
+      get().loadUserChats();
+    });
   },
 
-  startChat: async (user1Id, user2Id, dealId, otherUserInfo) => {
+  startChat: async (user1Id, user2Id, targetId, targetType, otherUserInfo) => {
     set({ loading: true, error: null });
 
     try {
       // Create or get chat room
-      const roomId = await getOrCreateChatRoom(user1Id, user2Id, dealId);
+      const roomId = await getOrCreateChatRoom(
+        user1Id,
+        user2Id,
+        targetId,
+        targetType
+      );
 
       // Initialize socket if not already done
       if (!get().socket) {
@@ -270,14 +281,15 @@ const useChat = create((set, get) => ({
       }
 
       // Start chat via WebSocket
-      startChat(user1Id, user2Id, dealId);
+      startChat(user1Id, user2Id, targetId, targetType);
 
       // Set active chat
       const activeChat = {
         roomId,
         user1Id,
         user2Id,
-        dealId,
+        targetId,
+        targetType,
         otherUser: otherUserInfo,
       };
 
@@ -349,6 +361,8 @@ const useChat = create((set, get) => ({
           user2Id: room.reciver.id,
           dealId: room.deal?.id,
           deal: room.deal,
+          pharmacyId: room.pharmacy?.id,
+          pharmacy: room.pharmacy,
           otherUser: {
             id: otherUser.id,
             fullName: otherUser.fullName || otherUser.name || "Unknown User",

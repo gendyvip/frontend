@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 
 export default function PharmacyDetailsTable({ pharmacy }) {
+  const pricePerSqm =
+    pharmacy.pharmacyPrice && pharmacy.area
+      ? Math.round(pharmacy.pharmacyPrice / pharmacy.area)
+      : null;
+
   const details = [
     {
       icon: Building2,
@@ -60,8 +65,8 @@ export default function PharmacyDetailsTable({ pharmacy }) {
     },
     {
       icon: DollarSign,
-      label: "Price",
-      value: Number(pharmacy.pharmacyPrice).toLocaleString() + " EGP",
+      label: "Price per m²",
+      value: pricePerSqm ? `${pricePerSqm.toLocaleString()} EGP` : "N/A",
       color: "text-emerald-600",
     },
   ];
@@ -78,6 +83,21 @@ export default function PharmacyDetailsTable({ pharmacy }) {
             Complete information about this pharmacy
           </p>
         </div>
+      </div>
+
+      {/* Price Section */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+        <div className="flex items-baseline gap-3 mb-2">
+          <span className="text-4xl font-bold text-gray-900">
+            {Number(pharmacy.pharmacyPrice).toLocaleString()}
+          </span>
+          <span className="text-xl text-gray-600">EGP</span>
+        </div>
+        {pricePerSqm && (
+          <p className="text-gray-500">
+            {pricePerSqm.toLocaleString()} EGP per m²
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

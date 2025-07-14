@@ -9,16 +9,6 @@ import {
 import { Link } from "react-router-dom";
 
 export default function ListingHeader({ pharmacy }) {
-  const handleCall = () => {
-    // Handle call functionality
-    console.log("Call clicked");
-  };
-
-  const handleWhatsApp = () => {
-    // Handle WhatsApp functionality
-    console.log("WhatsApp clicked");
-  };
-
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -27,7 +17,6 @@ export default function ListingHeader({ pharmacy }) {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      // Show toast notification
     }
   };
 
@@ -88,20 +77,6 @@ export default function ListingHeader({ pharmacy }) {
               className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
             >
               <Share2 className="w-5 h-5 text-gray-600" />
-            </button>
-            <button
-              onClick={handleWhatsApp}
-              className="flex items-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors"
-            >
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp
-            </button>
-            <button
-              onClick={handleCall}
-              className="flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              Call Now
             </button>
           </div>
         </div>

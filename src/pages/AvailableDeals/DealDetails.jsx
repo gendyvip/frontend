@@ -110,7 +110,7 @@ export default function DealDetails() {
 
     try {
       // Start chat with the deal poster
-      await startChat(currentUserId, deal.postedBy.id, deal.id, {
+      await startChat(currentUserId, deal.postedBy.id, deal.id, "deal", {
         fullName: deal.postedBy.fullName,
         profilePhotoUrl: deal.postedBy.profilePhotoUrl,
         role: deal.postedBy.role || "User",
@@ -136,6 +136,7 @@ export default function DealDetails() {
   };
 
   const handleProfile = () => {
+
     navigate(`/pharmacists/${deal.postedBy.id}`);
   };
 

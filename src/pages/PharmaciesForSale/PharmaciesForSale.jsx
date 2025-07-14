@@ -124,7 +124,7 @@ export default function PharmaciesForSale() {
   };
 
   const handleViewDetails = (pharmacy) => {
-    navigate(`/pharmacies-for-sale/${pharmacy.id}`);
+    navigate(`/pharmacies/${pharmacy.id}`);
   };
 
   // Only show pharmacies not owned by the current user
@@ -179,7 +179,7 @@ export default function PharmaciesForSale() {
           {error && <div className="text-red-500 mb-4">{error}</div>}
           {loading || filteredPharmacies.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center flex-1 min-w-0">
                 <PharmaciesList
                   pharmacies={filteredPharmacies}
                   loading={loading}

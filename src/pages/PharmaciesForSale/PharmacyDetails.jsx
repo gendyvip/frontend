@@ -10,9 +10,7 @@ const ListingHeader = lazy(() =>
 const ImageGallery = lazy(() =>
   import("../../components/PharmacyDetails/ImageGallery")
 );
-const PriceAndDetails = lazy(() =>
-  import("../../components/PharmacyDetails/PriceAndDetails")
-);
+
 const PharmacyDetailsTable = lazy(() =>
   import("../../components/PharmacyDetails/PharmacyDetailsTable")
 );
@@ -22,9 +20,7 @@ const MapSection = lazy(() =>
 const AdvertiserInfo = lazy(() =>
   import("../../components/PharmacyDetails/AdvertiserInfo")
 );
-const AreaRatings = lazy(() =>
-  import("../../components/PharmacyDetails/AreaRatings")
-);
+
 const RelatedListings = lazy(() =>
   import("../../components/PharmacyDetails/RelatedListings")
 );
@@ -59,9 +55,15 @@ const LoadingSkeleton = () => (
 
       {/* Full Width Components */}
       <div className="space-y-8">
-        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
-        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
-        <div className="h-80 bg-gray-200 rounded-2xl animate-pulse"></div>
+        {/* Detailed Information and Map Section - Side by Side */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
+          </div>
+          <div>
+            <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
+          </div>
+        </div>
         <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
       </div>
     </div>
@@ -157,28 +159,25 @@ export default function PharmacyDetails() {
 
         {/* Full Width Components Below */}
         <div className="space-y-8">
-          {/* Price and Key Details */}
-          <SuspenseWrapper>
-            <PriceAndDetails pharmacy={pharmacy} />
-          </SuspenseWrapper>
+          {/* Detailed Information and Map Section - Side by Side */}
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Detailed Information - Takes 2/3 of the width */}
+            <div className="lg:col-span-2">
+              <SuspenseWrapper>
+                <PharmacyDetailsTable pharmacy={pharmacy} />
+              </SuspenseWrapper>
+            </div>
 
-          {/* Detailed Information */}
-          <SuspenseWrapper>
-            <PharmacyDetailsTable pharmacy={pharmacy} />
-          </SuspenseWrapper>
-
-          {/* Map Section */}
-          <SuspenseWrapper>
-            <MapSection
-              location={pharmacy.location}
-              address={pharmacy.addressLine1}
-            />
-          </SuspenseWrapper>
-
-          {/* Area Ratings */}
-          <SuspenseWrapper>
-            <AreaRatings />
-          </SuspenseWrapper>
+            {/* Map Section - Takes 1/3 of the width */}
+            <div>
+              <SuspenseWrapper>
+                <MapSection
+                  location={pharmacy.location}
+                  address={pharmacy.addressLine1}
+                />
+              </SuspenseWrapper>
+            </div>
+          </div>
 
           {/* Related Listings */}
           <SuspenseWrapper>
@@ -221,7 +220,7 @@ export default function PharmacyDetails() {
 
       {/* Floating Contact Button */}
       <SuspenseWrapper>
-        <ContactOptions owner={pharmacy.owner} />
+        <ContactOptions owner={pharmacy.owner} pharmacyId={pharmacy.id} />
       </SuspenseWrapper>
     </div>
   );

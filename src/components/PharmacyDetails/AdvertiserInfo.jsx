@@ -2,16 +2,6 @@ import React from "react";
 import { Phone, MessageCircle, Star, Building2 } from "lucide-react";
 
 export default function AdvertiserInfo({ owner }) {
-  const handleCall = () => {
-    // Handle call functionality
-    console.log("Call advertiser");
-  };
-
-  const handleMessage = () => {
-    // Handle message functionality
-    console.log("Message advertiser");
-  };
-
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-start gap-4 mb-6">
@@ -56,24 +46,6 @@ export default function AdvertiserInfo({ owner }) {
           <p className="text-2xl font-bold text-gray-900">24h</p>
           <p className="text-sm text-gray-500">Response Time</p>
         </div>
-      </div>
-
-      {/* CTA Buttons */}
-      <div className="space-y-3">
-        <button
-          onClick={handleCall}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-        >
-          <Phone className="w-4 h-4" />
-          Call Now
-        </button>
-        <button
-          onClick={handleMessage}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
-        >
-          <MessageCircle className="w-4 h-4" />
-          Send Message
-        </button>
       </div>
 
       {/* Trust Indicators */}

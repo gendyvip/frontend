@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useChat from "../../store/useChat";
 import { useAuth } from "../../store/useAuth";
 
-export default function ContactOptions({ owner }) {
+export default function ContactOptions({ owner, pharmacyId }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const currentUserId = (() => {
@@ -15,31 +15,36 @@ export default function ContactOptions({ owner }) {
       return null;
     }
   })();
-  const { startChat } = useChat();
+  const { startChat, setIsWidgetOpen, loadUserChats, selectChat, chats } =
+    useChat();
 
   const handleChat = async () => {
-    if (!currentUserId || !owner) {
+    if (!currentUserId || !owner || !pharmacyId) {
       alert("Please login to start a chat");
       return;
     }
 
     try {
-      // Note: Pharmacy chats currently require a dealId
-      // This is a limitation of the current backend structure
-      // For now, we'll show an informative message
-      alert(
-        "Chat feature for pharmacy listings is coming soon! Currently, you can only chat about specific deals."
+      // Start chat with the pharmacy owner
+      await startChat(currentUserId, owner.id, pharmacyId, "pharmacy", {
+        fullName: owner.fullName,
+        profilePhotoUrl: owner.profilePhotoUrl,
+        role: owner.role || "User",
+      });
+
+      // Refresh chat list
+      await loadUserChats();
+
+      // Find the new chat in the list (by pharmacyId or userId)
+      const chatToSelect = chats.find(
+        (c) => c.pharmacy?.id === pharmacyId || c.otherUser?.id === owner.id
       );
+      if (chatToSelect) {
+        await selectChat(chatToSelect);
+      }
 
-      // TODO: Implement pharmacy chat functionality when backend supports it
-      // await startChat(currentUserId, owner.id, null, {
-      //   fullName: owner.fullName,
-      //   profilePhotoUrl: owner.profilePhotoUrl,
-      //   role: owner.role || "User",
-      // });
-
-      // Navigate to chat page
-      // navigate("/chat");
+      // Open the chat widget immediately
+      setIsWidgetOpen(true);
     } catch (error) {
       console.error("Error starting chat:", error);
       alert("Failed to start chat. Please try again.");

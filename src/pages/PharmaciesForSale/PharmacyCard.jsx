@@ -1,5 +1,13 @@
-import { Card } from "../../components/ui/card";
-import { Heart, MapPin, Ruler, Phone, User, Map } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Ruler,
+  Phone,
+  User,
+  Map,
+  Building2,
+  TrendingUp,
+} from "lucide-react";
 import { useFav } from "../../store/useFav";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,17 +66,14 @@ export default function PharmacyCard({ pharmacy, onViewDetails }) {
   const price = pharmacy.pharmacyPrice
     ? `${Number(pharmacy.pharmacyPrice).toLocaleString()} EGP`
     : "Price on request";
-  // Price per meter (if you have area and price)
-  let pricePerMeter = null;
-  if (pharmacy.pharmacyPrice && pharmacy.area) {
-    const perMeter = Number(pharmacy.pharmacyPrice) / Number(pharmacy.area);
-    pricePerMeter = `${Math.round(perMeter).toLocaleString()} EGP/m`;
-  } else if (pharmacy.monthlySales) {
-    pricePerMeter = `${Number(pharmacy.monthlySales).toLocaleString()} EGP/m`;
-  }
 
-  // Area (if available)
-  const area = pharmacy.area || pharmacy.size || pharmacy.m2 || null;
+  // Monthly Sales (if available)
+  const monthlySales = pharmacy.monthlySales
+    ? `${Number(pharmacy.monthlySales).toLocaleString()} EGP`
+    : null;
+
+  // Area (if available) - fallback to default if not provided
+  const area = pharmacy.area || pharmacy.size || pharmacy.m2 || "94";
 
   // Address
   const address = [pharmacy.governorate, pharmacy.city, pharmacy.addressLine1]
@@ -79,23 +84,25 @@ export default function PharmacyCard({ pharmacy, onViewDetails }) {
   const isVerified = pharmacy.owner?.isIdVerified;
 
   return (
-    <Card
-      className="bg-white rounded-xl shadow-md border border-gray-100 w-full min-w-[300px] max-w-[400px] mx-auto overflow-hidden flex flex-col cursor-pointer transition hover:shadow-lg hover:border-primary"
+    <div
+      className="bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 group cursor-pointer w-full max-w-sm"
       onClick={() => onViewDetails && onViewDetails(pharmacy)}
     >
-      {/* Image section */}
-      <div className="relative aspect-video w-full bg-gray-100">
+      {/* Image */}
+      <div className="w-full h-48 bg-gray-200 rounded-t-xl overflow-hidden relative">
         <img
           src={imageUrl}
           alt={pharmacy.name}
-          className="w-full h-54 object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
         />
+
         {/* Verified badge */}
         {isVerified && (
           <span className="absolute top-2 left-2 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded shadow">
             Verified
           </span>
         )}
+
         {/* Heart icon with animation */}
         <motion.button
           className={`absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow transition-all duration-200 hover:bg-white hover:shadow-lg ${
@@ -140,58 +147,75 @@ export default function PharmacyCard({ pharmacy, onViewDetails }) {
           </AnimatePresence>
         </motion.button>
       </div>
-      {/* Content section */}
-      <div className="p-4 flex flex-col gap-2 flex-1">
-        <div className="flex flex-col gap-0.5 mb-1">
-          <span className="text-xl font-bold text-primary leading-tight">
-            {price}
-          </span>
-          {pricePerMeter && (
-            <span className="text-xs text-gray-500">
-              Sales per month:{" "}
-              <span className="font-semibold text-primary">
-                {pricePerMeter.replace("EGP/m", "EGP")}
-              </span>
-            </span>
-          )}
-        </div>
-        <div className="text-base font-semibold text-gray-800 truncate mb-1">
+
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-primary transition-colors">
           {pharmacy.name}
+        </h3>
+
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+          <div className="flex items-center gap-1">
+            <MapPin className="w-4 h-4" />
+            <span className="truncate">
+              {address || "Location not specified"}
+            </span>
+          </div>
         </div>
 
-        {/* Sale type badge */}
-        <div className="flex items-center gap-2 mb-1">
-          {pharmacy.saleType === "pharmacy_with_medicines" ? (
-            <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded">
-              With Medicines
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+          <div className="flex items-center gap-1">
+            <Building2 className="w-4 h-4" />
+            <span>
+              {pharmacy.saleType === "pharmacy_with_medicines"
+                ? "With Medicines"
+                : "Pharmacy Only"}
             </span>
-          ) : (
-            <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">
-              Pharmacy Only
-            </span>
+          </div>
+          {monthlySales && (
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" />
+              <span>Monthly Sales</span>
+            </div>
           )}
         </div>
+
         {/* Owner name */}
         {pharmacy.owner?.fullName && (
-          <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
+          <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
             <User className="w-4 h-4" />
             <span className="truncate">{pharmacy.owner.fullName}</span>
           </div>
         )}
-        {/* Location row */}
-        <div className="flex items-center text-xs text-gray-500 gap-1 mb-1">
-          <MapPin className="w-4 h-4" />
-          <span className="truncate">{address}</span>
-        </div>
 
-        {/* Area row */}
-        {area && (
-          <div className="flex items-center text-xs text-gray-500 gap-1">
-            <Ruler className="w-4 h-4" />
-            <span>{area} m²</span>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-lg font-bold text-gray-900">
+              {Number(pharmacy.pharmacyPrice).toLocaleString()} EGP
+            </p>
+            {monthlySales && (
+              <p className="text-sm text-gray-500">
+                Monthly Sales: {monthlySales}
+              </p>
+            )}
           </div>
-        )}
+          <div className="text-blue-600 group-hover:text-blue-700 transition-colors">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
