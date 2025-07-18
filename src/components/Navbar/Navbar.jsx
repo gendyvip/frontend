@@ -160,7 +160,7 @@ export default function Navbar() {
               Dawaback
             </span>
             <p className="text-sm text-gray-500  leading-0 mt-1 dark:text-gray-400">
-              Before it expires, Dawaback it
+              Before it expires, trade it with desire
             </p>
           </div>
         </Link>

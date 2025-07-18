@@ -416,31 +416,39 @@ export function SignUpForm({ className, ...props }) {
                     <Label htmlFor="name" className="font-semibold">
                       Full Name <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      className={cn(
-                        "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all h-10",
-                        formik.touched.name &&
-                          formik.errors.name &&
-                          "border-red-500"
-                      )}
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      aria-describedby={
-                        formik.touched.name && formik.errors.name
-                          ? "name-error"
-                          : undefined
-                      }
-                      aria-invalid={
-                        formik.touched.name && formik.errors.name
-                          ? "true"
-                          : "false"
-                      }
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* User icon */}
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                      </span>
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        className={cn(
+                          "pl-10",
+                          formik.touched.name &&
+                            formik.errors.name &&
+                            "border-red-500"
+                        )}
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        aria-describedby={
+                          formik.touched.name && formik.errors.name
+                            ? "name-error"
+                            : undefined
+                        }
+                        aria-invalid={
+                          formik.touched.name && formik.errors.name
+                            ? "true"
+                            : "false"
+                        }
+                      />
+                    </div>
                     <ErrorMessage
                       error={
                         formik.touched.name && formik.errors.name ? (
@@ -475,21 +483,39 @@ export function SignUpForm({ className, ...props }) {
                     <Label htmlFor="email" className="font-semibold">
                       Email <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                      className={cn(
-                        "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all h-10",
-                        formik.touched.email &&
-                          formik.errors.email &&
-                          "border-red-500"
-                      )}
-                      value={formik.values.email}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Envelope icon */}
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </span>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter your email address"
+                        className={cn(
+                          "pl-10",
+                          formik.touched.email &&
+                            formik.errors.email &&
+                            "border-red-500"
+                        )}
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        aria-describedby={
+                          formik.touched.email && formik.errors.email
+                            ? "email-error"
+                            : undefined
+                        }
+                        aria-invalid={
+                          formik.touched.email && formik.errors.email
+                            ? "true"
+                            : "false"
+                        }
+                      />
+                    </div>
                     <ErrorMessage
                       error={
                         formik.touched.email && formik.errors.email ? (
@@ -528,20 +554,28 @@ export function SignUpForm({ className, ...props }) {
                     <Label htmlFor="phone" className="font-semibold">
                       Phone Number <span className="text-red-500">*</span>
                     </Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      placeholder="Enter your phone number"
-                      className={cn(
-                        "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all h-10",
-                        formik.touched.phone &&
-                          formik.errors.phone &&
-                          "border-red-500"
-                      )}
-                      value={formik.values.phone}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Phone icon */}
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      </span>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter your phone number"
+                        className={cn(
+                          "pl-10",
+                          formik.touched.phone &&
+                            formik.errors.phone &&
+                            "border-red-500"
+                        )}
+                        value={formik.values.phone}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </div>
                     <ErrorMessage
                       error={
                         formik.touched.phone && formik.errors.phone ? (
@@ -568,18 +602,12 @@ export function SignUpForm({ className, ...props }) {
                     />
                   </div>
 
+                  {/* Date of Birth (remove icon, keep wrapper and pl-10 for alignment if needed) */}
                   <div className="space-y-2">
                     <Label className="font-semibold">
                       Date of Birth <span className="text-red-500">*</span>
                     </Label>
-                    <div
-                      className={cn(
-                        "rounded-lg border-2 transition-all",
-                        formik.touched.dateOfBirth && formik.errors.dateOfBirth
-                          ? "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500"
-                          : "border-gray-300 focus-within:border-[var(--primary)] focus-within:ring-2 focus-within:ring-[var(--primary)]"
-                      )}
-                    >
+                    <div>
                       <Calendar28
                         value={formik.values.dateOfBirth}
                         onChange={(date) => {
@@ -588,31 +616,6 @@ export function SignUpForm({ className, ...props }) {
                         }}
                       />
                     </div>
-                    <ErrorMessage
-                      error={
-                        formik.touched.dateOfBirth &&
-                        formik.errors.dateOfBirth ? (
-                          <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.dateOfBirth}
-                          </span>
-                        ) : null
-                      }
-                    />
                   </div>
                 </div>
                 <div className="space-y-2 w-full">
@@ -695,13 +698,20 @@ export function SignUpForm({ className, ...props }) {
                       Password <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Lock icon */}
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <rect width="12" height="8" x="6" y="11" rx="2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-4-6V9a4 4 0 118 0v2" />
+                        </svg>
+                      </span>
                       <Input
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Create a strong password"
                         className={cn(
-                          "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all h-10",
+                          "pl-10",
                           formik.touched.password &&
                             formik.errors.password &&
                             "border-red-500"
@@ -768,13 +778,20 @@ export function SignUpForm({ className, ...props }) {
                       Confirm Password <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Lock icon */}
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <rect width="12" height="8" x="6" y="11" rx="2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-4-6V9a4 4 0 118 0v2" />
+                        </svg>
+                      </span>
                       <Input
                         id="confirmPassword"
                         name="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm your password"
                         className={cn(
-                          "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all h-10",
+                          "pl-10",
                           formik.touched.confirmPassword &&
                             formik.errors.confirmPassword &&
                             "border-red-500",
@@ -1218,21 +1235,30 @@ export function SignUpForm({ className, ...props }) {
                 <Label htmlFor="nationalId" className="font-semibold">
                   National ID Number <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="nationalId"
-                  name="nationalId"
-                  type="text"
-                  placeholder="Enter your 14-digit national ID"
-                  className={cn(
-                    "rounded-lg border-2 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)] transition-all",
-                    formik.touched.nationalId &&
-                      formik.errors.nationalId &&
-                      "border-red-500"
-                  )}
-                  value={formik.values.nationalId}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                    {/* ID card icon */}
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <rect width="18" height="12" x="3" y="6" rx="2" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 10h.01M7 14h.01M11 10h6M11 14h6" />
+                    </svg>
+                  </span>
+                  <Input
+                    id="nationalId"
+                    name="nationalId"
+                    type="text"
+                    placeholder="Enter your 14-digit national ID"
+                    className={cn(
+                      "pl-10",
+                      formik.touched.nationalId &&
+                        formik.errors.nationalId &&
+                        "border-red-500"
+                    )}
+                    value={formik.values.nationalId}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
                 <ErrorMessage
                   error={
                     formik.touched.nationalId && formik.errors.nationalId ? (

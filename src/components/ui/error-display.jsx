@@ -41,7 +41,22 @@ export function ErrorMessage({ error, className }) {
   if (!error) return null;
 
   return (
-    <div className={cn("text-sm text-red-500", className)}>
+    <div className={cn("flex items-center gap-1 text-red-500 text-sm mt-1", className)}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4 flex-shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
+        />
+      </svg>
       {error}
     </div>
   );

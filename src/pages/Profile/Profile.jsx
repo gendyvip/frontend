@@ -330,7 +330,7 @@ export default function Profile() {
                     <div className="flex flex-col items-center justify-center h-64">
                       {/* Pie Chart SVG for Deals by Status */}
                       <svg
-                        className="w-12 h-12 text-gray-300 mb-4"
+                        className="w-12 h-12 text-primary mb-2"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -346,6 +346,7 @@ export default function Profile() {
                         <path
                           d="M12 2a10 10 0 0 1 10 10h-10z"
                           fill="currentColor"
+                          opacity="0.18"
                         />
                       </svg>
                       <p className="text-gray-500 text-lg font-medium">
@@ -389,7 +390,7 @@ export default function Profile() {
                     <div className="flex flex-col items-center justify-center h-64">
                       {/* Bar Chart SVG for Deals by Type */}
                       <svg
-                        className="w-12 h-12 text-gray-300 mb-4"
+                        className="w-12 h-12 text-primary mb-2"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -400,6 +401,7 @@ export default function Profile() {
                           width="3"
                           height="10"
                           fill="currentColor"
+                          opacity="0.18"
                         />
                         <rect
                           x="10.5"
@@ -407,6 +409,7 @@ export default function Profile() {
                           width="3"
                           height="14"
                           fill="currentColor"
+                          opacity="0.18"
                         />
                         <rect
                           x="17"
@@ -414,6 +417,7 @@ export default function Profile() {
                           width="3"
                           height="18"
                           fill="currentColor"
+                          opacity="0.18"
                         />
                       </svg>
                       <p className="text-gray-500 text-lg font-medium">
@@ -464,7 +468,7 @@ export default function Profile() {
                 <div className="hidden md:block overflow-x-auto">
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                      <Package className="w-12 h-12 text-gray-300 mb-4" />
+                      <Package className="w-12 h-12 text-primary mb-2" />
                       <p className="text-gray-500 text-lg font-medium">
                         No deals found
                       </p>
@@ -550,7 +554,7 @@ export default function Profile() {
                 <div className="md:hidden space-y-4">
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                      <Package className="w-12 h-12 text-gray-300 mb-4" />
+                      <Package className="w-12 h-12 text-primary mb-4" />
                       <p className="text-gray-500 text-lg font-medium">
                         No deals found
                       </p>
@@ -707,132 +711,48 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6 pt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {pharmacies.map((pharmacy) => (
-                    <div key={pharmacy.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between mb-4">
-                        <div className="flex flex-row  space-x-2">
-                          <Building2 className="h-6 w-6 text-primary" />
-                          <h3 className="text-lg font-semibold">
-                            {pharmacy.name}
-                          </h3>
+                {pharmacies.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    {/* SVG illustration for empty pharmacies */}
+                    <svg className="w-14 h-14 text-primary mb-2" fill="none" viewBox="0 0 48 48" stroke="currentColor">
+                      <rect x="8" y="20" width="32" height="20" rx="3" fill="currentColor" opacity="0.12"/>
+                      <rect x="8" y="20" width="32" height="20" rx="3" stroke="currentColor" strokeWidth="2"/>
+                      <rect x="18" y="30" width="12" height="10" rx="1" fill="currentColor" opacity="0.18"/>
+                      <rect x="18" y="30" width="12" height="10" rx="1" stroke="currentColor" strokeWidth="2"/>
+                      <rect x="22" y="34" width="4" height="2" rx="1" fill="white"/>
+                      <rect x="23" y="33" width="2" height="4" rx="1" fill="white"/>
+                      <rect x="20" y="10" width="8" height="8" rx="2" fill="currentColor" opacity="0.18"/>
+                      <rect x="20" y="10" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <rect x="23" y="13" width="2" height="4" rx="1" fill="white"/>
+                      <rect x="22" y="14" width="4" height="2" rx="1" fill="white"/>
+                    </svg>
+                    <p className="text-gray-500 text-lg font-medium">No pharmacies found</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {pharmacies.map((pharmacy) => (
+                      <div key={pharmacy.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between mb-4">
+                          <div className="flex flex-row  space-x-2">
+                            <Building2 className="h-6 w-6 text-primary" />
+                            <h3 className="text-lg font-semibold">
+                              {pharmacy.name}
+                            </h3>
+                          </div>
+                          <Badge
+                            variant={
+                              pharmacy.isForSale ? "success" : "destructive"
+                            }
+                          >
+                            {pharmacy.isForSale ? "For Sale" : "Not for Sale"}
+                          </Badge>
                         </div>
-                        <Badge
-                          variant={
-                            pharmacy.isForSale ? "success" : "destructive"
-                          }
-                        >
-                          {pharmacy.isForSale ? "For Sale" : "Not for Sale"}
-                        </Badge>
-                      </div>
 
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 bg-blue-100 rounded flex items-center justify-center">
-                            <svg
-                              className="w-3 h-3 text-primary"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                              />
-                            </svg>
-                          </div>
-                          <div className="flex justify-between flex-1">
-                            <span className="text-gray-600 font-medium">
-                              License:
-                            </span>
-                            <span className="font-medium">
-                              {pharmacy.licenseNum}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 bg-green-100 rounded flex items-center justify-center">
-                            <svg
-                              className="w-3 h-3 text-green-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                              />
-                            </svg>
-                          </div>
-                          <div className="flex justify-between flex-1">
-                            <span className="text-gray-600 font-medium">
-                              Phone:
-                            </span>
-                            <span className="font-medium">
-                              {pharmacy.pharmacyPhone}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
-                            <svg
-                              className="w-3 h-3 text-purple-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                          <div className="flex justify-between flex-1">
-                            <span className="text-gray-600 font-medium">
-                              Hours:
-                            </span>
-                            <span className="font-medium">
-                              {pharmacy.startHour} - {pharmacy.endHour}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-5 h-5 bg-orange-100 rounded flex items-center justify-center">
-                            {/* British Pound SVG */}
-                            <svg
-                              className="w-3 h-3 text-orange-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17 21H9a4 4 0 01-4-4v0a4 4 0 014-4h2a2 2 0 100-4H9a2 2 0 110-4h6"
-                              />
-                            </svg>
-                          </div>
-                          <div className="flex justify-between flex-1">
-                            <span className="text-gray-600 font-medium">
-                              Monthly Sales:
-                            </span>
-                            <span className="font-medium">
-                              £{pharmacy.monthlySales}
-                            </span>
-                          </div>
-                        </div>
-                        {pharmacy.isForSale && (
+                        <div className="space-y-2 text-sm">
                           <div className="flex items-center space-x-2">
-                            <div className="w-5 h-5 bg-red-100 rounded flex items-center justify-center">
+                            <div className="w-5 h-5 bg-blue-100 rounded flex items-center justify-center">
                               <svg
-                                className="w-3 h-3 text-red-600"
+                                className="w-3 h-3 text-primary"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -841,63 +761,166 @@ export default function Profile() {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth={2}
-                                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                                 />
                               </svg>
                             </div>
                             <div className="flex justify-between flex-1">
                               <span className="text-gray-600 font-medium">
-                                Sale Price:
+                                License:
                               </span>
-                              <span className="font-medium text-green-600">
-                                EGP{pharmacy.pharmacyPrice}
+                              <span className="font-medium">
+                                {pharmacy.licenseNum}
                               </span>
                             </div>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="mt-4">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
-                            <MapPin className="h-3 w-3 text-gray-600" />
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5 bg-green-100 rounded flex items-center justify-center">
+                              <svg
+                                className="w-3 h-3 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                />
+                              </svg>
+                            </div>
+                            <div className="flex justify-between flex-1">
+                              <span className="text-gray-600 font-medium">
+                                Phone:
+                              </span>
+                              <span className="font-medium">
+                                {pharmacy.pharmacyPhone}
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-sm text-gray-600 font-medium">
-                            Address:
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5 bg-purple-100 rounded flex items-center justify-center">
+                              <svg
+                                className="w-3 h-3 text-purple-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </div>
+                            <div className="flex justify-between flex-1">
+                              <span className="text-gray-600 font-medium">
+                                Hours:
+                              </span>
+                              <span className="font-medium">
+                                {pharmacy.startHour} - {pharmacy.endHour}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5 bg-orange-100 rounded flex items-center justify-center">
+                              {/* British Pound SVG */}
+                              <svg
+                                className="w-3 h-3 text-orange-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17 21H9a4 4 0 01-4-4v0a4 4 0 014-4h2a2 2 0 100-4H9a2 2 0 110-4h6"
+                                />
+                              </svg>
+                            </div>
+                            <div className="flex justify-between flex-1">
+                              <span className="text-gray-600 font-medium">
+                                Monthly Sales:
+                              </span>
+                              <span className="font-medium">
+                                £{pharmacy.monthlySales}
+                              </span>
+                            </div>
+                          </div>
+                          {pharmacy.isForSale && (
+                            <div className="flex items-center space-x-2">
+                              <div className="w-5 h-5 bg-red-100 rounded flex items-center justify-center">
+                                <svg
+                                  className="w-3 h-3 text-red-600"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="flex justify-between flex-1">
+                                <span className="text-gray-600 font-medium">
+                                  Sale Price:
+                                </span>
+                                <span className="font-medium text-green-600">
+                                  EGP{pharmacy.pharmacyPrice}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div className="ml-7 space-y-1">
-                          <p className="text-sm text-gray-900">
-                            {pharmacy.addressLine1}
-                            {pharmacy.addressLine2 && (
-                              <>
-                                <br />
-                                {pharmacy.addressLine2}
-                              </>
-                            )}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {pharmacy.city}, {pharmacy.governorate}{" "}
-                            {pharmacy.zipCode}
-                          </p>
-                        </div>
-                      </div>
 
-                      {/* Action Button */}
-                      <div className="mt-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewPharmacy(pharmacy.id)}
-                          className="w-full flex items-center justify-center space-x-2"
-                        >
-                          <Building2 className="w-4 h-4" />
-                          <span>View Pharmacy Details</span>
-                        </Button>
+                        <div className="mt-4">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
+                              <MapPin className="h-3 w-3 text-gray-600" />
+                            </div>
+                            <span className="text-sm text-gray-600 font-medium">
+                              Address:
+                            </span>
+                          </div>
+                          <div className="ml-7 space-y-1">
+                            <p className="text-sm text-gray-900">
+                              {pharmacy.addressLine1}
+                              {pharmacy.addressLine2 && (
+                                <>
+                                  <br />
+                                  {pharmacy.addressLine2}
+                                </>
+                              )}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {pharmacy.city}, {pharmacy.governorate}{" "}
+                              {pharmacy.zipCode}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewPharmacy(pharmacy.id)}
+                            className="w-full flex items-center justify-center space-x-2"
+                          >
+                            <Building2 className="w-4 h-4" />
+                            <span>View Pharmacy Details</span>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

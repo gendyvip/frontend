@@ -7,6 +7,9 @@ import { requestAdvertise } from "../../api/advertise";
 import { Card } from "../../components/ui/card";
 import { ErrorHandler } from "@/utils/errorHandler";
 import { ErrorDisplay, ErrorMessage } from "@/components/ui/error-display";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 
 const advertiseSchema = Yup.object().shape({
   fullName: Yup.string()
@@ -108,32 +111,21 @@ export default function Advertise() {
   });
 
   return (
-    <div className="min-h-screen font-sans">
+    <motion.div
+      className="min-h-screen font-sans"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Hero Section */}
       <section className="py-16 px-4 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-center mb-4">
-            <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-              {/* Medical Icon SVG */}
-              <svg
-                className="w-10 h-10 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 2v20m10-10H2"
-                />
-              </svg>
-            </span>
           </div>
           <h1 className="text-5xl font-extrabold mb-2 text-primary">
             Advertise with Dawaback
           </h1>
-          <p className="text-md text-muted-foreground mb-6">
+          <p className="text-md text-muted-foreground">
             Reach health-conscious customers and grow your pharmaceutical or
             healthcare brand with Dawaback, your trusted online medical pharmacy.
           </p>
@@ -142,12 +134,17 @@ export default function Advertise() {
 
       {/* Contact Form Section */}
       <section className="max-w-7xl mx-auto mb-16 px-4">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <motion.div
+          className="flex flex-col lg:flex-row gap-8"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {/* Form Container */}
-          <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden rounded-2xl shadow-lg p-8 flex flex-col justify-center border border-gray-100 flex-1">
+          <div className="overflow-hidden shadow-2xl border-0 rounded-3xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative flex-1 p-8">
             {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 opacity-10" style={{ background: "var(--primary)" }}></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full -ml-20 -mb-20 opacity-10" style={{ background: "var(--primary)" }}></div>
             <h2 className="text-3xl font-bold mb-1 text-center">Get In Touch</h2>
             <p className="text-sm text-muted-foreground mb-6 text-center">
               Fill out the form below to learn more about our advertising
@@ -216,103 +213,115 @@ export default function Advertise() {
               </div>
             )}
             
-            <form className="space-y-5" onSubmit={formik.handleSubmit}>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full">
-                  <label
-                    htmlFor="fullName"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    className={cn(
-                      "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5",
-                      {
-                        "border-red-500":
-                          formik.touched.fullName && formik.errors.fullName,
-                      }
-                    )}
-                    placeholder="Full Name"
-                    onChange={handleInputChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.fullName}
-                  />
+            <form className="space-y-8" onSubmit={formik.handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="font-semibold">
+                    Full Name <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      {/* User icon */}
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    </span>
+                    <Input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      className={cn(
+                        "pl-10 h-9 shadow-xs",
+                        formik.touched.fullName && formik.errors.fullName && "border-red-500"
+                      )}
+                      placeholder="Enter your full name"
+                      onChange={handleInputChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.fullName}
+                    />
+                  </div>
                   <ErrorMessage error={formik.touched.fullName && formik.errors.fullName ? formik.errors.fullName : null} />
                 </div>
-                <div className="w-full">
-                  <label
-                    htmlFor="phone"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Contact Number
-                  </label>
-                  <input
-                    type="text"
-                    id="phone"
-                    className={cn(
-                      "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5",
-                      {
-                        "border-red-500":
-                          formik.touched.phone && formik.errors.phone,
-                      }
-                    )}
-                    placeholder="Your best contact number"
-                    onChange={handleInputChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.phone}
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="font-semibold">
+                    Contact Number <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      {/* Phone icon */}
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </span>
+                    <Input
+                      type="text"
+                      id="phone"
+                      name="phone"
+                      className={cn(
+                        "pl-10 h-9 shadow-xs",
+                        formik.touched.phone && formik.errors.phone && "border-red-500"
+                      )}
+                      placeholder="Enter your phone number"
+                      onChange={handleInputChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.phone}
+                    />
+                  </div>
                   <ErrorMessage error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : null} />
                 </div>
               </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className={cn(
-                    "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5",
-                    {
-                      "border-red-500":
-                        formik.touched.email && formik.errors.email,
-                    }
-                  )}
-                  placeholder="Your professional email address"
-                  onChange={handleInputChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.email}
-                />
+              <div className="space-y-2">
+                <Label htmlFor="email" className="font-semibold">
+                  Email Address <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    {/* Envelope icon */}
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </span>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className={cn(
+                      "pl-10 h-9 shadow-xs",
+                      formik.touched.email && formik.errors.email && "border-red-500"
+                    )}
+                    placeholder="Enter your email address"
+                    onChange={handleInputChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.email}
+                  />
+                </div>
                 <ErrorMessage error={formik.touched.email && formik.errors.email ? formik.errors.email : null} />
               </div>
-              <div>
-                <label
-                  htmlFor="content"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Message or Product/Service Details
-                </label>
-                <textarea
-                  id="content"
-                  rows="8"
-                  className={cn(
-                    "bg-gray-50 border resize-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5",
-                    {
-                      "border-red-500":
-                        formik.touched.content && formik.errors.content,
-                    }
-                  )}
-                  placeholder="Tell us about your advertising needs..."
-                  onChange={handleInputChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.content}
-                ></textarea>
+              <div className="space-y-2">
+                <Label htmlFor="content" className="font-semibold">
+                  Message or Product/Service Details <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 mt-2.5 text-gray-400">
+                    {/* Info icon */}
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                    </svg>
+                  </span>
+                  <textarea
+                    id="content"
+                    name="content"
+                    rows="8"
+                    className={cn(
+                      "bg-gray-50 border resize-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 pl-10 h-32 shadow-xs",
+                      formik.touched.content && formik.errors.content && "border-red-500"
+                    )}
+                    placeholder="Tell us more about your advertising needs..."
+                    onChange={handleInputChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.content}
+                  ></textarea>
+                </div>
                 <ErrorMessage error={formik.touched.content && formik.errors.content ? formik.errors.content : null} />
               </div>
               <button
@@ -352,10 +361,10 @@ export default function Advertise() {
           </div>
 
           {/* Information Container */}
-          <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden rounded-2xl shadow-lg p-8 border border-gray-100 flex-1">
+          <div className="overflow-hidden shadow-2xl border-0 rounded-3xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative flex-1 p-8">
             {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 opacity-50"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 opacity-10" style={{ background: "var(--primary)" }}></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full -ml-20 -mb-20 opacity-10" style={{ background: "var(--primary)" }}></div>
             <h2 className="text-3xl font-bold mb-6 text-center">Why Advertise with Us?</h2>
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
@@ -459,8 +468,8 @@ export default function Advertise() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
-    </div>
+    </motion.div>
   );
 }

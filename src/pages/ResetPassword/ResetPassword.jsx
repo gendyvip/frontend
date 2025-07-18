@@ -73,20 +73,29 @@ export default function ResetPassword() {
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-3">
                     <Label htmlFor="email" className="font-semibold">Email</Label>
-                    <Field
-                      as={Input}
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                      disabled={isLoading}
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.email}
-                      className={cn(
-                        touched.email && errors.email && "border-red-500"
-                      )}
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Envelope icon */}
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </span>
+                      <Field
+                        as={Input}
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Enter your email address"
+                        disabled={isLoading}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.email}
+                        className={cn(
+                          "pl-10",
+                          touched.email && errors.email && "border-red-500"
+                        )}
+                      />
+                    </div>
                     {touched.email && errors.email ? (
                       <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

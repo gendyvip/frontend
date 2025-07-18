@@ -177,8 +177,41 @@ export const PharmacyAnimatedLoader = ({ size = 80, className = "", message = "L
   );
 }; 
 
-export const LoadingPage = ({ message = "Loading..." })=> {
+export const LoadingCapsule = ({ message = "Loading..." })=> {
   return (
       <PharmacyAnimatedLoader message={message} size={50} />
+  );
+}; 
+
+// Custom loader with two SVGs: wrapper spins around capsule
+export const LoadingPage = ({ size = 80, className = "", message = "Loading..." }) => {
+  const wrapperSize = size * 1; // Make wrapper larger than capsule
+  return (
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+      <div style={{ position: "relative", width: wrapperSize, height: wrapperSize }}>
+        {/* Spinning wrapper SVG */}
+        <img
+          src="/wrapper.svg"
+          alt="Loader Wrapper"
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: wrapperSize,
+            height: wrapperSize,
+            animation: "spin 1.2s linear infinite",
+            transformOrigin: "50% 50%",
+          }}
+        />
+      </div>
+      <div className="mt-2 text-center">
+        <p className="text-md font-medium text-gray-600 animate-pulse">{message}</p>
+      </div>
+      <style>{`
+        @keyframes spin {
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
   );
 }; 

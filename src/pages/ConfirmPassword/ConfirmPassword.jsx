@@ -79,6 +79,13 @@ export default function ConfirmPassword() {
                   <div className="grid gap-3">
                     <Label htmlFor="password">New Password</Label>
                     <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Lock icon */}
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <rect width="12" height="8" x="6" y="11" rx="2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-4-6V9a4 4 0 118 0v2" />
+                        </svg>
+                      </span>
                       <Field
                         as={Input}
                         id="password"
@@ -87,6 +94,7 @@ export default function ConfirmPassword() {
                         placeholder="Enter new password"
                         disabled={isLoading}
                         className={cn(
+                          "pl-10",
                           errors.password && touched.password && "border-red-500"
                         )}
                       />
@@ -122,6 +130,13 @@ export default function ConfirmPassword() {
                   <div className="grid gap-3">
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
                     <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        {/* Lock icon */}
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <rect width="12" height="8" x="6" y="11" rx="2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-4-6V9a4 4 0 118 0v2" />
+                        </svg>
+                      </span>
                       <Field
                         as={Input}
                         id="confirmPassword"
@@ -130,6 +145,7 @@ export default function ConfirmPassword() {
                         placeholder="Re-enter new password"
                         disabled={isLoading}
                         className={cn(
+                          "pl-10",
                           errors.confirmPassword && touched.confirmPassword && "border-red-500"
                         )}
                       />
