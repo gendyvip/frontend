@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,10 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { toast } from "sonner";
 import { Mail, Phone, MapPin, Send, Clock, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { requestContact } from "@/api/contact";
+import { ErrorHandler } from "@/utils/errorHandler";
+import { ErrorDisplay, ErrorMessage } from "@/components/ui/error-display";
+import { cn } from "@/lib/utils";
 
 // Create motion version of Button
 const MotionButton = motion(Button);
@@ -61,15 +63,24 @@ const itemAnimation = {
 };
 
 export default function ContactUs() {
+  const [error, setError] = useState(null);
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    setError(null);
+    
     try {
       // Prepend '+20' to the phone number
       const payload = { ...values, phone: `+20${values.phone}` };
       await requestContact(payload);
-      toast.success("Message sent successfully!");
+      
+      // Show success message
+      ErrorHandler.handleSuccess("Message sent successfully! We'll get back to you soon.");
+      
       resetForm();
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message || "Failed to send message");
+      console.error("Contact error:", error);
+      setError(error.message || "Failed to send message");
+      // Error toast is handled by the API
     } finally {
       setSubmitting(false);
     }
@@ -233,6 +244,9 @@ export default function ContactUs() {
                 </motion.div>
               </CardHeader>
               <CardContent className="h-full">
+                {/* Error Display */}
+                <ErrorDisplay error={error} />
+                
                 <Formik
                   initialValues={{
                     name: "",
@@ -252,71 +266,22 @@ export default function ContactUs() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.8 }}
                       >
+                        <label htmlFor="name" className="text-sm font-medium">
+                          Name
+                        </label>
                         <Field
                           as={Input}
+                          id="name"
                           name="name"
-                          placeholder="Your Name"
-                          disabled={isSubmitting}
-                          className="h-12"
+                          placeholder="Your full name"
+                          className={cn(
+                            "border-gray-300 focus:border-primary focus:ring-primary",
+                            {
+                              "border-red-500": touched.name && errors.name,
+                            }
+                          )}
                         />
-                        <AnimatePresence>
-                          {errors.name && touched.name && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="text-sm text-red-500"
-                            >
-                              {errors.name}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-
-                      <motion.div
-                        className="space-y-2"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.85 }}
-                      >
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
-                        </label>
-                        <div
-                          className="flex items-center group border border-primary/30 rounded-lg transition-all duration-200 bg-white focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary"
-                        >
-                          <span
-                            className="px-4 py-2 bg-primary/10 border-r border-primary/30 rounded-l-lg text-primary font-semibold text-base transition-colors duration-200 group-focus-within:bg-primary/20 group-hover:bg-primary/20 select-none"
-                            style={{ minWidth: '56px', textAlign: 'center' }}
-                          >
-                            +20
-                          </span>
-                          <Field
-                            as={Input}
-                            id="phone"
-                            name="phone"
-                            placeholder="1234567890"
-                            disabled={isSubmitting}
-                            className="h-12 rounded-l-none rounded-r-lg border-0 focus:ring-0 focus:border-0 text-base shadow-none"
-                            maxLength={10}
-                            pattern="1[0-9]{9}"
-                            inputMode="numeric"
-                            autoComplete="tel"
-                            aria-label="Egyptian phone number, 10 digits after +20"
-                          />
-                        </div>
-                        <AnimatePresence>
-                          {errors.phone && touched.phone && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="text-sm text-red-500"
-                            >
-                              {errors.phone}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        <ErrorMessage error={touched.name && errors.name ? errors.name : null} />
                       </motion.div>
 
                       <motion.div
@@ -325,26 +290,23 @@ export default function ContactUs() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.9 }}
                       >
+                        <label htmlFor="email" className="text-sm font-medium">
+                          Email
+                        </label>
                         <Field
                           as={Input}
+                          id="email"
                           name="email"
                           type="email"
-                          placeholder="Your Email"
-                          disabled={isSubmitting}
-                          className="h-12"
-                        />
-                        <AnimatePresence>
-                          {errors.email && touched.email && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="text-sm text-red-500"
-                            >
-                              {errors.email}
-                            </motion.div>
+                          placeholder="your.email@example.com"
+                          className={cn(
+                            "border-gray-300 focus:border-primary focus:ring-primary",
+                            {
+                              "border-red-500": touched.email && errors.email,
+                            }
                           )}
-                        </AnimatePresence>
+                        />
+                        <ErrorMessage error={touched.email && errors.email ? errors.email : null} />
                       </motion.div>
 
                       <motion.div
@@ -353,83 +315,113 @@ export default function ContactUs() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1.0 }}
                       >
+                        <label htmlFor="phone" className="text-sm font-medium">
+                          Phone Number
+                        </label>
                         <Field
                           as={Input}
-                          name="subject"
-                          placeholder="Subject"
-                          disabled={isSubmitting}
-                          className="h-12"
-                        />
-                        <AnimatePresence>
-                          {errors.subject && touched.subject && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="text-sm text-red-500"
-                            >
-                              {errors.subject}
-                            </motion.div>
+                          id="phone"
+                          name="phone"
+                          placeholder="1002708889"
+                          className={cn(
+                            "border-gray-300 focus:border-primary focus:ring-primary",
+                            {
+                              "border-red-500": touched.phone && errors.phone,
+                            }
                           )}
-                        </AnimatePresence>
+                        />
+                        <ErrorMessage error={touched.phone && errors.phone ? errors.phone : null} />
                       </motion.div>
 
                       <motion.div
-                        className="space-y-2 flex-grow"
+                        className="space-y-2"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1.1 }}
                       >
+                        <label htmlFor="subject" className="text-sm font-medium">
+                          Subject
+                        </label>
+                        <Field
+                          as={Input}
+                          id="subject"
+                          name="subject"
+                          placeholder="What's this about?"
+                          className={cn(
+                            "border-gray-300 focus:border-primary focus:ring-primary",
+                            {
+                              "border-red-500": touched.subject && errors.subject,
+                            }
+                          )}
+                        />
+                        <ErrorMessage error={touched.subject && errors.subject ? errors.subject : null} />
+                      </motion.div>
+
+                      <motion.div
+                        className="space-y-2 flex-1"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1.2 }}
+                      >
+                        <label htmlFor="message" className="text-sm font-medium">
+                          Message
+                        </label>
                         <Field
                           as={Textarea}
+                          id="message"
                           name="message"
-                          placeholder="Your Message"
-                          className="min-h-[200px] max-h-[200px] resize-none h-full overflow-y-auto"
-                          disabled={isSubmitting}
-                        />
-                        <AnimatePresence>
-                          {errors.message && touched.message && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              className="text-sm text-red-500"
-                            >
-                              {errors.message}
-                            </motion.div>
+                          placeholder="Tell us more about your inquiry..."
+                          className={cn(
+                            "border-gray-300 focus:border-primary focus:ring-primary min-h-[120px] resize-none",
+                            {
+                              "border-red-500": touched.message && errors.message,
+                            }
                           )}
-                        </AnimatePresence>
+                        />
+                        <ErrorMessage error={touched.message && errors.message ? errors.message : null} />
                       </motion.div>
 
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.2 }}
+                        transition={{ duration: 0.5, delay: 1.3 }}
                       >
                         <MotionButton
                           type="submit"
-                          className="w-full h-12 text-lg font-semibold mb-11"
                           disabled={isSubmitting}
+                          className="w-full bg-primary hover:bg-primary-hover text-white"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
                           {isSubmitting ? (
-                            <motion.div
-                              className="flex items-center gap-2"
-                              transition={{
-                                duration: 1,
-                                repeat: Infinity,
-                                ease: "linear",
-                              }}
-                            >
-                              <div className="h-5 w-5 rounded-full border-2 border-background border-t-transparent"></div>
+                            <div className="flex items-center justify-center">
+                              <svg
+                                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
                               Sending...
-                            </motion.div>
+                            </div>
                           ) : (
-                            <>
-                              <Send className="mr-2 h-5 w-5" />
+                            <div className="flex items-center justify-center">
+                              <Send className="mr-2 h-4 w-4" />
                               Send Message
-                            </>
+                            </div>
                           )}
                         </MotionButton>
                       </motion.div>

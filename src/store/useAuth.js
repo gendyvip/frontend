@@ -6,6 +6,8 @@ import {
   confirmPassword,
 } from "../api/auth/ResetPassword";
 import { changePassword } from "../api/auth/ChangePassword";
+import { clearAllStores } from "../utils/stateManager";
+import { ErrorHandler } from "../utils/errorHandler";
 
 export const useAuth = create((set, get) => ({
   user: null,
@@ -22,12 +24,12 @@ export const useAuth = create((set, get) => ({
       const response = await signIn(credentials);
 
       // Store user data and token
-      const userData = response.user || response;
-      const token = response.token || response.accessToken;
+      const userData = response.data || response;
+      const token = userData.token || userData.accessToken;
 
       // Save to localStorage
-      localStorage.setItem("user", JSON.stringify(userData.data.id));
-      localStorage.setItem("token", JSON.stringify(userData.data.token));
+      localStorage.setItem("user", JSON.stringify(userData.id));
+      localStorage.setItem("token", JSON.stringify(token));
 
       set({
         user: userData,
@@ -37,13 +39,19 @@ export const useAuth = create((set, get) => ({
         isAuthenticated: true,
       });
 
+      // Show success toast
+      ErrorHandler.handleSuccess("Login successful! Welcome back.");
+
       return response;
     } catch (error) {
+      const errorResult = ErrorHandler.handleApiError(error, "login");
+
       set({
         isLoading: false,
-        error: error.message || "Login failed",
+        error: errorResult.message,
         isAuthenticated: false,
       });
+
       throw error;
     }
   },
@@ -55,11 +63,13 @@ export const useAuth = create((set, get) => ({
       if (data.email) sessionStorage.setItem("resetEmail", data.email);
       const response = await resetPassword(data);
       set({ isLoading: false, error: null });
+      ErrorHandler.handleSuccess("Password reset instructions sent to your email");
       return response;
     } catch (error) {
+      const errorResult = ErrorHandler.handleApiError(error, "reset-password");
       set({
         isLoading: false,
-        error: error.message || "Reset password failed",
+        error: errorResult.message,
       });
       throw error;
     }
@@ -72,11 +82,13 @@ export const useAuth = create((set, get) => ({
       if (data.email) sessionStorage.setItem("resetEmail", data.email);
       const response = await confirmOtp(data);
       set({ isLoading: false, error: null });
+      ErrorHandler.handleSuccess("OTP has been successfully verified!");
       return response;
     } catch (error) {
+      const errorResult = ErrorHandler.handleApiError(error, "confirm-otp");
       set({
         isLoading: false,
-        error: error.message || "OTP confirmation failed",
+        error: errorResult.message,
       });
       throw error;
     }
@@ -89,11 +101,13 @@ export const useAuth = create((set, get) => ({
       if (data.email) sessionStorage.setItem("resetEmail", data.email);
       const response = await confirmPassword(data);
       set({ isLoading: false, error: null });
+      ErrorHandler.handleSuccess("Password has been successfully changed!");
       return response;
     } catch (error) {
+      const errorResult = ErrorHandler.handleApiError(error, "confirm-password");
       set({
         isLoading: false,
-        error: error.message || "Password confirmation failed",
+        error: errorResult.message,
       });
       throw error;
     }
@@ -106,11 +120,13 @@ export const useAuth = create((set, get) => ({
       const token = get().token;
       const response = await changePassword(data, token);
       set({ isLoading: false, error: null });
+      ErrorHandler.handleSuccess("Password has been successfully changed!");
       return response;
     } catch (error) {
+      const errorResult = ErrorHandler.handleApiError(error, "change-password");
       set({
         isLoading: false,
-        error: error.message || "Change password failed",
+        error: errorResult.message,
       });
       throw error;
     }
@@ -118,8 +134,12 @@ export const useAuth = create((set, get) => ({
 
   // Logout action
   logout: () => {
+    // Clear auth data
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+
+    // Clear all other store data
+    clearAllStores();
 
     set({
       user: null,
@@ -128,6 +148,8 @@ export const useAuth = create((set, get) => ({
       error: null,
       isAuthenticated: false,
     });
+
+    ErrorHandler.handleSuccess("Logged out successfully");
   },
 
   // Initialize auth state from localStorage

@@ -7,19 +7,22 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../store/useAuth";
+import { ErrorDisplay, ErrorMessage } from "@/components/ui/error-display";
+import { useState } from "react";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
 });
 
 export function LoginForm({ className, ...props }) {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -34,7 +37,7 @@ export function LoginForm({ className, ...props }) {
         navigate("/");
       } catch (error) {
         console.error("Login error:", error);
-        // Error is handled by the store
+        // Error is handled by the store with toast notifications
       }
     },
   });
@@ -48,27 +51,33 @@ export function LoginForm({ className, ...props }) {
             className="p-6 md:p-8 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden"
           >
             {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-50"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-10" style={{ background: 'var(--primary)' }}></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-10" style={{ background: 'var(--primary)' }}></div>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-muted-foreground text-balance">
-                  Login to your Dawaback account
-                </p>
-              </div>
-              {error && (
-                <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
-                  Password is incorrect
+              <div className="flex flex-row items-center justify-center text-center gap-4 mb-2">
+                <img
+                  src="/logo.svg"
+                  alt="Dawaback Logo"
+                  className="h-14 w-14"
+                />
+                <div className="flex flex-col items-start">
+                  <h1 className="text-2xl font-bold">Welcome back</h1>
+                  <p className="text-muted-foreground text-balance -mt-1">
+                    Login to your Dawaback account
+                  </p>
                 </div>
-              )}
+              </div>
+              
+              {/* Error Display */}
+              <ErrorDisplay error={error} />
+
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Enter your email address"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.email}
@@ -78,40 +87,76 @@ export function LoginForm({ className, ...props }) {
                       "border-red-500"
                   )}
                 />
-                {formik.touched.email && formik.errors.email && (
-                  <div className="text-sm text-red-500">
+                <ErrorMessage error={formik.touched.email && formik.errors.email ? (
+                  <span className="flex items-center gap-1 text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z" />
+                    </svg>
                     {formik.errors.email}
-                  </div>
-                )}
+                  </span>
+                ) : null} />
               </div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                    className={cn(
+                      formik.touched.password &&
+                        formik.errors.password &&
+                        "border-red-500"
+                    )}
+                  />
+                  <button
+                    type="button"
+                    className={cn(
+                      "absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition",
+                      showPassword
+                        ? "text-primary"
+                        : "text-gray-500"
+                    )}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      // Eye-off (crossed) icon, outline style (Heroicons)
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3.11-10.5-7.5a10.05 10.05 0 012.563-4.568m2.1-1.933A9.956 9.956 0 0112 5c5 0 9.27 3.11 10.5 7.5a9.956 9.956 0 01-4.198 5.568M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
+                      </svg>
+                    ) : (
+                      // Eye icon (outlined)
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <ErrorMessage error={formik.touched.password && formik.errors.password ? (
+                  <span className="flex items-center gap-1 text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z" />
+                    </svg>
+                    {formik.errors.password}
+                  </span>
+                ) : null} />
+                <div className="text-right text-sm">
+                  Forgot your password?{' '}
                   <Link
                     to="/auth/reset-password"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
+                    className="font-semibold text-primary hover:text-primary-hover transition-colors duration-150 focus:outline-none  rounded underline-offset-2 hover:underline"
                   >
-                    Forgot your password?
+                    Reset it
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.password}
-                  className={cn(
-                    formik.touched.password &&
-                      formik.errors.password &&
-                      "border-red-500"
-                  )}
-                />
-                {formik.touched.password && formik.errors.password && (
-                  <div className="text-sm text-red-500">
-                    {formik.errors.password}
-                  </div>
-                )}
               </div>
               <Button
                 type="submit"
@@ -121,60 +166,41 @@ export function LoginForm({ className, ...props }) {
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Or continue with
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <Button variant="outline" type="button" className="w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Apple</span>
-                </Button>
-                <Button variant="outline" type="button" className="w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Google</span>
-                </Button>
-                <Button variant="outline" type="button" className="w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.358-2.602zm-10.201.553c1.265 0 2.058.791 2.675 1.446.307.327.737.871 1.234 1.579l-1.02 1.566c-.757 1.163-1.882 3.017-2.837 4.338-1.191 1.649-1.81 1.817-2.486 1.817-.524 0-1.038-.237-1.383-.794-.263-.426-.464-1.13-.464-2.046 0-2.221.63-4.535 1.66-6.088.454-.687.964-1.226 1.533-1.533a2.264 2.264 0 0 1 1.088-.285z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Meta</span>
-                </Button>
-              </div>
-              <div className="text-center text-sm">
+              <div className="text-center text-sm -mt-4">
                 Don&apos;t have an account?{" "}
-                <Link to="/auth/signup" className="underline underline-offset-4">
+                <Link
+                  to="/auth/signup"
+                  className="font-semibold text-primary hover:text-primary-hover transition-colors duration-150 focus:outline-none  rounded underline-offset-2 hover:underline"
+                >
                   Sign up
                 </Link>
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-gradient-to-br from-primary/20 via-white to-primary/20 hidden md:flex items-center justify-center">
             <img
               src="/Fingerprint-bro.svg"
-              alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              alt="Fingerprint illustration"
+              className="h-70 w-70 object-contain dark:brightness-[0.2] dark:grayscale mx-auto my-auto"
             />
           </div>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+      <div className="text-muted-foreground text-center -mt-3 text-xs text-balance">
+        By clicking continue, you agree to our 
+        <a 
+          href="#" 
+          className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
+        >
+           {" "}Terms of Service
+        </a>{" "}
+        and 
+        <a 
+          href="#" 
+          className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
+        >
+           {" "}Privacy Policy
+        </a>.
       </div>
     </div>
   );

@@ -115,52 +115,7 @@ function MedicineDealCard({ deal }) {
             </h2>
           </div>
           <div className="flex flex-col gap-2 items-end">
-            {/* Heart icon with animation */}
-            <motion.button
-              className={`bg-white/80 rounded-full p-1 shadow transition-all duration-200 hover:bg-white hover:shadow-lg ${
-                isLoading || isOwnDeal ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handleHeartClick}
-              disabled={isLoading || isOwnDeal}
-              whileHover={!isOwnDeal ? { scale: 1.1 } : {}}
-              whileTap={!isOwnDeal ? { scale: 0.9 } : {}}
-              animate={
-                isAnimating
-                  ? {
-                      scale: [1, 1.3, 1],
-                      rotate: [0, 10, -10, 0],
-                    }
-                  : {}
-              }
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              title={isOwnDeal ? "You cannot favorite your own deal" : ""}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={isFavorite ? "filled" : "empty"}
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: 180 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <Heart
-                    className={`w-5 h-5 transition-colors duration-200 ${
-                      isOwnDeal
-                        ? "text-gray-300"
-                        : isFavorite
-                        ? "text-red-500 fill-red-500"
-                        : "text-gray-400 hover:text-red-400"
-                    }`}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </motion.button>
+            {/* Remove Heart icon from here, keep only the Badge */}
             <Badge
               className={`${
                 deal.dealType === "sell"
@@ -264,10 +219,56 @@ function MedicineDealCard({ deal }) {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="text-sm font-medium text-gray-900 truncate">
                   {deal.pharmacy.name || "Unknown Pharmacy"}
                 </span>
+                {/* Heart icon aligned with pharmacy name */}
+                <motion.button
+                  className={`bg-white/80 rounded-full p-1 shadow transition-all duration-200 hover:bg-white hover:shadow-lg ${
+                    isLoading || isOwnDeal ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={handleHeartClick}
+                  disabled={isLoading || isOwnDeal}
+                  whileHover={!isOwnDeal ? { scale: 1.1 } : {}}
+                  whileTap={!isOwnDeal ? { scale: 0.9 } : {}}
+                  animate={
+                    isAnimating
+                      ? {
+                          scale: [1, 1.3, 1],
+                          rotate: [0, 10, -10, 0],
+                        }
+                      : {}
+                  }
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                  }}
+                  title={isOwnDeal ? "You cannot favorite your own deal" : ""}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={isFavorite ? "filled-bottom" : "empty-bottom"}
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{
+                        duration: 0.2,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Heart
+                        className={`w-5 h-5 transition-colors duration-200 ${
+                          isOwnDeal
+                            ? "text-gray-300"
+                            : isFavorite
+                            ? "text-red-500 fill-red-500"
+                            : "text-gray-400 hover:text-red-400"
+                        }`}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.button>
               </div>
               <div className="text-xs text-gray-500 space-y-0.5">
                 {(deal.pharmacy.governorate || deal.pharmacy.city) && (

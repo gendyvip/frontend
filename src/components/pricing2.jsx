@@ -22,15 +22,15 @@ const Pricing2 = ({
 
   plans = [
     {
-      id: "plus",
-      name: "Plus",
-      description: "For personal use",
-      monthlyPrice: "EGP200",
+      id: "Basic",
+      name: "Basic",
+      description: "Limited features",
+      monthlyPrice: "EGP50",
       yearlyPrice: "EGP400",
       features: [
-        { text: "Add 2 Pharmacy" },
-        { text: "Add Unlimited Deals" },
-        { text: "Community support" },
+        { text: "Add up to 2 pharmacies" },
+        { text: "Add up to 10 deals" },
+        { text: "Chat with 100 pharmacists" },
       ],
       button: {
         text: "Purchase",
@@ -40,13 +40,14 @@ const Pricing2 = ({
     {
       id: "pro",
       name: "Pro",
-      description: "For professionals",
+      description: "Full features",
       monthlyPrice: "EGP400",
-      yearlyPrice: "EGP2000",
+      yearlyPrice: "EGP1500",
       features: [
-        { text: "Up to 5 Pharmacies" },
-        { text: "List Pharmacy For Sale" },
-        { text: "Priority support" },
+        { text: "Add up to 5 pharmacies" },
+        { text: "Add unlimited deals" },
+        { text: "Chat with unlimited pharmacists" },
+        { text: "List pharmacies for sale" },
       ],
       button: {
         text: "Purchase",
@@ -63,7 +64,7 @@ const Pricing2 = ({
   const [loadingPlan, setLoadingPlan] = useState(null);
 
   const planIdMap = {
-    plus: "regular",
+    Basic: "regular",
     pro: "premium",
   };
 
@@ -131,11 +132,6 @@ const Pricing2 = ({
                 </CardHeader>
                 <CardContent>
                   <Separator className="mb-6" />
-                  {plan.id === "pro" && (
-                    <p className="mb-3 font-semibold">
-                      Everything in Plus, and:
-                    </p>
-                  )}
                   <ul className="space-y-4">
                     {plan.features.map((feature, index) => (
                       <li

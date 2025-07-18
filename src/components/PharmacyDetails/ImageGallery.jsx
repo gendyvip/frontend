@@ -61,9 +61,9 @@ export default function ImageGallery({ images = [] }) {
           <button
             key={img + idx}
             onClick={() => setMainIndex(idx)}
-            className={`aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
+            className={`aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-102 cursor-pointer ${
               mainIndex === idx
-                ? "border-blue-500 shadow-lg"
+                ? "border-primary shadow-lg"
                 : "border-gray-200 hover:border-gray-300"
             }`}
           >

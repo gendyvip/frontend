@@ -9,7 +9,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Accordion from "@/components/ui/Accordion";
-import { FaClinicMedical, FaMapMarkerAlt, FaPhone, FaIdCard, FaEdit, FaTrash, FaTag, FaExclamationTriangle, FaCheckCircle, FaTimesCircle, FaClock, FaChartBar, FaCapsules } from "react-icons/fa";
+import {
+  FaClinicMedical,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaIdCard,
+  FaEdit,
+  FaTrash,
+  FaTag,
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaClock,
+  FaChartBar,
+  FaCapsules,
+} from "react-icons/fa";
 import { RiCapsuleLine } from "react-icons/ri";
 import { useAuth } from "../../store/useAuth";
 import { usePharmacies } from "../../store/usePharmcies";
@@ -17,7 +31,11 @@ import ConfirmDialog from "./ConfirmDialog";
 import { Link } from "react-router-dom";
 import ListPharmacyForSaleModal from "./ListPharmacyForSaleModal";
 import { toast } from "sonner";
-import { listPharmaciesForSale, unlistPharmacyFromSale, unlistPharmacyFromSaleJson } from "../../api/pharmacies";
+import {
+  listPharmaciesForSale,
+  unlistPharmacyFromSale,
+  unlistPharmacyFromSaleJson,
+} from "../../api/pharmacies";
 import { LoadingPage } from "../../components/ui/loading";
 
 export default function PharmaciesCard({ pharmacistDetails }) {
@@ -67,7 +85,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
       setActionLoading(true);
       setShowDeleteModal(false);
       setPharmacyToDelete(null);
-      
+
       try {
         await deletePharmacyById(pharmacyToDelete, token);
         toast.success("Pharmacy deleted successfully!");
@@ -103,17 +121,17 @@ export default function PharmaciesCard({ pharmacistDetails }) {
 
       // Call the API to list pharmacy for sale
       await listPharmaciesForSale(pharmacyToList, saleData);
-      
+
       setShowListModal(false);
       setPharmacyToList(null);
       toast.success("Pharmacy listed for sale successfully!");
-      
+
       // Refresh the pharmacies list to show updated status
       if (user && token) {
         await fetchPharmacies(token, user);
       }
     } catch (error) {
-      console.error('Failed to list pharmacy:', error);
+      console.error("Failed to list pharmacy:", error);
       toast.error(error.message || "Failed to list pharmacy for sale");
     } finally {
       setActionLoading(false);
@@ -138,13 +156,13 @@ export default function PharmaciesCard({ pharmacistDetails }) {
   // Validate pharmacy data structure
   const validatePharmacyData = (pharmacy) => {
     // Helper function to safely extract string values from complex objects
-    const extractStringValue = (value, fallback = 'Not available') => {
+    const extractStringValue = (value, fallback = "Not available") => {
       if (!value) return fallback;
-      if (typeof value === 'string') return value;
-      if (typeof value === 'object') {
+      if (typeof value === "string") return value;
+      if (typeof value === "object") {
         // Handle GeoJSON objects
         if (value.type && value.coordinates) {
-          return 'Location coordinates available';
+          return "Location coordinates available";
         }
         // Handle address objects
         if (value.street || value.address) {
@@ -156,7 +174,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
         }
         // Try to find any string property
         for (const key in value) {
-          if (typeof value[key] === 'string' && value[key].trim()) {
+          if (typeof value[key] === "string" && value[key].trim()) {
             return value[key];
           }
         }
@@ -173,8 +191,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
       if (pharmacy.city) addressParts.push(pharmacy.city);
       if (pharmacy.governorate) addressParts.push(pharmacy.governorate);
       if (pharmacy.zipCode) addressParts.push(pharmacy.zipCode);
-      
-      return addressParts.length > 0 ? addressParts.join(', ') : 'Address not available';
+
+      return addressParts.length > 0
+        ? addressParts.join(", ")
+        : "Address not available";
     };
 
     // Helper function to format working hours
@@ -182,23 +202,27 @@ export default function PharmaciesCard({ pharmacistDetails }) {
       if (pharmacy.startHour && pharmacy.endHour) {
         return `${pharmacy.startHour} - ${pharmacy.endHour}`;
       }
-      return 'Hours not specified';
+      return "Hours not specified";
     };
 
     // Helper function to get sale status
     const getSaleStatus = (pharmacy) => {
-      if (pharmacy.isSold) return 'Sold';
-      if (pharmacy.isForSale) return 'For Sale';
-      return 'Not for Sale';
+      if (pharmacy.isSold) return "Sold";
+      if (pharmacy.isForSale) return "For Sale";
+      return "Not for Sale";
     };
 
     return {
-      id: pharmacy?.id || pharmacy?._id || 'N/A',
-      name: extractStringValue(pharmacy?.name, 'Unnamed Pharmacy'),
-      licenseNumber: extractStringValue(pharmacy?.licenseNum || pharmacy?.licenseNumber),
-      phone: extractStringValue(pharmacy?.pharmacyPhone || pharmacy?.phone || pharmacy?.phoneNumber),
+      id: pharmacy?.id || pharmacy?._id || "N/A",
+      name: extractStringValue(pharmacy?.name, "Unnamed Pharmacy"),
+      licenseNumber: extractStringValue(
+        pharmacy?.licenseNum || pharmacy?.licenseNumber
+      ),
+      phone: extractStringValue(
+        pharmacy?.pharmacyPhone || pharmacy?.phone || pharmacy?.phoneNumber
+      ),
       address: formatAddress(pharmacy),
-      city: extractStringValue(pharmacy?.city, 'Unknown Location'),
+      city: extractStringValue(pharmacy?.city, "Unknown Location"),
       governorate: extractStringValue(pharmacy?.governorate),
       zipCode: extractStringValue(pharmacy?.zipCode),
       workingHours: formatWorkingHours(pharmacy),
@@ -208,12 +232,21 @@ export default function PharmaciesCard({ pharmacistDetails }) {
       monthlySales: pharmacy?.monthlySales,
       saleType: pharmacy?.saleType,
       isSold: pharmacy?.isSold || false,
-      status: pharmacy?.isSold ? 'Sold' : (pharmacy?.isForSale ? 'For Sale':"Not for Sale"),
-      type: extractStringValue(pharmacy?.type || pharmacy?.pharmacyType, 'Standard'),
-      category: extractStringValue(pharmacy?.category, 'General'),
-      registrationDate: pharmacy?.createdAt || pharmacy?.created_at || 'N/A',
-      updatedAt: pharmacy?.updatedAt || pharmacy?.updated_at || 'N/A',
-      imagesUrls: Array.isArray(pharmacy?.imagesUrls) ? pharmacy.imagesUrls : [],
+      status: pharmacy?.isSold
+        ? "Sold"
+        : pharmacy?.isForSale
+        ? "For Sale"
+        : "Not for Sale",
+      type: extractStringValue(
+        pharmacy?.type || pharmacy?.pharmacyType,
+        "Standard"
+      ),
+      category: extractStringValue(pharmacy?.category, "General"),
+      registrationDate: pharmacy?.createdAt || pharmacy?.created_at || "N/A",
+      updatedAt: pharmacy?.updatedAt || pharmacy?.updated_at || "N/A",
+      imagesUrls: Array.isArray(pharmacy?.imagesUrls)
+        ? pharmacy.imagesUrls
+        : [],
       location: pharmacy?.location || null,
     };
   };
@@ -228,10 +261,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
               <FaClinicMedical size={24} className="text-primary" />
             </span>
             <div className="flex flex-col">
-              <span className="text-gray-900">
-                My Pharmacies
-              </span>
-              <p className="text-sm text-gray-600 font-normal">Manage your added pharmacies and their details</p>
+              <span className="text-gray-900">My Pharmacies</span>
+              <p className="text-sm text-gray-600 font-normal">
+                Manage your added pharmacies and their details
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -252,10 +285,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
               <FaClinicMedical size={24} className="text-primary" />
             </span>
             <div className="flex flex-col">
-              <span className="text-gray-900">
-                My Pharmacies
-              </span>
-              <p className="text-sm text-gray-600 font-normal">Manage your registered pharmacies and their details</p>
+              <span className="text-gray-900">My Pharmacies</span>
+              <p className="text-sm text-gray-600 font-normal">
+                Manage your registered pharmacies and their details
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -291,7 +324,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
   // Defensive: always use an array and validate data
   const safePharmacies = Array.isArray(pharmacies) ? pharmacies : [];
   const validatedPharmacies = safePharmacies.map(validatePharmacyData);
-  
+
   // Convert pharmacies to accordion items
   const accordionItems = validatedPharmacies.map((pharmacy, index) => ({
     title: (
@@ -312,27 +345,38 @@ export default function PharmaciesCard({ pharmacistDetails }) {
         {/* Main Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="truncate font-semibold text-lg text-gray-900">{pharmacy.name}</span>
+            <span className="truncate font-semibold text-lg text-gray-900">
+              {pharmacy.name}
+            </span>
             <Badge
               className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                 pharmacy.isSold
-                  ? 'bg-red-100 text-red-700'
+                  ? "bg-red-100 text-red-700"
                   : pharmacy.isForSale
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-200 text-red-700'
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-200 text-red-700"
               }`}
             >
-              {pharmacy.isSold ? <FaCheckCircle /> : pharmacy.isForSale ? <FaTag /> : <FaTimesCircle />}
+              {pharmacy.isSold ? (
+                <FaCheckCircle />
+              ) : pharmacy.isForSale ? (
+                <FaTag />
+              ) : (
+                <FaTimesCircle />
+              )}
               {pharmacy.isSold
-                ? 'Sold'
+                ? "Sold"
                 : pharmacy.isForSale
-                ? 'For Sale'
-                : 'Not For Sale'}
+                ? "For Sale"
+                : "Not For Sale"}
             </Badge>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
             <FaMapMarkerAlt className="text-gray-400" size={12} />
-            <span className="truncate">{pharmacy.city}{pharmacy.governorate ? `, ${pharmacy.governorate}` : ''}</span>
+            <span className="truncate">
+              {pharmacy.city}
+              {pharmacy.governorate ? `, ${pharmacy.governorate}` : ""}
+            </span>
           </div>
         </div>
       </div>
@@ -359,7 +403,9 @@ export default function PharmaciesCard({ pharmacistDetails }) {
           <div className="flex-1 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-bold text-lg text-gray-900 truncate">{pharmacy.name}</span>
+                <span className="font-bold text-lg text-gray-900 truncate">
+                  {pharmacy.name}
+                </span>
               </div>
               <div className="flex items-center gap-1 text-gray-500 text-sm mb-2">
                 <FaMapMarkerAlt className="text-gray-400" />
@@ -403,10 +449,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                 <div className="flex items-center gap-1 text-gray-700">
                   <FaCapsules />
                   <span>
-                    {pharmacy.saleType === 'pharmacy_with_medicines'
-                      ? 'With Medicines'
-                      : pharmacy.saleType === 'pharmacy_only'
-                      ? 'Without Medicines'
+                    {pharmacy.saleType === "pharmacy_with_medicines"
+                      ? "With Medicines"
+                      : pharmacy.saleType === "pharmacy_only"
+                      ? "Without Medicines"
                       : pharmacy.saleType}
                   </span>
                 </div>
@@ -422,7 +468,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                 asChild
                 disabled={actionLoading}
               >
-                <Link to={`/pharmacy/${pharmacy.id}/edit`}>
+                <Link to={`/pharmacies/${pharmacy.id}/edit`}>
                   <FaEdit size={14} />
                   Edit
                 </Link>
@@ -437,17 +483,19 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                   <FaTag size={14} />
                   Unlist Sale
                 </Button>
-              ) : !pharmacy.isSold && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex bg-green-600 hover:bg-green-500 text-white items-center gap-2"
-                  onClick={() => handleListClick(pharmacy.id)}
-                  disabled={actionLoading}
-                >
-                  <FaTag size={14} />
-                  List for Sale
-                </Button>
+              ) : (
+                !pharmacy.isSold && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex bg-green-600 hover:bg-green-500 text-white items-center gap-2"
+                    onClick={() => handleListClick(pharmacy.id)}
+                    disabled={actionLoading}
+                  >
+                    <FaTag size={14} />
+                    List for Sale
+                  </Button>
+                )
               )}
               <Button
                 size="sm"
@@ -463,7 +511,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
           </div>
         </div>
       </Card>
-    )
+    ),
   }));
 
   return (
@@ -474,12 +522,12 @@ export default function PharmaciesCard({ pharmacistDetails }) {
             <span className="inline-flex items-center justify-center rounded-full bg-primary/10 shadow-sm w-12 h-12">
               <FaClinicMedical size={24} className="text-primary" />
             </span>
-           <div className="flex flex-col">
-           <span className="text-gray-900">
-              My Pharmacies
-            </span>
-            <p className="text-sm text-gray-600 font-normal">Manage your added pharmacies and their details</p>
-           </div>
+            <div className="flex flex-col">
+              <span className="text-gray-900">My Pharmacies</span>
+              <p className="text-sm text-gray-600 font-normal">
+                Manage your added pharmacies and their details
+              </p>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -488,12 +536,14 @@ export default function PharmaciesCard({ pharmacistDetails }) {
               <div className="text-gray-400 mb-4">
                 <FaClinicMedical size={48} className="mx-auto" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Pharmacies Found</h3>
-              <p className="text-gray-600 mb-4">You haven't added any pharmacies yet.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Pharmacies Found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                You haven't added any pharmacies yet.
+              </p>
               <Button asChild>
-                <Link to="/add-pharmacy">
-                  Add Your First Pharmacy
-                </Link>
+                <Link to="/add-pharmacy">Add Your First Pharmacy</Link>
               </Button>
             </div>
           ) : (
@@ -503,12 +553,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                   Your Pharmacies ({validatedPharmacies.length})
                 </h3>
                 <Button asChild>
-                  <Link to="/pharmacies/new">
-                    Add New Pharmacy
-                  </Link>
+                  <Link to="/pharmacies/new">Add New Pharmacy</Link>
                 </Button>
               </div>
-              
+
               <Accordion items={accordionItems} />
             </div>
           )}
@@ -535,7 +583,11 @@ export default function PharmaciesCard({ pharmacistDetails }) {
           }
         }}
         onSubmit={handleListSubmit}
-        initialPharmacy={pharmacyToList ? validatedPharmacies.find(p => p.id === pharmacyToList) : null}
+        initialPharmacy={
+          pharmacyToList
+            ? validatedPharmacies.find((p) => p.id === pharmacyToList)
+            : null
+        }
       />
     </div>
   );

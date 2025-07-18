@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronRight,
   Phone,
@@ -7,8 +7,25 @@ import {
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFav } from "../../store/useFav";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function ListingHeader({ pharmacy }) {
+  const {
+    isPharmacyFavorite,
+    togglePharmacyFavorite,
+    fetchFavorites,
+    isLoading,
+  } = useFav();
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    fetchFavorites();
+  }, [fetchFavorites]);
+
+  const isFavorite = isPharmacyFavorite(pharmacy.id);
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -20,9 +37,21 @@ export default function ListingHeader({ pharmacy }) {
     }
   };
 
-  const handleFavorite = () => {
-    // Handle favorite functionality
-    console.log("Favorite clicked");
+  const handleFavorite = async (e) => {
+    e.stopPropagation();
+    setIsAnimating(true);
+    try {
+      await togglePharmacyFavorite(pharmacy.id);
+      if (isFavorite) {
+        toast.success(`${pharmacy.name} removed from favorites`);
+      } else {
+        toast.success(`${pharmacy.name} added to favorites`);
+      }
+    } catch (error) {
+      toast.error("Failed to update favorites. Please try again.");
+    } finally {
+      setTimeout(() => setIsAnimating(false), 300);
+    }
   };
 
   return (
@@ -35,7 +64,7 @@ export default function ListingHeader({ pharmacy }) {
           </Link>
           <ChevronRight className="w-4 h-4" />
           <Link
-            to="/pharmacies-for-sale"
+            to="/pharmacies"
             className="hover:text-blue-600 transition-colors"
           >
             Pharmacies for Sale
@@ -66,12 +95,42 @@ export default function ListingHeader({ pharmacy }) {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-3">
-            <button
+            <motion.button
               onClick={handleFavorite}
-              className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className={`p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              animate={
+                isAnimating
+                  ? {
+                      scale: [1, 1.3, 1],
+                      rotate: [0, 10, -10, 0],
+                    }
+                  : {}
+              }
+              transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <Heart className="w-5 h-5 text-gray-600" />
-            </button>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isFavorite ? "filled" : "empty"}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: 180 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <Heart
+                    className={`w-5 h-5 transition-colors duration-200 ${
+                      isFavorite
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-600 hover:text-red-400"
+                    }`}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </motion.button>
             <button
               onClick={handleShare}
               className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"

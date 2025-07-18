@@ -25,6 +25,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useDebounce } from "@/hooks/useDebounce";
+import { toast } from "sonner";
 
 export default function Deals() {
   const [searchInput, setSearchInput] = useState("");
@@ -207,8 +208,13 @@ export default function Deals() {
     setCurrentPage(1);
   };
 
-  const handleCloseDeal = (dealId) => {
-    updateDealStatus(dealId, true);
+  const handleCloseDeal = async (dealId) => {
+    try {
+      await updateDealStatus(dealId, true);
+      toast.success("Deal has been successfully closed!");
+    } catch (error) {
+      toast.error(error.message || "Failed to close deal");
+    }
   };
 
   // Pagination handlers

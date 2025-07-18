@@ -457,7 +457,7 @@ export default function Chat() {
                     )}
                   </div>
                   <Link
-                    to={`/pharmacies-for-sale/${activeChat.pharmacy.id}`}
+                    to={`/pharmacies/${activeChat.pharmacy.id}`}
                     className="px-4 py-2 bg-gradient-to-r from-primary to-primary-hover text-white rounded-xl font-semibold hover:from-primary-hover hover:to-primary transition-all duration-300"
                   >
                     View Pharmacy

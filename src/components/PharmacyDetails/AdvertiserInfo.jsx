@@ -1,64 +1,121 @@
 import React from "react";
-import { Phone, MessageCircle, Star, Building2 } from "lucide-react";
+import { User2, CheckCircle2, MessageCircle } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import useChat from "../../store/useChat";
+import { useAuth } from "../../store/useAuth";
 
-export default function AdvertiserInfo({ owner }) {
+export default function AdvertiserInfo({ owner, pharmacyId }) {
+  // Get initials for fallback
+  const getInitials = (name) => {
+    if (!name) return "?";
+    const parts = name.split(" ");
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || "?";
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  };
+  const initials = getInitials(owner?.fullName);
+
+  // Chat logic (from ContactOptions)
+  const { startChat, setIsWidgetOpen, loadUserChats, selectChat, chats } =
+    useChat();
+  const { user } = useAuth();
+  const currentUserId = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  })();
+
+  const handleChat = async () => {
+    if (!currentUserId || !owner || !pharmacyId) {
+      alert("Please login to start a chat");
+      return;
+    }
+    try {
+      // Start chat with the pharmacy owner
+      await startChat(currentUserId, owner.id, pharmacyId, "pharmacy", {
+        fullName: owner.fullName,
+        profilePhotoUrl: owner.profilePhotoUrl,
+        role: owner.role || "User",
+      });
+      await loadUserChats();
+      // Find the new chat in the list (by pharmacyId or userId)
+      const chatToSelect = chats.find(
+        (c) => c.pharmacy?.id === pharmacyId || c.otherUser?.id === owner.id
+      );
+      if (chatToSelect) {
+        await selectChat(chatToSelect);
+      }
+      setIsWidgetOpen(true);
+    } catch (error) {
+      console.error("Error starting chat:", error);
+      alert("Failed to start chat. Please try again.");
+    }
+  };
+
+  const handleProfile = () => {
+    // Implement profile navigation
+    alert("Profile feature coming soon!");
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <div className="flex items-start gap-4 mb-6">
-        {/* Avatar */}
-        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-          {owner?.profilePhotoUrl ? (
-            <img
-              src={owner.profilePhotoUrl}
-              alt={owner.fullName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <Building2 className="w-8 h-8 text-gray-400" />
+      <div className="flex flex-col items-center text-center space-y-4">
+        {/* Avatar with Status */}
+        <div className="relative">
+          <Avatar className="size-20 shadow-md border-2 border-white">
+            {owner?.profilePhotoUrl ? (
+              <AvatarImage src={owner.profilePhotoUrl} alt={owner.fullName} />
+            ) : (
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary-hover text-white text-lg font-bold">
+                {initials}
+              </AvatarFallback>
+            )}
+          </Avatar>
+          {owner?.isIdVerified && (
+            <div className="absolute -bottom-1 -right-1 bg-transparent rounded-full p-1">
+              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <CheckCircle2 size={14} className="text-white" />
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Info */}
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">
-            {owner?.fullName || "Pharmacy Owner"}
-          </h3>
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-            <span className="text-sm">Verified Seller</span>
+        {/* Name and Verification */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-center gap-2">
+            <h3 className="text-lg font-bold text-gray-900">
+              {owner?.fullName || "Pharmacy Owner"}
+            </h3>
+            {owner?.isIdVerified && (
+              <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
+                <CheckCircle2 className="w-3 h-3 mr-1" /> Verified
+              </Badge>
+            )}
           </div>
-          <p className="text-sm text-gray-500">
-            Member since{" "}
-            {owner?.createdAt
-              ? new Date(owner.createdAt).getFullYear()
-              : "2023"}
-          </p>
+          <p className="text-xs text-gray-600">Professional Pharmacist</p>
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <p className="text-2xl font-bold text-gray-900">3</p>
-          <p className="text-sm text-gray-500">Active Listings</p>
-        </div>
-        <div className="text-center p-3 bg-gray-50 rounded-lg">
-          <p className="text-2xl font-bold text-gray-900">24h</p>
-          <p className="text-sm text-gray-500">Response Time</p>
-        </div>
-      </div>
-
-      {/* Trust Indicators */}
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-          <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            Verified
-          </span>
-          <span>•</span>
-          <span>Quick Response</span>
-          <span>•</span>
-          <span>Trusted Seller</span>
+        {/* Action Buttons */}
+        <div className="w-full space-y-2">
+          <Button
+            onClick={handleChat}
+            className="w-full bg-primary hover:bg-primary/80 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-all text-xs flex items-center justify-center gap-2"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Chat with {owner?.fullName?.split(" ")[0] || "Owner"}</span>
+          </Button>
+          <Button
+            onClick={handleProfile}
+            variant="outline"
+            className="w-full border border-primary text-primary hover:bg-primary/5 font-semibold px-4 py-2 rounded-lg shadow-sm transition-all text-xs flex items-center justify-center gap-2"
+            title="View all listings by this owner"
+          >
+            <User2 className="w-4 h-4" />
+            <span>View Profile</span>
+          </Button>
         </div>
       </div>
     </div>

@@ -142,7 +142,8 @@
 /* Custom scrollbar for chat widget */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #7c3aed #18181b; /* thumb color, track color */
+  scrollbar-color: #7c3aed #18181b;
+  /* thumb color, track color */
 }
 
 /* For Chrome, Edge, and Safari */
@@ -167,6 +168,21 @@
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 8px;
+}
+
+/* Hide browser default password reveal (eye) icon */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-input-password-reveal-button {
+  display: none;
+}
+
+input[type="password"]::-webkit-input-password-reveal-button {
+  display: none;
 }
 
 @layer base {

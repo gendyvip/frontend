@@ -5,8 +5,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { requestAdvertise } from "../../api/advertise";
 import { Card } from "../../components/ui/card";
+import { ErrorHandler } from "@/utils/errorHandler";
+import { ErrorDisplay, ErrorMessage } from "@/components/ui/error-display";
 
-  
 const advertiseSchema = Yup.object().shape({
   fullName: Yup.string()
     .min(3, "Name must be at least 3 characters")
@@ -22,10 +23,33 @@ const advertiseSchema = Yup.object().shape({
 
 export default function Advertise() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [showAlternativeContact, setShowAlternativeContact] = useState(false);
 
   useEffect(() => {
     initFlowbite();
   }, []);
+
+  // Clear error when user starts typing
+  const handleInputChange = (e) => {
+    if (error) {
+      setError(null);
+      setShowAlternativeContact(false);
+    }
+    formik.handleChange(e);
+  };
+
+  // Handle retry submission
+  const handleRetry = () => {
+    setError(null);
+    setShowAlternativeContact(false);
+    formik.submitForm();
+  };
+
+  // Show alternative contact methods for certain errors
+  const showAlternativeContactMethods = () => {
+    setShowAlternativeContact(true);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -37,9 +61,16 @@ export default function Advertise() {
     validationSchema: advertiseSchema,
     onSubmit: async (values, { resetForm }) => {
       setIsSubmitting(true);
+      setError(null);
+      
       try {
         const res = await requestAdvertise(values);
-        console.log("Form submitted:", res.data);
+        console.log("Form submitted:", res);
+        
+        // Use the specialized advertise success handler
+        const successResult = ErrorHandler.handleAdvertiseSuccess(res, "submission");
+        
+        // Save to localStorage with response data if available
         localStorage.setItem(
           "advertise_request",
           JSON.stringify({
@@ -47,11 +78,29 @@ export default function Advertise() {
             phone: values.phone,
             email: values.email,
             content: values.content,
+            submittedAt: new Date().toISOString(),
+            requestId: res.data?.id || res.id || null,
+            status: res.data?.status || res.status || "submitted"
           })
         );
+        
         resetForm();
       } catch (error) {
-        console.log(error);
+        console.error("Advertise error:", error);
+        
+        // Use the specialized advertise error handler
+        const errorResult = ErrorHandler.handleAdvertiseError(error, "submission");
+        setError(errorResult.message);
+        
+        // Don't show toast here as it's handled by the API
+        // But we can add additional context-specific handling
+        if (errorResult.type === "warning") {
+          // For duplicate requests, provide additional guidance
+          console.log("Duplicate request detected - user should contact support");
+        } else if (errorResult.type === "info") {
+          // For service issues, suggest alternative contact methods
+          console.log("Service issue detected - suggest alternative contact");
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -104,6 +153,69 @@ export default function Advertise() {
               Fill out the form below to learn more about our advertising
               opportunities.
             </p>
+            
+            {/* Error Display */}
+            <ErrorDisplay error={error} />
+            
+            {/* Alternative Contact Methods */}
+            {showAlternativeContact && (
+              <div className="mb-6 mt-3 p-6 bg-primary/30 border border-primary rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-primary">Alternative Contact Methods</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowAlternativeContact(false)}
+                    className="text-primary hover:text-primary-hover transition-colors p-1"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="space-y-3 text-sm text-primary">
+                  <div className="flex items-center space-x-3">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span><strong>Email:</strong> advertise@dawaback.com</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span><strong>Phone:</strong> +20 (100) 270-8887</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span><strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Error Recovery Actions */}
+            {error && (
+              <div className="my-3 flex flex-wrap flex-end gap-4">
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  disabled={isSubmitting}
+                  className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+                >
+                  {isSubmitting ? "Retrying..." : "Try Again"}
+                </button>
+                <button
+                  type="button"
+                  onClick={showAlternativeContactMethods}
+                  className="px-6 py-3 bg-white text-gray-700 border-gray-300 border rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
+                >
+                  Contact Support
+                </button>
+              </div>
+            )}
+            
             <form className="space-y-5" onSubmit={formik.handleSubmit}>
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full">
@@ -124,15 +236,11 @@ export default function Advertise() {
                       }
                     )}
                     placeholder="Full Name"
-                    onChange={formik.handleChange}
+                    onChange={handleInputChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.fullName}
                   />
-                  {formik.touched.fullName && formik.errors.fullName && (
-                    <div className="text-sm text-red-500">
-                      {formik.errors.fullName}
-                    </div>
-                  )}
+                  <ErrorMessage error={formik.touched.fullName && formik.errors.fullName ? formik.errors.fullName : null} />
                 </div>
                 <div className="w-full">
                   <label
@@ -152,15 +260,11 @@ export default function Advertise() {
                       }
                     )}
                     placeholder="Your best contact number"
-                    onChange={formik.handleChange}
+                    onChange={handleInputChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.phone}
                   />
-                  {formik.touched.phone && formik.errors.phone && (
-                    <div className="text-sm text-red-500">
-                      {formik.errors.phone}
-                    </div>
-                  )}
+                  <ErrorMessage error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : null} />
                 </div>
               </div>
               <div>
@@ -181,15 +285,11 @@ export default function Advertise() {
                     }
                   )}
                   placeholder="Your professional email address"
-                  onChange={formik.handleChange}
+                  onChange={handleInputChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.email}
                 />
-                {formik.touched.email && formik.errors.email && (
-                  <div className="text-sm text-red-500">
-                    {formik.errors.email}
-                  </div>
-                )}
+                <ErrorMessage error={formik.touched.email && formik.errors.email ? formik.errors.email : null} />
               </div>
               <div>
                 <label
@@ -209,15 +309,11 @@ export default function Advertise() {
                     }
                   )}
                   placeholder="Tell us about your advertising needs..."
-                  onChange={formik.handleChange}
+                  onChange={handleInputChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.content}
                 ></textarea>
-                {formik.touched.content && formik.errors.content && (
-                  <div className="text-sm text-red-500">
-                    {formik.errors.content}
-                  </div>
-                )}
+                <ErrorMessage error={formik.touched.content && formik.errors.content ? formik.errors.content : null} />
               </div>
               <button
                 type="submit"
@@ -249,411 +345,118 @@ export default function Advertise() {
                     Submitting...
                   </>
                 ) : (
-                  "Submit Inquiry"
+                  "Submit Request"
                 )}
               </button>
             </form>
           </div>
 
-          {/* FAQ Container */}
-          <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden rounded-2xl shadow-lg p-8 flex flex-col border border-gray-100 flex-1">
+          {/* Information Container */}
+          <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden rounded-2xl shadow-lg p-8 border border-gray-100 flex-1">
             {/* Decorative Elements */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-blue-100 rounded-full -ml-16 -mt-16 opacity-50"></div>
-            <div className="absolute bottom-0 right-0 w-40 h-40 bg-indigo-100 rounded-full -mr-20 -mb-20 opacity-50"></div>
-            <h3 className="text-3xl font-bold mb-1 text-center">
-              Frequently Asked Questions
-            </h3>
-            <p className="text-muted-foreground text-sm text-center mb-6">
-              Find answers to common questions about advertising with Dawaback
-            </p>
-            <div id="accordion-open" data-accordion="open">
-              {/* Q1 */}
-              <h2 id="accordion-open-heading-1">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 gap-3"
-                  data-accordion-target="#accordion-open-body-1"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-1"
-                >
-                  What types of advertising opportunities are available?
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 opacity-50"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-50"></div>
+            <h2 className="text-3xl font-bold mb-6 text-center">Why Advertise with Us?</h2>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                   <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
+                    className="w-6 h-6 text-primary"
                     fill="none"
-                    viewBox="0 0 10 6"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
                     <path
-                      stroke="currentColor"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
+                      strokeWidth="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                     />
                   </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-1"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-1"
-              >
-                <div className="p-5 border border-b-0 border-gray-200">
-                  Dawaback offers banner ads, sponsored content, product highlights,
-                  and custom campaigns tailored to pharmacy and healthcare brands.
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Targeted Audience</h3>
+                  <p className="text-gray-600">
+                    Reach health-conscious customers actively seeking pharmaceutical
+                    and healthcare solutions.
+                  </p>
                 </div>
               </div>
-              {/* Q2 */}
-              <h2 id="accordion-open-heading-2">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 gap-3"
-                  data-accordion-target="#accordion-open-body-2"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-2"
-                >
-                  How is ad performance tracked and reported?
-                  <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-2"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-2"
-              >
-                <div className="p-5 border border-b-0 border-gray-200">
-                  We provide detailed analytics dashboards with impressions, clicks,
-                  conversions, and compliance tracking for all campaigns.
-                </div>
-              </div>
-              {/* Q3 */}
-              <h2 id="accordion-open-heading-3">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 gap-3"
-                  data-accordion-target="#accordion-open-body-3"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-3"
-                >
-                  What is the typical duration for an advertising campaign?
-                  <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-3"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-3"
-              >
-                <div className="p-5 border border-t-0 border-gray-200">
-                  Campaigns can run from one week to several months, depending on
-                  your goals and budget.
-                </div>
-              </div>
-              {/* Q4 */}
-              <h2 id="accordion-open-heading-4">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 gap-3 "
-                  data-accordion-target="#accordion-open-body-4"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-4"
-                >
-                  Can I target specific demographics or user segments?
-                  <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-4"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-4"
-              >
-                <div className="p-5 border border-t-0 border-gray-200">
-                  Yes, Dawaback allows targeting by age, location, health interests,
-                  and more to ensure your ads reach the right audience.
-                </div>
-              </div>
-              {/* Q5 */}
-              <h2 id="accordion-open-heading-5">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 gap-3 "
-                  data-accordion-target="#accordion-open-body-5"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-5"
-                >
-                  What are the payment terms for advertising services?
-                  <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-5"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-5"
-              >
-                <div className="p-5 border border-t-0 border-gray-200">
-                  We offer flexible payment options including monthly billing and
-                  upfront packages. Contact us for details.
-                </div>
-              </div>
-              {/* Q6 */}
-              <h2 id="accordion-open-heading-6">
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 gap-3 "
-                  data-accordion-target="#accordion-open-body-6"
-                  aria-expanded="false"
-                  aria-controls="accordion-open-body-6"
-                >
-                  Is there support available for ad creative development?
-                  <svg
-                    data-accordion-icon
-                    className="w-3 h-3 rotate-180 shrink-0"
-                    aria-hidden="true"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5 5 1 1 5"
-                    />
-                  </svg>
-                </button>
-              </h2>
-              <div
-                id="accordion-open-body-6"
-                className="hidden"
-                aria-labelledby="accordion-open-heading-6"
-              >
-                <div className="p-5 border border-t-0 border-gray-200">
-                  Our team can assist with ad design, copywriting, and compliance
-                  review to ensure your campaign is effective and approved.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Why Advertise with Dawaback */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-1">
-            Why Advertise with Dawaback?
-          </h2>
-          <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Unlock unique benefits for your pharmacy or healthcare brand.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                  <circle cx="12" cy="12" r="6" strokeWidth="2" />
-                  <circle cx="12" cy="12" r="2" strokeWidth="2" />
-                </svg>
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">High Engagement</h3>
+                  <p className="text-gray-600">
+                    Our platform sees high engagement rates with users actively
+                    browsing and purchasing healthcare products.
+                  </p>
+                </div>
               </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Reach Health-Focused Audiences
-              </h5>
-              <p className="text-gray-700">
-                Connect with patients, caregivers, and health-conscious
-                individuals actively seeking pharmacy products and medical
-                solutions online.
-              </p>
-            </div>
-            {/* Card 2 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <path strokeWidth="2" d="M3 17l6-6 4 4 8-8" />
-                  <path strokeWidth="2" d="M14 7h7v7" />
-                </svg>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Trusted Platform</h3>
+                  <p className="text-gray-600">
+                    Partner with a trusted healthcare platform that customers rely
+                    on for their medical needs.
+                  </p>
+                </div>
               </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Boost Brand Trust & Visibility
-              </h5>
-              <p className="text-gray-700">
-                Showcase your pharmacy or healthcare brand on Dawaback, building
-                trust with a community that values safety, reliability, and
-                professional care.
-              </p>
-            </div>
-            {/* Card 3 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <rect x="3" y="12" width="4" height="8" strokeWidth="2" />
-                  <rect x="10" y="8" width="4" height="12" strokeWidth="2" />
-                  <rect x="17" y="4" width="4" height="16" strokeWidth="2" />
-                </svg>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Competitive Pricing</h3>
+                  <p className="text-gray-600">
+                    Get competitive advertising rates with flexible packages to
+                    suit your budget and goals.
+                  </p>
+                </div>
               </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Comprehensive Analytics & Compliance
-              </h5>
-              <p className="text-gray-700">
-                Access real-time analytics and ensure your campaigns meet
-                healthcare advertising standards and regulations for peace of
-                mind.
-              </p>
-            </div>
-            {/* Card 4 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <circle cx="12" cy="8" r="4" strokeWidth="2" />
-                  <path
-                    strokeWidth="2"
-                    d="M2 20c0-3.3137 3.134-6 7-6h6c3.866 0 7 2.6863 7 6"
-                  />
-                </svg>
-              </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Engage the Dawaback Community
-              </h5>
-              <p className="text-gray-700">
-                Interact with a vibrant community of users who rely on Dawaback for
-                their pharmacy needs, health advice, and wellness products.
-              </p>
-            </div>
-            {/* Card 5 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                  <circle cx="7" cy="10" r="1" strokeWidth="2" />
-                  <circle cx="17" cy="10" r="1" strokeWidth="2" />
-                  <circle cx="9" cy="16" r="1" strokeWidth="2" />
-                  <circle cx="15" cy="16" r="1" strokeWidth="2" />
-                </svg>
-              </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Custom Campaign Solutions
-              </h5>
-              <p className="text-gray-700">
-                Design campaigns tailored to your pharmaceutical products,
-                health services, or wellness solutions, with flexible options to
-                fit your goals.
-              </p>
-            </div>
-            {/* Card 6 */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-lg">
-              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="text-primary"
-                >
-                  <path strokeWidth="2" d="M8 12l4 4 4-4" />
-                  <path strokeWidth="2" d="M12 16V4" />
-                  <path strokeWidth="2" d="M2 20h20" />
-                </svg>
-              </div>
-              <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900">
-                Expert Support & Partnership
-              </h5>
-              <p className="text-gray-700">
-                Receive guidance from Dawaback's pharmacy and marketing experts at
-                every step, from campaign setup to optimization and compliance.
-              </p>
             </div>
           </div>
         </div>

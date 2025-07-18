@@ -81,7 +81,7 @@ export default function Favorites() {
 
   // Handle pharmacy card click
   const handlePharmacyClick = (pharmacy) => {
-    navigate(`/pharmacies-for-sale/${pharmacy.id}`);
+    navigate(`/pharmacies/${pharmacy.id}`);
   };
 
   // Check if user is authenticated
@@ -286,7 +286,7 @@ export default function Favorites() {
               <AnimatePresence mode="wait">
                 {isLoading ? (
                   <motion.div
-                    key="loading"
+                    key="loading-pharmacies"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
@@ -303,118 +303,38 @@ export default function Favorites() {
                       }}
                       className="text-primary"
                     >
-                      <BriefcaseMedical
-                        className="w-14 h-14"
-                        strokeWidth={2.5}
-                      />
+                      <BriefcaseMedical className="w-14 h-14" strokeWidth={2.5} />
                     </motion.div>
-
-                    {/* Loading Text */}
                     <motion.p
-                      className="text-center  text-base md:text-lg font-medium"
+                      className="text-center text-base md:text-lg font-medium"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.4 }}
                     >
-                      Loading your favorite pharmacies... <br />
+                      Loading your favorite pharmacies ... <br />
                       Please hold on
                     </motion.p>
                   </motion.div>
                 ) : visiblePharmacies.length > 0 ? (
-                  <div className="space-y-6">
-                    <motion.div
-                      key="pharmacies-grid"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                    >
-                      {visiblePharmacies.map((pharmacy, index) => (
-                        <motion.div
-                          key={pharmacy.id}
-                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{
-                            duration: 0.3,
-                            delay: index * 0.1,
-                            ease: "easeOut",
-                          }}
-                        >
-                          <PharmacyCard
-                            pharmacy={pharmacy}
-                            onViewDetails={handlePharmacyClick}
-                          />
-                        </motion.div>
-                      ))}
-                    </motion.div>
-
-                    {/* Load More Button for Pharmacies */}
-                    {visiblePharmacies.length < favorites.pharmacies.length && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {visiblePharmacies.map((pharmacy, index) => (
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: 0.2 }}
-                        className="flex justify-center pt-4"
+                        key={pharmacy.id}
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: index * 0.1,
+                          ease: "easeOut",
+                        }}
                       >
-                        <button
-                          onClick={loadMorePharmacies}
-                          disabled={isLoadingMore}
-                          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {isLoadingMore ? (
-                            <>
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                  duration: 1,
-                                  repeat: Infinity,
-                                  ease: "linear",
-                                }}
-                                className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                              />
-                              Loading...
-                            </>
-                          ) : (
-                            <>
-                              <Building2 className="w-4 h-4" />
-                              Load More Pharmacies (
-                              {favorites.pharmacies.length -
-                                visiblePharmacies.length}{" "}
-                              remaining)
-                            </>
-                          )}
-                        </button>
+                        <PharmacyCard pharmacy={pharmacy} onViewDetails={handlePharmacyClick} />
                       </motion.div>
-                    )}
+                    ))}
                   </div>
-                ) : favorites.pharmacies.length === 0 ? (
-                  <motion.div
-                    key="empty-pharmacies"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                  >
-                    <Card className="p-8 text-center">
-                      <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                        No Favorite Pharmacies
-                      </h3>
-                      <p className="text-gray-500 mb-4">
-                        You haven't added any pharmacies to your favorites yet.
-                      </p>
-                      <div>
-                        <button
-                          onClick={() => navigate("/pharmacies-for-sale")}
-                          className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-                        >
-                          Browse Pharmacies
-                        </button>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ) : null}
+                ) : (
+                  <div className="text-center text-gray-500 py-12">No favorite pharmacies found.</div>
+                )}
               </AnimatePresence>
             </TabsContent>
           </Tabs>

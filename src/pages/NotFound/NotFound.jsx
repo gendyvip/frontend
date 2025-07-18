@@ -105,7 +105,7 @@ export default function NotFound() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Button
                   variant="ghost"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/auth/login")}
                   className="text-sm text-gray-600 hover:text-primary hover:bg-primary/10 cursor-pointer"
                 >
                   Login

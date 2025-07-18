@@ -59,7 +59,7 @@ export default function Profile() {
   const [dealsPerPage] = useState(5);
 
   const handleViewDeal = (dealId) => {
-    navigate(`/deal/${dealId}`);
+    navigate(`/deals/${dealId}`);
   };
 
   const handleViewPharmacy = (pharmacyId) => {
@@ -172,67 +172,79 @@ export default function Profile() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-8">
-          <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
-              <Avatar className="h-20 w-20 sm:h-20 sm:w-20">
-                <AvatarImage src={userDetails.profilePhotoUrl} />
-                <AvatarFallback className="text-xl sm:text-2xl">
-                  {userDetails.fullName?.charAt(0) ||
-                    userDetails.email?.charAt(0) ||
-                    "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0 text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  {userDetails.fullName || "Unknown User"}
-                </h1>
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-gray-600 text-sm sm:text-base">
-                  <div className="flex items-center justify-center sm:justify-start space-x-1">
-                    <Mail className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{userDetails.email}</span>
-                  </div>
-                  <div className="flex items-center justify-center sm:justify-start space-x-1">
-                    <Phone className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{userDetails.phone}</span>
-                  </div>
-                  <div className="flex items-center justify-center sm:justify-start space-x-1">
-                    <Calendar className="h-4 w-4 flex-shrink-0" />
-                    <span>
-                      Joined{" "}
-                      {new Date(userDetails.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
+          <div className="relative flex flex-col items-center bg-gradient-to-b from-gray-50 to-white rounded-2xl shadow-lg border p-0 overflow-hidden">
+            <div className="w-full flex flex-col items-center px-6 pt-10 pb-6">
+              <div className="relative">
+                <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+                  <AvatarImage src={userDetails.profilePhotoUrl} />
+                  <AvatarFallback className="text-4xl">
+                    {userDetails.fullName?.charAt(0) ||
+                      userDetails.email?.charAt(0) ||
+                      "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <h1 className="mt-4 text-3xl font-bold text-gray-900">
+                {userDetails.fullName || "Unknown User"}
+              </h1>
+              {/* Optional: User bio/tagline */}
+              {/* <p className="text-gray-500 mt-1">Pharmacist | Health Advocate</p> */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2 text-gray-500 text-base">
+                <div className="flex items-center gap-1">
+                  <Mail className="h-5 w-5 text-indigo-400" />
+                  <span>{userDetails.email}</span>
                 </div>
-                <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 mt-3">
-                  <Badge
-                    variant={
-                      userDetails.isIdVerified ? "success" : "destructive"
-                    }
-                    className="text-xs"
-                  >
-                    {userDetails.isIdVerified ? "Verified" : "Unverified"}
-                  </Badge>
-                  <Badge
-                    variant={
-                      userDetails.isWorkIdVerified === "confirmed"
-                        ? "success"
-                        : "secondary"
-                    }
-                    className="text-xs"
-                  >
-                    {userDetails.isWorkIdVerified === "confirmed"
-                      ? "Work ID Verified"
-                      : "Work ID Pending"}
-                  </Badge>
-                  <Badge
-                    variant={
-                      userDetails.subscriptionStatus ? "success" : "outline"
-                    }
-                    className="text-xs"
-                  >
-                    {userDetails.subscriptionStatus ? "Premium" : "Free"}
-                  </Badge>
+                <div className="flex items-center gap-1">
+                  <Phone className="h-5 w-5 text-emerald-400" />
+                  <span>{userDetails.phone}</span>
                 </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-5 w-5 text-purple-400" />
+                  <span>
+                    Joined{" "}
+                    {new Date(userDetails.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-wrap justify-center items-center gap-3 mt-4">
+                <Badge
+                  variant={userDetails.isIdVerified ? "success" : "destructive"}
+                  className="text-xs flex items-center gap-1 px-3 py-1 shadow"
+                >
+                  {userDetails.isIdVerified ? (
+                    <CheckCircle className="w-4 h-4" />
+                  ) : (
+                    <XCircle className="w-4 h-4" />
+                  )}
+                  {userDetails.isIdVerified ? "Verified" : "Unverified"}
+                </Badge>
+                <Badge
+                  variant={
+                    userDetails.isWorkIdVerified === "confirmed"
+                      ? "success"
+                      : "secondary"
+                  }
+                  className="text-xs flex items-center gap-1 px-3 py-1 shadow"
+                >
+                  <Building2 className="w-4 h-4" />
+                  {userDetails.isWorkIdVerified === "confirmed"
+                    ? "Work ID Verified"
+                    : "Work ID Pending"}
+                </Badge>
+                <Badge
+                  variant={
+                    userDetails.subscriptionStatus === "pro"
+                      ? "success"
+                      : "outline"
+                  }
+                  className={`text-xs flex items-center gap-1 px-3 py-1 shadow ${
+                    userDetails.subscriptionStatus === "pro"
+                      ? "bg-gradient-to-r from-emerald-400 to-indigo-400 text-white"
+                      : "bg-white text-primary border-primary"
+                  }`}
+                >
+                  {userDetails.subscriptionStatus === "pro" ? "Pro" : "Basic"}
+                </Badge>
               </div>
             </div>
           </div>
@@ -240,66 +252,67 @@ export default function Profile() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Package className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total Deals
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {deals.length}
-                  </p>
-                </div>
+          {/* Total Deals */}
+          <div className="bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 transition hover:shadow-lg">
+            <div className="bg-blue-100 rounded-xl p-3 flex items-center justify-center">
+              <Package className="h-7 w-7 text-blue-500" />
+            </div>
+            <div>
+              <div className="text-gray-500 font-medium">Total Deals</div>
+              <div className="text-2xl font-extrabold text-gray-700">
+                {deals.length}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Active Deals
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {deals.filter((deal) => !deal.isClosed).length}
-                  </p>
-                </div>
+            </div>
+          </div>
+          {/* Active Deals */}
+          <div className="bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 transition hover:shadow-lg">
+            <div className="bg-green-100 rounded-xl p-3 flex items-center justify-center">
+              <CheckCircle className="h-7 w-7 text-green-500" />
+            </div>
+            <div>
+              <div className="text-gray-500 font-medium">Active Deals</div>
+              <div className="text-2xl font-extrabold text-gray-700">
+                {deals.filter((deal) => !deal.isClosed).length}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Building2 className="h-6 w-6 text-purple-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Pharmacies
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {pharmacyStats.total}
-                  </p>
-                </div>
+            </div>
+          </div>
+          {/* Pharmacies */}
+          <div className="bg-white rounded-2xl shadow-md p-6 flex items-center gap-4 transition hover:shadow-lg">
+            <div className="bg-purple-100 rounded-xl p-3 flex items-center justify-center">
+              <Building2 className="h-7 w-7 text-purple-500" />
+            </div>
+            <div>
+              <div className="text-gray-500 font-medium">Pharmacies</div>
+              <div className="text-2xl font-extrabold text-gray-700">
+                {pharmacyStats.total}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Charts and Details */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Deals</TabsTrigger>
-            <TabsTrigger value="pharmacies">Pharmacies</TabsTrigger>
+          <TabsList className="flex w-full bg-gray-100 rounded-2xl px-3 shadow-sm">
+            <TabsTrigger
+              value="overview"
+              className={`
+                flex-1 py-3 rounded-xl text-lg font-semibold transition
+                data-[state=active]:bg-white data-[state=active]:shadow data-[state=active]:text-primary/70
+                data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-500 hover:bg-gray-200
+              `}
+            >
+              Deals
+            </TabsTrigger>
+            <TabsTrigger
+              value="pharmacies"
+              className={`
+                flex-1 py-3 rounded-xl text-lg font-semibold transition
+                data-[state=active]:bg-white data-[state=active]:shadow data-[state=active]:text-primary/70
+                data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-500 hover:bg-gray-200
+              `}
+            >
+              Pharmacies
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -316,11 +329,28 @@ export default function Profile() {
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64">
                       {/* Pie Chart SVG for Deals by Status */}
-                      <svg className="w-12 h-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <circle cx="12" cy="12" r="10" strokeWidth="2" stroke="currentColor" fill="none" />
-                        <path d="M12 2a10 10 0 0 1 10 10h-10z" fill="currentColor" />
+                      <svg
+                        className="w-12 h-12 text-gray-300 mb-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                        />
+                        <path
+                          d="M12 2a10 10 0 0 1 10 10h-10z"
+                          fill="currentColor"
+                        />
                       </svg>
-                      <p className="text-gray-500 text-lg font-medium">No data to display</p>
+                      <p className="text-gray-500 text-lg font-medium">
+                        No data to display
+                      </p>
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height={300}>
@@ -352,20 +382,43 @@ export default function Profile() {
               <Card>
                 <CardHeader className="p-6 pb-4">
                   <CardTitle>Deals by Type</CardTitle>
-                  <CardDescription>
-                    Distribution of deal types
-                  </CardDescription>
+                  <CardDescription>Distribution of deal types</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-64">
                       {/* Bar Chart SVG for Deals by Type */}
-                      <svg className="w-12 h-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <rect x="4" y="10" width="3" height="10" fill="currentColor" />
-                        <rect x="10.5" y="6" width="3" height="14" fill="currentColor" />
-                        <rect x="17" y="2" width="3" height="18" fill="currentColor" />
+                      <svg
+                        className="w-12 h-12 text-gray-300 mb-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <rect
+                          x="4"
+                          y="10"
+                          width="3"
+                          height="10"
+                          fill="currentColor"
+                        />
+                        <rect
+                          x="10.5"
+                          y="6"
+                          width="3"
+                          height="14"
+                          fill="currentColor"
+                        />
+                        <rect
+                          x="17"
+                          y="2"
+                          width="3"
+                          height="18"
+                          fill="currentColor"
+                        />
                       </svg>
-                      <p className="text-gray-500 text-lg font-medium">No data to display</p>
+                      <p className="text-gray-500 text-lg font-medium">
+                        No data to display
+                      </p>
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height={300}>
@@ -386,7 +439,9 @@ export default function Profile() {
                           {dealsByTypeData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
-                              fill={["#4a4957", "#4f46e5", "#ffb500"][index % 3]}
+                              fill={
+                                ["#4a4957", "#4f46e5", "#ffb500"][index % 3]
+                              }
                             />
                           ))}
                         </Pie>
@@ -410,7 +465,9 @@ export default function Profile() {
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <Package className="w-12 h-12 text-gray-300 mb-4" />
-                      <p className="text-gray-500 text-lg font-medium">No deals found</p>
+                      <p className="text-gray-500 text-lg font-medium">
+                        No deals found
+                      </p>
                     </div>
                   ) : (
                     <table className="w-full">
@@ -426,10 +483,15 @@ export default function Profile() {
                       </thead>
                       <tbody>
                         {currentDeals.map((deal) => (
-                          <tr key={deal.id} className="border-b hover:bg-gray-50">
+                          <tr
+                            key={deal.id}
+                            className="border-b hover:bg-gray-50"
+                          >
                             <td className="p-4">
                               <div>
-                                <p className="font-medium">{deal.medicineName}</p>
+                                <p className="font-medium">
+                                  {deal.medicineName}
+                                </p>
                                 <p className="text-sm text-gray-600">
                                   {deal.description}
                                 </p>
@@ -489,7 +551,9 @@ export default function Profile() {
                   {deals.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <Package className="w-12 h-12 text-gray-300 mb-4" />
-                      <p className="text-gray-500 text-lg font-medium">No deals found</p>
+                      <p className="text-gray-500 text-lg font-medium">
+                        No deals found
+                      </p>
                     </div>
                   ) : (
                     currentDeals.map((deal) => (
@@ -511,7 +575,9 @@ export default function Profile() {
                           {/* Deal Details */}
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-500 text-xs">Type</span>
+                              <span className="text-gray-500 text-xs">
+                                Type
+                              </span>
                               <div className="mt-1">
                                 <Badge
                                   variant="outline"
@@ -530,7 +596,9 @@ export default function Profile() {
                               </div>
                             </div>
                             <div>
-                              <span className="text-gray-500 text-xs">Price</span>
+                              <span className="text-gray-500 text-xs">
+                                Price
+                              </span>
                               <p className="font-medium text-gray-900">
                                 EGP{Number(deal.price).toFixed(2)}
                               </p>
@@ -650,7 +718,9 @@ export default function Profile() {
                           </h3>
                         </div>
                         <Badge
-                          variant={pharmacy.isForSale ? "success" : "destructive"}
+                          variant={
+                            pharmacy.isForSale ? "success" : "destructive"
+                          }
                         >
                           {pharmacy.isForSale ? "For Sale" : "Not for Sale"}
                         </Badge>
@@ -734,6 +804,7 @@ export default function Profile() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="w-5 h-5 bg-orange-100 rounded flex items-center justify-center">
+                            {/* British Pound SVG */}
                             <svg
                               className="w-3 h-3 text-orange-600"
                               fill="none"
@@ -744,7 +815,7 @@ export default function Profile() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                                d="M17 21H9a4 4 0 01-4-4v0a4 4 0 014-4h2a2 2 0 100-4H9a2 2 0 110-4h6"
                               />
                             </svg>
                           </div>
@@ -753,7 +824,7 @@ export default function Profile() {
                               Monthly Sales:
                             </span>
                             <span className="font-medium">
-                              EGP{pharmacy.monthlySales}
+                              £{pharmacy.monthlySales}
                             </span>
                           </div>
                         </div>

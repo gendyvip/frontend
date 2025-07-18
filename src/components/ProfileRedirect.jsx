@@ -26,11 +26,11 @@ export default function ProfileRedirect() {
         navigate(`/me/${userId}`, { replace: true });
       } else {
         // If we can't get the user ID, redirect to login
-        navigate('/login', { replace: true });
+        navigate('/auth/login', { replace: true });
       }
     } else {
       // If not authenticated, redirect to login
-      navigate('/login', { replace: true });
+      navigate('/auth/login', { replace: true });
     }
   }, [user, isAuthenticated, navigate]);
 

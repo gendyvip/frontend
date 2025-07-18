@@ -23,6 +23,7 @@ import {
   List,
   Building2,
   Globe,
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,6 +34,7 @@ import { useDeals } from "@/store/useDeals";
 import { shallow } from "zustand/shallow";
 import useChat from "../../store/useChat";
 import { useAuth } from "../../store/useAuth";
+import CornerAd from "@/components/ui/CornerAd";
 
 export default function DealDetails() {
   const { id } = useParams();
@@ -95,7 +97,7 @@ export default function DealDetails() {
         <div className="text-center">
           <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 text-lg font-bold">
-        No Data With This Deal_ID
+            No Data With This Deal_ID
           </p>
         </div>
       </div>
@@ -136,7 +138,6 @@ export default function DealDetails() {
   };
 
   const handleProfile = () => {
-
     navigate(`/pharmacists/${deal.postedBy.id}`);
   };
 
@@ -160,23 +161,22 @@ export default function DealDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+      <CornerAd position="dealDetails" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center gap-2 sm:gap-3 sm:mb-6">
-            <Button
-              onClick={() => navigate(-1)}
-              className="bg-primary p-2 sm:p-3"
-            >
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
-            <div className="h-4 sm:h-6 w-px bg-gray-300"></div>
-            <span className="text-xs sm:text-sm text-gray-500">
-              Deal Details
-            </span>
-          </div>
-        </div>
+        {/* Breadcrumbs */}
+        <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+          <a href="/" className="hover:text-blue-600 transition-colors">
+            Home
+          </a>
+          <ChevronRight className="w-4 h-4" />
+          <a href="/deals" className="hover:text-blue-600 transition-colors">
+            Deals
+          </a>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-gray-900 font-medium truncate">
+            {deal.medicineName}
+          </span>
+        </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Main Content */}
@@ -188,9 +188,9 @@ export default function DealDetails() {
                   <div className="p-2 rounded-lg bg-blue-100">
                     <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
-              <div>
+                  <div>
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                  {deal.medicineName}
+                      {deal.medicineName}
                     </h2>
                     <p className="text-xs sm:text-sm text-gray-600">
                       Medicine Information
@@ -212,11 +212,11 @@ export default function DealDetails() {
                           <List className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                           <span className="font-medium text-gray-700 text-sm sm:text-base">
                             Quantity
-                </span>
-              </div>
+                          </span>
+                        </div>
                         <span className="font-bold text-primary text-sm sm:text-base">
                           {deal.quantity}
-                </span>
+                        </span>
                       </div>
 
                       <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
@@ -224,12 +224,12 @@ export default function DealDetails() {
                           <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                           <span className="font-medium text-gray-700 text-sm sm:text-base">
                             Price
-                </span>
-              </div>
+                          </span>
+                        </div>
                         <span className="font-bold text-green-600 text-sm sm:text-base">
-                        EGP{Number(deal.price).toFixed(2)} 
+                          EGP{Number(deal.price).toFixed(2)}
                         </span>
-            </div>
+                      </div>
 
                       <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -237,11 +237,11 @@ export default function DealDetails() {
                           <span className="font-medium text-gray-700 text-sm sm:text-base">
                             Expiry
                           </span>
-                </div>
+                        </div>
                         <span className="font-medium text-gray-900 text-sm sm:text-base">
                           {new Date(deal.expiryDate).toLocaleDateString()}
                         </span>
-                </div>
+                      </div>
 
                       <div className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -249,20 +249,20 @@ export default function DealDetails() {
                           <span className="font-medium text-gray-700 text-sm sm:text-base">
                             Box Status
                           </span>
-                </div>
+                        </div>
                         <Badge
                           variant={
-                      deal.boxStatus === "damaged"
+                            deal.boxStatus === "damaged"
                               ? "destructive"
                               : "default"
-                    }
+                          }
                           className={`font-medium text-xs ${
                             deal.boxStatus === "damaged"
                               ? "bg-red-100 text-red-700 border-red-200"
                               : "bg-green-100 text-green-700 border-green-200"
                           }`}
-                  >
-                    {deal.boxStatus}
+                        >
+                          {deal.boxStatus}
                         </Badge>
                       </div>
                     </div>
@@ -304,13 +304,13 @@ export default function DealDetails() {
                           <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                           <span className="font-medium text-gray-700 text-sm sm:text-base">
                             Posted
-                  </span>
-                </div>
+                          </span>
+                        </div>
                         <span className="font-medium text-gray-900 text-sm sm:text-base">
                           {getTimeSincePosted()}
-                  </span>
-                </div>
-              </div>
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -322,7 +322,7 @@ export default function DealDetails() {
                 <CardTitle className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-primary/10">
                     <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              </div>
+                  </div>
                   <div>
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                       Pharmacy Information
@@ -330,7 +330,7 @@ export default function DealDetails() {
                     <p className="text-xs sm:text-sm text-gray-600">
                       Location and contact details
                     </p>
-            </div>
+                  </div>
                 </CardTitle>
                 <a
                   href={mapsUrl}
@@ -351,12 +351,12 @@ export default function DealDetails() {
                       <div className="flex-1 min-w-0">
                         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block">
                           Name
-              </span>
+                        </span>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
                           {deal.pharmacy.name}
                         </p>
-            </div>
-              </div>
+                      </div>
+                    </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                       <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mb-5" />
@@ -365,10 +365,10 @@ export default function DealDetails() {
                           License #
                         </span>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                {deal.pharmacy.licenseNum}
+                          {deal.pharmacy.licenseNum}
                         </p>
                       </div>
-              </div>
+                    </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                       <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 mb-5" />
@@ -377,10 +377,10 @@ export default function DealDetails() {
                           Phone
                         </span>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                {deal.pharmacy.pharmacyPhone}
+                          {deal.pharmacy.pharmacyPhone}
                         </p>
                       </div>
-              </div>
+                    </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                       <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mb-5" />
@@ -389,7 +389,7 @@ export default function DealDetails() {
                           Hours
                         </span>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                {deal.pharmacy.startHour} - {deal.pharmacy.endHour}
+                          {deal.pharmacy.startHour} - {deal.pharmacy.endHour}
                         </p>
                       </div>
                     </div>
@@ -406,8 +406,8 @@ export default function DealDetails() {
                           {deal.pharmacy.addressLine1}{" "}
                           {deal.pharmacy.addressLine2}
                         </p>
-              </div>
-              </div>
+                      </div>
+                    </div>
 
                     <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
@@ -417,10 +417,10 @@ export default function DealDetails() {
                             City
                           </span>
                           <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
-                {deal.pharmacy.city}
+                            {deal.pharmacy.city}
                           </p>
                         </div>
-              </div>
+                      </div>
 
                       <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                         <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-teal-600 mb-5" />
@@ -429,11 +429,11 @@ export default function DealDetails() {
                             Governorate
                           </span>
                           <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
-                {deal.pharmacy.governorate}
+                            {deal.pharmacy.governorate}
                           </p>
                         </div>
                       </div>
-              </div>
+                    </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 bg-gray-50">
                       <Map className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 mb-5" />
@@ -442,15 +442,15 @@ export default function DealDetails() {
                           Zip Code
                         </span>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                {deal.pharmacy.zipCode}
+                          {deal.pharmacy.zipCode}
                         </p>
                       </div>
                     </div>
-              </div>
-            </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            </div>
+          </div>
 
           {/* Sidebar - Doctor Information */}
           <div className="lg:col-span-1">
@@ -468,7 +468,7 @@ export default function DealDetails() {
                       <p className="text-xs sm:text-sm text-gray-600">
                         Deal posted by
                       </p>
-            </div>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6">
@@ -476,21 +476,21 @@ export default function DealDetails() {
                     {/* Avatar with Status */}
                     <div className="relative">
                       <Avatar className="size-16 sm:size-20 shadow-md border-2 border-white">
-              {deal.postedBy.profilePhotoUrl ? (
-                <AvatarImage
-                  src={deal.postedBy.profilePhotoUrl}
-                  alt={deal.postedBy.fullName}
-                />
-              ) : (
+                        {deal.postedBy.profilePhotoUrl ? (
+                          <AvatarImage
+                            src={deal.postedBy.profilePhotoUrl}
+                            alt={deal.postedBy.fullName}
+                          />
+                        ) : (
                           <AvatarFallback className="bg-gradient-to-br from-primary to-primary-hover text-white text-sm sm:text-lg font-bold">
                             {initials}
                           </AvatarFallback>
-              )}
-            </Avatar>
-              {deal.postedBy.isIdVerified && (
+                        )}
+                      </Avatar>
+                      {deal.postedBy.isIdVerified && (
                         <div className="absolute -bottom-1 -right-1 bg-transparent rounded-full  p-1  ">
                           <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <CheckCircle2
+                            <CheckCircle2
                               size={10}
                               className="text-white sm:w-3 sm:h-3"
                             />
@@ -510,8 +510,8 @@ export default function DealDetails() {
                             <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 mr-1" />
                             <span className="sm:inline">Verified</span>
                           </Badge>
-              )}
-            </div>
+                        )}
+                      </div>
                       <p className="text-xs sm:text-sm text-gray-600">
                         Professional Pharmacist
                       </p>
@@ -519,26 +519,26 @@ export default function DealDetails() {
 
                     {/* Action Buttons */}
                     <div className="w-full space-y-2 sm:space-y-3">
-            <Button
-              onClick={handleChat}
+                      <Button
+                        onClick={handleChat}
                         className="w-full bg-primary hover:bg-primary/80 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-sm transition-all text-xs sm:text-base flex items-center justify-center gap-2"
-            >
+                      >
                         <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="xl:inline">
-              Chat with {deal.postedBy.fullName.split(" ")[0]}
+                          Chat with {deal.postedBy.fullName.split(" ")[0]}
                         </span>
-            </Button>
+                      </Button>
 
-            <Button
-              onClick={handleProfile}
+                      <Button
+                        onClick={handleProfile}
                         variant="outline"
                         className="w-full border border-primary text-primary hover:bg-primary/5 font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-sm transition-all text-xs sm:text-base flex items-center justify-center gap-2"
-              title="View all deals by this doctor"
-            >
+                        title="View all deals by this doctor"
+                      >
                         <User2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="hidden sm:inline">View Profile</span>
                         <span className="sm:hidden">Profile</span>
-            </Button>
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, Suspense, lazy } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../store/useAuth";
 import { getPharmacyById } from "../../api/pharmacies";
+import CornerAd from "../../components/ui/CornerAd";
 
 // Lazy load components for better performance
 const ListingHeader = lazy(() =>
@@ -23,10 +24,6 @@ const AdvertiserInfo = lazy(() =>
 
 const RelatedListings = lazy(() =>
   import("../../components/PharmacyDetails/RelatedListings")
-);
-
-const ContactOptions = lazy(() =>
-  import("../../components/PharmacyDetails/ContactOptions")
 );
 
 // Loading Skeleton Component
@@ -133,11 +130,11 @@ export default function PharmacyDetails() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <CornerAd position="pharmacyDetails" />
       {/* Header */}
       <SuspenseWrapper>
         <ListingHeader pharmacy={pharmacy} />
       </SuspenseWrapper>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Top Row - Image Gallery and Advertiser Info */}
@@ -149,34 +146,27 @@ export default function PharmacyDetails() {
             </SuspenseWrapper>
           </div>
 
-          {/* Advertiser Info - Takes 1/3 of the width */}
-          <div>
+          {/* Advertiser Info - Takes 1/3 of the width, MapSection below it */}
+          <div className="flex flex-col gap-6">
             <SuspenseWrapper>
-              <AdvertiserInfo owner={pharmacy.owner} />
+              <AdvertiserInfo owner={pharmacy.owner} pharmacyId={pharmacy.id} />
+            </SuspenseWrapper>
+            <SuspenseWrapper>
+              <MapSection
+                location={pharmacy.location}
+                address={pharmacy.addressLine1}
+              />
             </SuspenseWrapper>
           </div>
         </div>
 
         {/* Full Width Components Below */}
         <div className="space-y-8">
-          {/* Detailed Information and Map Section - Side by Side */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Detailed Information - Takes 2/3 of the width */}
-            <div className="lg:col-span-2">
-              <SuspenseWrapper>
-                <PharmacyDetailsTable pharmacy={pharmacy} />
-              </SuspenseWrapper>
-            </div>
-
-            {/* Map Section - Takes 1/3 of the width */}
-            <div>
-              <SuspenseWrapper>
-                <MapSection
-                  location={pharmacy.location}
-                  address={pharmacy.addressLine1}
-                />
-              </SuspenseWrapper>
-            </div>
+          {/* PharmacyDetailsTable - now full width */}
+          <div>
+            <SuspenseWrapper>
+              <PharmacyDetailsTable pharmacy={pharmacy} />
+            </SuspenseWrapper>
           </div>
 
           {/* Related Listings */}
@@ -217,11 +207,6 @@ export default function PharmacyDetails() {
           )}
         </div>
       </div>
-
-      {/* Floating Contact Button */}
-      <SuspenseWrapper>
-        <ContactOptions owner={pharmacy.owner} pharmacyId={pharmacy.id} />
-      </SuspenseWrapper>
     </div>
   );
 }

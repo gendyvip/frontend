@@ -177,7 +177,7 @@ export function DealForm({ className, ...props }) {
         console.log("Updating deal data:", updateData);
         await updateDeal(id, updateData);
 
-        toast.success("Deal updated successfully!", {
+        toast.success("Deal has been successfully updated!", {
           description: "Your medicine deal has been updated.",
           duration: 5000,
           position: "top-center",
@@ -209,7 +209,7 @@ export function DealForm({ className, ...props }) {
         console.log("Submitting deal data:", dealData);
         await createDeal(dealData);
 
-        toast.success("Deal posted successfully!", {
+        toast.success("Deal has been successfully posted!", {
           description:
             "Your medicine deal has been posted and is now visible to other users.",
           duration: 5000,
