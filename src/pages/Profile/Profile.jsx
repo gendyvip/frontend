@@ -63,7 +63,7 @@ export default function Profile() {
   };
 
   const handleViewPharmacy = (pharmacyId) => {
-    navigate(`/pharmacy/${pharmacyId}`);
+    navigate(`/pharmacies/${pharmacyId}`);
   };
 
   const handlePageChange = (pageNumber) => {

@@ -147,19 +147,19 @@ export default function Navbar() {
     >
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
-          to="/deals"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          to="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse focus:outline-none"
         >
           <img
             src="/logo.svg"
             className="h-15"
-            alt="Flowbite Logo"
+            alt="Dawaback Logo"
           />
           <div className="flex flex-col mb-3">
             <span className="font-bold  text-4xl  whitespace-nowrap text-primary dark:text-white">
               Dawaback
             </span>
-            <p className="text-sm text-gray-500  leading-0 mt-1 dark:text-gray-400">
+            <p className="text-sm text-zinc-700 ms-.5  leading-0 mt-1 dark:text-gray-400">
               Before it expires, trade it with desire
             </p>
           </div>

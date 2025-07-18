@@ -10,6 +10,7 @@ import {
   User2,
   X,
   MapPin,
+  MessagesSquare,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -196,13 +197,13 @@ export default function Chat() {
         {/* Outer glow ring */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-primary-hover opacity-80 group-hover:opacity-100 animate-pulse blur-lg transition-all duration-300"></div>
         {/* Main button */}
-        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-hover shadow-2xl group-hover:shadow-primary/40 transition-all duration-500 group-hover:scale-110 flex items-center justify-center">
+        <div className="relative w-15 h-15 rounded-full bg-gradient-to-br from-primary to-primary-hover shadow-lg group-hover:shadow-primary/40 transition-all duration-500 group-hover:scale-110 flex items-center justify-center">
           {/* Lucide MessageCircle icon, styled */}
-          <MessageCircle className="w-10 h-10 text-white font-bold drop-shadow-lg" />
+          <MessagesSquare className="w-8 h-8 text-white font-bold drop-shadow-md" />
         </div>
         {/* Unread badge */}
         {unreadCount > 0 && (
-          <div className="absolute -top-2 -left-2 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg animate-pulse border-2 border-white">
+          <div className="absolute -top-2 -left-2 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md animate-pulse border-2 border-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </div>
         )}
@@ -379,7 +380,7 @@ export default function Chat() {
             ) : (
               <div className="p-6 text-center">
                 <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="h-8 w-8 text-gray-400" />
+                  <MessagesSquare className="h-9 w-9 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   No conversations yet
@@ -547,9 +548,8 @@ export default function Chat() {
             <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-100 border-t border-border p-3 shrink-0">
               <div className="flex items-end gap-3">
                 <Button
-                  variant="ghost"
                   size="icon"
-                  className="hover:bg-blue-50 text-foreground shrink-0"
+                  className="bg-gradient-to-r mb-3 from-primary to-primary-hover text-white shadow-lg hover:from-primary-hover hover:to-primary transition-all duration-200 shrink-0 rounded-2xl"
                 >
                   <Paperclip className="h-5 w-5" />
                 </Button>
@@ -565,7 +565,7 @@ export default function Chat() {
                 <Button
                   onClick={handleSendMessage}
                   disabled={!message.trim()}
-                  className="bg-gradient-to-r from-primary to-primary-hover text-white shadow-lg hover:from-primary-hover hover:to-primary transition-all duration-200 shrink-0 rounded-2xl"
+                  className="bg-gradient-to-r mb-3 from-primary to-primary-hover text-white shadow-lg hover:from-primary-hover hover:to-primary transition-all duration-200 shrink-0 rounded-2xl"
                 >
                   <Send className="h-5 w-5" />
                 </Button>
@@ -613,7 +613,7 @@ export default function Chat() {
       {/* Header with close button */}
       <div className="flex items-center justify-between p-4 sm:p-3 bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-50 border-b border-border text-foreground relative z-10">
         <div className="flex items-center gap-2">
-          <MessageCircle className="w-7 h-7 sm:w-6 sm:h-6" />
+          <MessagesSquare className="w-7 h-7 sm:w-6 sm:h-6" />
           <span className="font-bold text-lg">Chat</span>
         </div>
         <motion.button

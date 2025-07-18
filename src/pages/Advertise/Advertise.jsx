@@ -121,10 +121,10 @@ export default function Advertise() {
       <section className="py-16 px-4 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-center mb-4">
+            <h1 className="text-5xl font-extrabold mb-2 text-primary">
+              Advertise with Dawaback
+            </h1>
           </div>
-          <h1 className="text-5xl font-extrabold mb-2 text-primary">
-            Advertise with Dawaback
-          </h1>
           <p className="text-md text-muted-foreground">
             Reach health-conscious customers and grow your pharmaceutical or
             healthcare brand with Dawaback, your trusted online medical pharmacy.

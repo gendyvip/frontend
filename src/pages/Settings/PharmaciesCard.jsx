@@ -543,7 +543,7 @@ export default function PharmaciesCard({ pharmacistDetails }) {
                 You haven't added any pharmacies yet.
               </p>
               <Button asChild>
-                <Link to="/add-pharmacy">Add Your First Pharmacy</Link>
+                <Link to="/pharmacies/new">Add Your First Pharmacy</Link>
               </Button>
             </div>
           ) : (
