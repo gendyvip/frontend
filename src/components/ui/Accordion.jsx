@@ -12,19 +12,28 @@ export default function Accordion({ items }) {
       {items.map((item, idx) => (
         <div key={idx}>
           <button
-            className={`flex w-full items-center justify-between px-6 py-4 text-left font-medium text-gray-900 transition-colors hover:bg-gray-50 focus:outline-none ${openIndex === idx ? "bg-gray-50" : ""}`}
+            className={`flex w-full items-center justify-between px-6 py-4 text-left font-medium text-gray-900 transition-colors hover:bg-gray-50 focus:outline-none ${
+              openIndex === idx ? "bg-gray-50" : ""
+            }`}
             onClick={() => toggle(idx)}
             aria-expanded={openIndex === idx}
           >
             <span>{item.title}</span>
             <svg
-              className={`w-4 h-4 ml-2 transition-transform ${openIndex === idx ? "rotate-180" : "rotate-0"}`}
+              className={`w-4 h-4 ml-2 transition-transform ${
+                openIndex === idx ? "rotate-180" : "rotate-0"
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
           {openIndex === idx && (
@@ -36,4 +45,4 @@ export default function Accordion({ items }) {
       ))}
     </div>
   );
-} 
+}

@@ -79,6 +79,7 @@ export function LoginForm({ className, ...props }) {
 
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
+
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                     {/* Envelope icon */}
@@ -139,96 +140,6 @@ export function LoginForm({ className, ...props }) {
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
-                    {/* Lock icon */}
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <rect width="12" height="8" x="6" y="11" rx="2" />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 15v2m-4-6V9a4 4 0 118 0v2"
-                      />
-                    </svg>
-                  </span>
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.password}
-                    className={cn(
-                      "pl-10",
-                      formik.touched.password &&
-                        formik.errors.password &&
-                        "border-red-500"
-                    )}
-                  />
-                  <button
-                    type="button"
-                    className={cn(
-                      "absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition",
-                      showPassword ? "text-primary" : "text-gray-500"
-                    )}
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    tabIndex={-1}
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showPassword ? (
-                      // Eye-off (crossed) icon, outline style (Heroicons)
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3.11-10.5-7.5a10.05 10.05 0 012.563-4.568m2.1-1.933A9.956 9.956 0 0112 5c5 0 9.27 3.11 10.5 7.5a9.956 9.956 0 01-4.198 5.568M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 3l18 18"
-                        />
-                      </svg>
-                    ) : (
-                      // Eye icon (outlined)
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                </div>
                 <ErrorMessage
                   error={
                     formik.touched.password && formik.errors.password ? (
@@ -293,21 +204,23 @@ export function LoginForm({ className, ...props }) {
       </Card>
       <div className="text-muted-foreground text-center -mt-3 text-xs text-balance">
         By clicking continue, you agree to our
-        <a
-          href="#"
+        <Link
+          to="/terms"
           className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
         >
           {" "}
           Terms of Service
-        </a>{" "}
+
+        </Link>{" "}
         and
-        <a
-          href="#"
+        <Link
+          to="/privacy"
           className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
         >
           {" "}
           Privacy Policy
-        </a>
+
+        </Link>
         .
       </div>
     </div>

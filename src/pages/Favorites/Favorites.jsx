@@ -303,7 +303,10 @@ export default function Favorites() {
                       }}
                       className="text-primary"
                     >
-                      <BriefcaseMedical className="w-14 h-14" strokeWidth={2.5} />
+                      <BriefcaseMedical
+                        className="w-14 h-14"
+                        strokeWidth={2.5}
+                      />
                     </motion.div>
                     <motion.p
                       className="text-center text-base md:text-lg font-medium"
@@ -328,12 +331,39 @@ export default function Favorites() {
                           ease: "easeOut",
                         }}
                       >
-                        <PharmacyCard pharmacy={pharmacy} onViewDetails={handlePharmacyClick} />
+                        <PharmacyCard
+                          pharmacy={pharmacy}
+                          onViewDetails={handlePharmacyClick}
+                        />
                       </motion.div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center text-gray-500 py-12">No favorite pharmacies found.</div>
+                  <motion.div
+                    key="empty-pharmacies"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <Card className="p-8 text-center">
+                      <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                        No Favorite Pharmacies
+                      </h3>
+                      <p className="text-gray-500 mb-4">
+                        You haven't added any pharmacies to your favorites yet.
+                      </p>
+                      <div>
+                        <button
+                          onClick={() => navigate("/pharmacies")}
+                          className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          Browse Pharmacies for Sale
+                        </button>
+                      </div>
+                    </Card>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </TabsContent>

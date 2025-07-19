@@ -27,7 +27,7 @@ import { useDebounce } from "../../hooks/useDebounce";
 import { Card } from "../../components/ui/card";
 import PharmaciesList from "./PharmaciesList";
 import { useAuth } from "../../store/useAuth";
-import AdsSlider from "../../components/ui/AdsSlider";
+import CornerAd from "@/components/ui/CornerAd";
 
 export default function PharmaciesForSale() {
   // Filter state (all in one place, like deals)
@@ -248,7 +248,7 @@ export default function PharmaciesForSale() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AdsSlider position="allPharmcies" />
+      <CornerAd position="allPharmcies" />
 
       <section className="py-5 px-4 text-foreground">
         <div className="max-w-7xl mx-auto flex items-center justify-between mb-4">

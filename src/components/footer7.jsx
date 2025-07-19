@@ -9,8 +9,8 @@ const defaultSections = [
       { name: "Overview", href: "#" },
       { name: "Pricing", href: "#" },
       { name: "Marketplace", href: "#" },
-      { name: "Features", href: "#" }
-    ]
+      { name: "Features", href: "#" },
+    ],
   },
   {
     title: "Company",
@@ -19,8 +19,8 @@ const defaultSections = [
       { name: "Deals", href: "#" },
       { name: "Requests", href: "#" },
       { name: "Advertise", href: "#" },
-      { name: "Contacts", href: "#" }
-    ]
+      { name: "Contacts", href: "#" },
+    ],
   },
   {
     title: "Resources",
@@ -28,21 +28,21 @@ const defaultSections = [
       { name: "Help", href: "#" },
       { name: "Login", href: "#" },
       { name: "Sign Up", href: "#" },
-      { name: "Privacy", href: "#" }
-    ]
-  }
+      { name: "Privacy", href: "#" },
+    ],
+  },
 ];
 
 const defaultSocialLinks = [
   { icon: <FaInstagram className="size-5" />, href: "#", label: "Instagram" },
   { icon: <FaFacebook className="size-5" />, href: "#", label: "Facebook" },
   { icon: <FaTwitter className="size-5" />, href: "#", label: "Twitter" },
-  { icon: <FaLinkedin className="size-5" />, href: "#", label: "LinkedIn" }
+  { icon: <FaLinkedin className="size-5" />, href: "#", label: "LinkedIn" },
 ];
 
 const defaultLegalLinks = [
   { name: "Terms and Conditions", href: "#" },
-  { name: "Privacy Policy", href: "#" }
+  { name: "Privacy Policy", href: "#" },
 ];
 
 const Footer7 = ({
@@ -50,13 +50,13 @@ const Footer7 = ({
     url: "/home",
     src: "/DawabackNewLogo.png",
     alt: "logo",
-    title: "Dawaback"
+    title: "Dawaback",
   },
   sections = defaultSections,
   description = "A collection of components for your startup business or side project.",
   socialLinks = defaultSocialLinks,
   copyright = "© 2024 Shadcnblocks.com. All rights reserved.",
-  legalLinks = defaultLegalLinks
+  legalLinks = defaultLegalLinks,
 }) => {
   return (
     <section className="bg-background text-foreground px-6 py-10 md:px-12 lg:px-20">
@@ -74,7 +74,7 @@ const Footer7 = ({
               {description}
             </p>
             <div className="flex items-center gap-4">
-              {socialLinks.map((social, idx) =>
+              {socialLinks.map((social, idx) => (
                 <a
                   key={idx}
                   href={social.href}
@@ -83,19 +83,17 @@ const Footer7 = ({
                 >
                   {social.icon}
                 </a>
-              )}
+              ))}
             </div>
           </div>
 
           {/* Links Section */}
           <div className="grid gap-8 mt-10 md:mt-0 w-full text-center md:text-center sm:grid-cols-1 md:grid-cols-3 lg:gap-12">
-            {sections.map((section, idx) =>
+            {sections.map((section, idx) => (
               <div key={idx}>
-                <h4 className="font-bold text-base mb-2">
-                  {section.title}
-                </h4>
+                <h4 className="font-bold text-base mb-2">{section.title}</h4>
                 <div className="flex flex-wrap md:flex-col items-center md:items-center justify-center gap-2 text-sm text-muted-foreground">
-                  {section.links.map((link, linkIdx) =>
+                  {section.links.map((link, linkIdx) => (
                     <a
                       key={linkIdx}
                       href={link.href}
@@ -103,20 +101,18 @@ const Footer7 = ({
                     >
                       {link.name}
                     </a>
-                  )}
+                  ))}
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
 
         {/* Footer Bottom */}
         <div className="border-t pt-6 text-sm flex flex-col md:flex-row justify-between items-center text-muted-foreground gap-4">
-          <p className="text-center md:text-left">
-            {copyright}
-          </p>
+          <p className="text-center md:text-left">{copyright}</p>
           <div className="flex gap-4">
-            {legalLinks.map((link, idx) =>
+            {legalLinks.map((link, idx) => (
               <a
                 key={idx}
                 href={link.href}
@@ -124,7 +120,7 @@ const Footer7 = ({
               >
                 {link.name}
               </a>
-            )}
+            ))}
           </div>
         </div>
       </div>

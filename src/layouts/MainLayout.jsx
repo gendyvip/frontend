@@ -57,6 +57,8 @@ const PharmacyDetails = React.lazy(() =>
 
 // Communication Pages
 const Chat = React.lazy(() => import("../pages/Chat/Chat"));
+const TermsOfService = React.lazy(() => import("../pages/TermsOfService"));
+const PrivacyPolicy = React.lazy(() => import("../pages/PrivacyPolicy"));
 
 export default function MainLayout() {
   return (
@@ -85,6 +87,8 @@ export default function MainLayout() {
             {/* Public Service Routes */}
             <Route path="/advertise" element={<Advertise />} />
             <Route path="contact" element={<ContactUs />} />
+            <Route path="terms" element={<TermsOfService />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
 
             {/* Subscription Routes */}
             <Route path="subscription">

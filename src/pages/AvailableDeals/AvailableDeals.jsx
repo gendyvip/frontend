@@ -38,8 +38,8 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Card } from "@/components/ui/card";
+import CornerAd from "@/components/ui/CornerAd";
 import { DrugAlert } from "@/components/DrugAlert";
-import AdsSlider from "@/components/ui/AdsSlider";
 
 export default function AvailableDeals() {
   // State for all filters
@@ -351,7 +351,7 @@ export default function AvailableDeals() {
 
   return (
     <div className="min-h-screen">
-      <AdsSlider position="allDeals" />
+      <CornerAd position="allDeals" />
 
       <section className="py-5 px-4 text-foreground">
         <div className="max-w-7xl mx-auto flex items-center justify-between mb-4">

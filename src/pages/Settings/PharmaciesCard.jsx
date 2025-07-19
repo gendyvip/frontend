@@ -60,6 +60,14 @@ export default function PharmaciesCard({ pharmacistDetails }) {
   // Local loading state for actions
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Add this handler for modal open/close
+  const handleOpenChange = (open) => {
+    if (!open) {
+      setShowDeleteModal(false);
+      setPharmacyToDelete(null);
+    }
+  };
+
   // Fetch pharmacies on component mount
   useEffect(() => {
     if (user && token) {
@@ -565,11 +573,11 @@ export default function PharmaciesCard({ pharmacistDetails }) {
 
       {/* Modals */}
       <ConfirmDialog
-        isOpen={showDeleteModal}
-        onClose={handleCancelDelete}
+        open={showDeleteModal}
+        onOpenChange={handleOpenChange}
         onConfirm={handleConfirmDelete}
         title="Delete Pharmacy"
-        message="Are you sure you want to delete this pharmacy? This action cannot be undone."
+        description="Are you sure you want to delete this pharmacy? This action cannot be undone."
         confirmText="Delete"
         cancelText="Cancel"
       />
