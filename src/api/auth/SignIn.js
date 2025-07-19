@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/";
+const API_BASE_URL = "https://backend.dawaback.com/";
 
 export const signIn = async (credentials) => {
   try {
@@ -19,13 +19,24 @@ export const signIn = async (credentials) => {
       } else if (response.status === 403) {
         // Check the specific error message from backend
         if (data.message && data.message.includes("blocked")) {
-          throw new Error("Your account has been blocked. Please contact support for assistance.");
+          throw new Error(
+            "Your account has been blocked. Please contact support for assistance."
+          );
         } else if (data.message && data.message.includes("rejected")) {
-          throw new Error("Your documents were rejected. Please contact support for assistance.");
+          throw new Error(
+            "Your documents were rejected. Please contact support for assistance."
+          );
         } else if (data.message && data.message.includes("under review")) {
-          throw new Error("Your documents are still under review. Please wait for admin approval.");
-        } else if (data.message && data.message.includes("admin verification")) {
-          throw new Error("Your profile is pending admin verification. Please wait for approval.");
+          throw new Error(
+            "Your documents are still under review. Please wait for admin approval."
+          );
+        } else if (
+          data.message &&
+          data.message.includes("admin verification")
+        ) {
+          throw new Error(
+            "Your profile is pending admin verification. Please wait for approval."
+          );
         } else {
           throw new Error(data.message || "Access denied");
         }
@@ -47,7 +58,9 @@ export const signIn = async (credentials) => {
   } catch (error) {
     // Handle network errors
     if (error.name === "TypeError" && error.message.includes("fetch")) {
-      throw new Error("Network error. Please check your internet connection and try again.");
+      throw new Error(
+        "Network error. Please check your internet connection and try again."
+      );
     }
 
     // Re-throw the error with the message

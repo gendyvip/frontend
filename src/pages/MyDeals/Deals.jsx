@@ -1,5 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { PlusCircle, CheckCircle, TrendingUp, Clock, Filter, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  PlusCircle,
+  CheckCircle,
+  TrendingUp,
+  Clock,
+  Filter,
+  X,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import {
   Card,
   CardDescription,
@@ -20,7 +31,11 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDeals } from "../../store/useDeals";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +48,7 @@ export default function Deals() {
   const [status, setStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortBy, setSortBy] = useState("expiryDate");
-  
+
   // Advanced filters
   const [dealType, setDealType] = useState("");
   const [dosageForm, setDosageForm] = useState("");
@@ -46,15 +61,23 @@ export default function Deals() {
   const [pageSize, setPageSize] = useState(9); // 9 deals per page (3x3 grid)
 
   // Use store
-  const { deals, isLoading, error, fetchUserDeals, updateDealStatus, totalDeals, totalPages } = useDeals();
+  const {
+    deals,
+    isLoading,
+    error,
+    fetchUserDeals,
+    updateDealStatus,
+    totalDeals,
+    totalPages,
+  } = useDeals();
 
   // Sorting options
   const sortOptions = [
-    { value: 'expiryDate-asc', label: 'Expiry Date (Nearest First)' },
-    { value: 'price-asc', label: 'Price (Low to High)' },
-    { value: 'quantity-asc', label: 'Quantity (Low to High)' },
-    { value: 'createdAt-asc', label: 'Created Date (Oldest First)' },
-    { value: 'medicineName-asc', label: 'Name (A to Z)' },
+    { value: "expiryDate-asc", label: "Expiry Date (Nearest First)" },
+    { value: "price-asc", label: "Price (Low to High)" },
+    { value: "quantity-asc", label: "Quantity (Low to High)" },
+    { value: "createdAt-asc", label: "Created Date (Oldest First)" },
+    { value: "medicineName-asc", label: "Name (A to Z)" },
   ];
 
   // Fetch deals with pagination
@@ -68,15 +91,17 @@ export default function Deals() {
       dosageForm: dosageForm || undefined,
       minPrice: priceRange.min || undefined,
       maxPrice: priceRange.max || undefined,
-      fromDate: dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
-      toDate: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
+      fromDate: dateRange.from
+        ? format(dateRange.from, "yyyy-MM-dd")
+        : undefined,
+      toDate: dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
       sortBy: sortBy || undefined,
       sortOrder: sortOrder || undefined,
     };
 
     // Remove undefined values
-    Object.keys(queryParams).forEach(key => 
-      queryParams[key] === undefined && delete queryParams[key]
+    Object.keys(queryParams).forEach(
+      (key) => queryParams[key] === undefined && delete queryParams[key]
     );
 
     await fetchUserDeals(queryParams);
@@ -90,36 +115,61 @@ export default function Deals() {
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
     fetchDealsWithPagination(1);
-  }, [searchDeal, status, dealType, dosageForm, priceRange, dateRange, sortBy, sortOrder]);
+  }, [
+    searchDeal,
+    status,
+    dealType,
+    dosageForm,
+    priceRange,
+    dateRange,
+    sortBy,
+    sortOrder,
+  ]);
 
   let filteredDeals = (deals || []).filter((deal) => {
-    const dealStatus = deal.isClosed ? "Closed" : 
-      new Date(deal.expiryDate) < new Date() ? "Expired" : "Active";
-    
+    const dealStatus = deal.isClosed
+      ? "Closed"
+      : new Date(deal.expiryDate) < new Date()
+      ? "Expired"
+      : "Active";
+
     // Basic filters
-    const matchesSearch = (deal.medicineName?.toLowerCase() || "").includes(searchDeal.toLowerCase());
-    const matchesStatus = dealStatus.toLowerCase().includes(status.toLowerCase());
-    
+    const matchesSearch = (deal.medicineName?.toLowerCase() || "").includes(
+      searchDeal.toLowerCase()
+    );
+    const matchesStatus = dealStatus
+      .toLowerCase()
+      .includes(status.toLowerCase());
+
     // Advanced filters
     const matchesDealType = !dealType || deal.dealType === dealType;
     const matchesDosageForm = !dosageForm || deal.dosageForm === dosageForm;
-    
+
     const dealPrice = parseFloat(deal.price || 0);
-    const matchesPriceRange = (!priceRange.min || dealPrice >= parseFloat(priceRange.min)) &&
-                             (!priceRange.max || dealPrice <= parseFloat(priceRange.max));
-    
+    const matchesPriceRange =
+      (!priceRange.min || dealPrice >= parseFloat(priceRange.min)) &&
+      (!priceRange.max || dealPrice <= parseFloat(priceRange.max));
+
     const dealDate = new Date(deal.expiryDate);
-    const matchesDateRange = (!dateRange.from || dealDate >= dateRange.from) &&
-                            (!dateRange.to || dealDate <= dateRange.to);
-    
-    return matchesSearch && matchesStatus && matchesDealType && matchesDosageForm && matchesPriceRange && matchesDateRange;
+    const matchesDateRange =
+      (!dateRange.from || dealDate >= dateRange.from) &&
+      (!dateRange.to || dealDate <= dateRange.to);
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesDealType &&
+      matchesDosageForm &&
+      matchesPriceRange &&
+      matchesDateRange
+    );
   });
 
   // Enhanced sorting
   const sortDeals = (dealsToSort) => {
     return [...dealsToSort].sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortBy) {
         case "expiryDate":
           aValue = new Date(a.expiryDate).getTime();
@@ -145,7 +195,7 @@ export default function Deals() {
           aValue = new Date(a.expiryDate).getTime();
           bValue = new Date(b.expiryDate).getTime();
       }
-      
+
       if (sortOrder === "asc") {
         return aValue > bValue ? 1 : -1;
       } else {
@@ -161,20 +211,23 @@ export default function Deals() {
     setSearchDeal(value);
   }, []);
   const debouncedSetSearch = useDebounce(setSearchCallback, 500);
-  const handleSearchInput = useCallback((e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    debouncedSetSearch(value);
-  }, [debouncedSetSearch]);
-  
+  const handleSearchInput = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setSearchInput(value);
+      debouncedSetSearch(value);
+    },
+    [debouncedSetSearch]
+  );
+
   const handleStatuses = (val) => {
     val === "all" ? setStatus("") : setStatus(val);
   };
-  
+
   const handleDealType = (val) => {
     val === "all" ? setDealType("") : setDealType(val);
   };
-  
+
   const handleSort = (newSortBy) => {
     if (sortBy === newSortBy) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -187,10 +240,10 @@ export default function Deals() {
   // Handle sort selection from dropdown
   const handleSortSelection = (value) => {
     if (!value) {
-      setSortBy('');
-      setSortOrder('asc');
+      setSortBy("");
+      setSortOrder("asc");
     } else {
-      const [newSortBy, newSortOrder] = value.split('-');
+      const [newSortBy, newSortOrder] = value.split("-");
       setSortBy(newSortBy);
       setSortOrder(newSortOrder);
     }
@@ -231,9 +284,7 @@ export default function Deals() {
   const activeDealsCount = (deals || []).filter(
     (deal) => !deal.isClosed && new Date(deal.expiryDate) >= new Date()
   ).length;
-  const closedDealsCount = (deals || []).filter(
-    (deal) => deal.isClosed
-  ).length;
+  const closedDealsCount = (deals || []).filter((deal) => deal.isClosed).length;
   const expiredDealsCount = (deals || []).filter(
     (deal) => !deal.isClosed && new Date(deal.expiryDate) < new Date()
   ).length;
@@ -241,14 +292,57 @@ export default function Deals() {
   // Get active filters for chips
   const getActiveFilters = () => {
     const filters = [];
-    if (searchDeal) filters.push({ key: 'search', label: `"${searchDeal}"`, onRemove: () => { setSearchDeal(""); setSearchInput(""); } });
-    if (status) filters.push({ key: 'status', label: status, onRemove: () => setStatus("") });
-    if (dealType) filters.push({ key: 'type', label: dealType, onRemove: () => setDealType("") });
-    if (dosageForm) filters.push({ key: 'dosageForm', label: dosageForm, onRemove: () => setDosageForm("") });
-    if (priceRange.min) filters.push({ key: 'minPrice', label: `Min: EGP ${priceRange.min}`, onRemove: () => setPriceRange(prev => ({ ...prev, min: "" })) });
-    if (priceRange.max) filters.push({ key: 'maxPrice', label: `Max: EGP ${priceRange.max}`, onRemove: () => setPriceRange(prev => ({ ...prev, max: "" })) });
-    if (dateRange.from) filters.push({ key: 'fromDate', label: `From: ${format(dateRange.from, "MMM dd")}`, onRemove: () => setDateRange(prev => ({ ...prev, from: null })) });
-    if (dateRange.to) filters.push({ key: 'toDate', label: `To: ${format(dateRange.to, "MMM dd")}`, onRemove: () => setDateRange(prev => ({ ...prev, to: null })) });
+    if (searchDeal)
+      filters.push({
+        key: "search",
+        label: `"${searchDeal}"`,
+        onRemove: () => {
+          setSearchDeal("");
+          setSearchInput("");
+        },
+      });
+    if (status)
+      filters.push({
+        key: "status",
+        label: status,
+        onRemove: () => setStatus(""),
+      });
+    if (dealType)
+      filters.push({
+        key: "type",
+        label: dealType,
+        onRemove: () => setDealType(""),
+      });
+    if (dosageForm)
+      filters.push({
+        key: "dosageForm",
+        label: dosageForm,
+        onRemove: () => setDosageForm(""),
+      });
+    if (priceRange.min)
+      filters.push({
+        key: "minPrice",
+        label: `Min: EGP ${priceRange.min}`,
+        onRemove: () => setPriceRange((prev) => ({ ...prev, min: "" })),
+      });
+    if (priceRange.max)
+      filters.push({
+        key: "maxPrice",
+        label: `Max: EGP ${priceRange.max}`,
+        onRemove: () => setPriceRange((prev) => ({ ...prev, max: "" })),
+      });
+    if (dateRange.from)
+      filters.push({
+        key: "fromDate",
+        label: `From: ${format(dateRange.from, "MMM dd")}`,
+        onRemove: () => setDateRange((prev) => ({ ...prev, from: null })),
+      });
+    if (dateRange.to)
+      filters.push({
+        key: "toDate",
+        label: `To: ${format(dateRange.to, "MMM dd")}`,
+        onRemove: () => setDateRange((prev) => ({ ...prev, to: null })),
+      });
     return filters;
   };
 
@@ -258,7 +352,7 @@ export default function Deals() {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -268,25 +362,25 @@ export default function Deals() {
         for (let i = 1; i <= 4; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
@@ -360,8 +454,12 @@ export default function Deals() {
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                  <p className="text-sm text-gray-500">Refine your search results</p>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Filters
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Refine your search results
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -376,7 +474,11 @@ export default function Deals() {
                         {activeFilters.length}
                       </Badge>
                     )}
-                    {showAdvancedFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    {showAdvancedFilters ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
                   </Button>
                   <Button
                     variant="outline"
@@ -406,7 +508,10 @@ export default function Deals() {
                   </div>
                   {/* Deal Type Filter */}
                   <div className="w-full md:w-44">
-                    <Select onValueChange={handleDealType} value={dealType || "all"}>
+                    <Select
+                      onValueChange={handleDealType}
+                      value={dealType || "all"}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Types" />
                       </SelectTrigger>
@@ -420,7 +525,12 @@ export default function Deals() {
                   </div>
                   {/* Dosage Form Filter */}
                   <div className="w-full md:w-44">
-                    <Select value={dosageForm || "all"} onValueChange={val => setDosageForm(val === "all" ? "" : val)}>
+                    <Select
+                      value={dosageForm || "all"}
+                      onValueChange={(val) =>
+                        setDosageForm(val === "all" ? "" : val)
+                      }
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Forms" />
                       </SelectTrigger>
@@ -437,13 +547,18 @@ export default function Deals() {
                   </div>
                   {/* Sort By Filter */}
                   <div className="w-full md:w-44">
-                    <Select value={sortBy ? `${sortBy}-${sortOrder}` : ''} onValueChange={handleSortSelection}>
+                    <Select
+                      value={sortBy ? `${sortBy}-${sortOrder}` : ""}
+                      onValueChange={handleSortSelection}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Sort By" />
                       </SelectTrigger>
                       <SelectContent>
-                        {sortOptions.map(opt => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        {sortOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -455,7 +570,9 @@ export default function Deals() {
               {activeFilters.length > 0 && (
                 <div className="border-t pt-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm font-medium text-gray-700">Active Filters:</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      Active Filters:
+                    </span>
                     <Badge className="bg-zinc-600 text-white font-bold  text-xs">
                       {activeFilters.length}
                     </Badge>
@@ -479,20 +596,31 @@ export default function Deals() {
               {showAdvancedFilters && (
                 <div className="border-t pt-6">
                   <div className="mb-4">
-                    <h4 className="text-md font-semibold text-gray-900 mb-2">Advanced Filters</h4>
-                    <p className="text-sm text-gray-500">Set price range and expiry date filters</p>
+                    <h4 className="text-md font-semibold text-gray-900 mb-2">
+                      Advanced Filters
+                    </h4>
+                    <p className="text-sm text-gray-500">
+                      Set price range and expiry date filters
+                    </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Price Range */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">Price Range (EGP)</Label>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Price Range (EGP)
+                      </Label>
                       <div className="flex gap-3">
                         <div className="flex-1">
                           <Input
                             placeholder="Min price"
                             type="number"
                             value={priceRange.min}
-                            onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                            onChange={(e) =>
+                              setPriceRange((prev) => ({
+                                ...prev,
+                                min: e.target.value,
+                              }))
+                            }
                             className="text-sm"
                           />
                         </div>
@@ -501,7 +629,12 @@ export default function Deals() {
                             placeholder="Max price"
                             type="number"
                             value={priceRange.max}
-                            onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                            onChange={(e) =>
+                              setPriceRange((prev) => ({
+                                ...prev,
+                                max: e.target.value,
+                              }))
+                            }
                             className="text-sm"
                           />
                         </div>
@@ -510,34 +643,53 @@ export default function Deals() {
 
                     {/* Date Range */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">Expiry Date Range</Label>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Expiry Date Range
+                      </Label>
                       <div className="flex gap-3">
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button variant="outline" className="flex-1 justify-start text-left font-normal text-sm">
-                              {dateRange.from ? format(dateRange.from, "MMM dd, yyyy") : "From date"}
+                            <Button
+                              variant="outline"
+                              className="flex-1 justify-start text-left font-normal text-sm"
+                            >
+                              {dateRange.from
+                                ? format(dateRange.from, "MMM dd, yyyy")
+                                : "From date"}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0">
                             <Calendar
                               mode="single"
                               selected={dateRange.from}
-                              onSelect={(date) => setDateRange(prev => ({ ...prev, from: date }))}
+                              onSelect={(date) =>
+                                setDateRange((prev) => ({
+                                  ...prev,
+                                  from: date,
+                                }))
+                              }
                               initialFocus
                             />
                           </PopoverContent>
                         </Popover>
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button variant="outline" className="flex-1 justify-start text-left font-normal text-sm">
-                              {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : "To date"}
+                            <Button
+                              variant="outline"
+                              className="flex-1 justify-start text-left font-normal text-sm"
+                            >
+                              {dateRange.to
+                                ? format(dateRange.to, "MMM dd, yyyy")
+                                : "To date"}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0">
                             <Calendar
                               mode="single"
                               selected={dateRange.to}
-                              onSelect={(date) => setDateRange(prev => ({ ...prev, to: date }))}
+                              onSelect={(date) =>
+                                setDateRange((prev) => ({ ...prev, to: date }))
+                              }
                               initialFocus
                             />
                           </PopoverContent>
@@ -552,17 +704,20 @@ export default function Deals() {
 
           {/* Loading and Error States */}
           {isLoading && (
-            <div className="text-center py-8 text-lg text-muted-foreground">Loading deals...</div>
+            <div className="text-center py-8 text-lg text-muted-foreground">
+              Loading deals...
+            </div>
           )}
           {error && (
             <div className="text-center py-8 text-lg text-red-500">{error}</div>
           )}
-          
+
           {/* Results Summary */}
           {!isLoading && !error && (
             <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="text-sm text-muted-foreground">
-                Showing {deals?.length || 0} of {totalDeals || 0} deals (Page {currentPage} of {totalPages || 1})
+                Showing {deals?.length || 0} of {totalDeals || 0} deals (Page{" "}
+                {currentPage} of {totalPages || 1})
               </div>
             </div>
           )}
@@ -571,11 +726,17 @@ export default function Deals() {
           {!isLoading && !error && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {filteredDeals.map((deal, index) => (
-                <DealCard key={deal.id || index} deal={deal} onClose={handleCloseDeal} />
+                <DealCard
+                  key={deal.id || index}
+                  deal={deal}
+                  onClose={handleCloseDeal}
+                />
               ))}
               {filteredDeals.length === 0 && (
                 <div className="col-span-full text-center text-muted-foreground py-8">
-                  {activeFilters.length > 0 ? "No deals match your filters. Try adjusting your search criteria." : "No deals found."}
+                  {activeFilters.length > 0
+                    ? "No deals match your filters. Try adjusting your search criteria."
+                    : "No deals found."}
                 </div>
               )}
             </div>
@@ -600,8 +761,10 @@ export default function Deals() {
                 <div className="flex items-center gap-1">
                   {getPageNumbers().map((page, index) => (
                     <div key={index}>
-                      {page === '...' ? (
-                        <span className="px-2 py-1 text-muted-foreground">...</span>
+                      {page === "..." ? (
+                        <span className="px-2 py-1 text-muted-foreground">
+                          ...
+                        </span>
                       ) : (
                         <Button
                           variant={currentPage === page ? "default" : "outline"}

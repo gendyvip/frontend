@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
@@ -13,19 +15,42 @@ export const fetchDrugs = async (token, options = {}) => {
   try {
     const { search = "", page = 1, size = 10 } = options;
 
-    const queryParams = new URLSearchParams({
+    const params = {
       page: page.toString(),
       size: size.toString(),
-    });
+    };
 
     if (search.trim()) {
-      queryParams.append("search", search.trim());
+      params.search = search.trim();
     }
 
-    const response = await fetch(
-      `${BASE_URL}/api/v1/drug-details?${queryParams}`,
+    const response = await axios.get(`${BASE_URL}/api/v1/drug-details`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching drugs:", error);
+    throw error;
+  }
+};
+
+/**
+ * Create drug alert for specified drug names
+ * @param {string} token - JWT token for authentication
+ * @param {Object} alertData - Drug alert data
+ * @param {Array<string>} alertData.drugNames - Array of drug names to create alerts for
+ * @returns {Promise<Object>} - Response from the API
+ */
+export const createDrugAlert = async (token, alertData) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/v1/drug-alert`,
+      alertData,
       {
-        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -33,14 +58,9 @@ export const fetchDrugs = async (token, options = {}) => {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
-    console.error("Error fetching drugs:", error);
+    console.error("Error creating drug alert:", error);
     throw error;
   }
 };

@@ -38,6 +38,7 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Card } from "@/components/ui/card";
+import { DrugAlert } from "@/components/DrugAlert";
 import AdsSlider from "@/components/ui/AdsSlider";
 
 export default function AvailableDeals() {
@@ -831,6 +832,7 @@ export default function AvailableDeals() {
           location
         </div>
       )}
+      <DrugAlert />
     </div>
   );
 }
