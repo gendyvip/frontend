@@ -1,20 +1,25 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://backend.dawaback.com";
+const API_BASE_URL = "https://backend.dawaback.com/api/v1";
 
 // Get user pharmacies
-export const getPharmacies = async (token,user) => {
+export const getPharmacies = async (token, user) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/pharmacies/user/${user}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${API_BASE_URL}/pharmacies/user/${user}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch pharmacies');
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch pharmacies"
+    );
   }
 };
 
@@ -27,14 +32,16 @@ export const createPharmacy = async (pharmacyData, token) => {
       pharmacyData,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+          Authorization: `Bearer ${token}`,
+          ...(isFormData ? {} : { "Content-Type": "application/json" }),
         },
       }
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to create pharmacy');
+    throw new Error(
+      error.response?.data?.message || "Failed to create pharmacy"
+    );
   }
 };
 
@@ -47,29 +54,36 @@ export const updatePharmacy = async (pharmacyId, pharmacyData, token) => {
       pharmacyData,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+          Authorization: `Bearer ${token}`,
+          ...(isFormData ? {} : { "Content-Type": "application/json" }),
         },
       }
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to update pharmacy');
+    throw new Error(
+      error.response?.data?.message || "Failed to update pharmacy"
+    );
   }
 };
 
 // Delete pharmacy
 export const deletePharmacy = async (pharmacyId, token) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/pharmacies/${pharmacyId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.delete(
+      `${API_BASE_URL}/pharmacies/${pharmacyId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to delete pharmacy');
+    throw new Error(
+      error.response?.data?.message || "Failed to delete pharmacy"
+    );
   }
 };
