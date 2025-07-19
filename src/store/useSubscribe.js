@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage } from "zustand/middleware";
 import { subscribeToPlan } from "@/api/subscription";
 
 export const useSubscribe = create(
@@ -11,18 +11,22 @@ export const useSubscribe = create(
       response: null,
 
       // subscribe action
-      subscribe: async ({ userId, planName, planType, token }) => {
+      subscribe: async ({ planName, planType, token }) => {
         set({ loading: true, error: null, success: false, response: null });
         try {
           let finalToken = token;
           if (!finalToken) {
             try {
-              const user = JSON.parse(localStorage.getItem("user"));
-              finalToken = user?.token;
-            } catch { }
+              const storedToken = localStorage.getItem("token");
+              finalToken = storedToken ? JSON.parse(storedToken) : null;
+            } catch {}
           }
+
+          if (!finalToken) {
+            throw new Error("No authentication token found");
+          }
+
           const res = await subscribeToPlan({
-            userId,
             planName,
             planType,
             token: finalToken,
@@ -44,7 +48,7 @@ export const useSubscribe = create(
         set({ loading: false, error: null, success: false, response: null }),
     }),
     {
-      name: 'subscription-storage', // unique name for localStorage key
+      name: "subscription-storage", // unique name for localStorage key
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         // Only persist these fields, exclude loading states and errors

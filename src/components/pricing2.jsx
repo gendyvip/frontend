@@ -2,6 +2,7 @@
 import { CircleCheck } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +58,7 @@ const Pricing2 = ({
   ],
 }) => {
   const [isYearly, setIsYearly] = useState(false);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { subscribe, loading, error, success } = useSubscribe();
   const navigate = useNavigate();
   const [iframeUrl, setIframeUrl] = useState(null);
@@ -69,24 +70,29 @@ const Pricing2 = ({
   };
 
   const handleSubscribe = async (planId) => {
-    if (!user) {
+    if (!user || !token) {
+      toast.error("Please login to subscribe");
       navigate("/auth/login");
       return;
     }
     try {
       setLoadingPlan(planId);
       const res = await subscribe({
-        userId: user,
         planName: planIdMap[planId],
         planType: isYearly ? "yearly" : "monthly",
+        token,
       });
       if (res && res.iframeUrl) {
         window.open(res.iframeUrl, "_blank");
+        toast.success("Subscription initiated successfully!");
       } else {
-        alert("تم الاشتراك بنجاح!");
+        toast.success("تم الاشتراك بنجاح!");
       }
     } catch (err) {
-      // error state handled below
+      console.error("Subscription error:", err);
+      toast.error("Failed to subscribe", {
+        description: err.response?.data?.message || "Please try again later",
+      });
     } finally {
       setLoadingPlan(null);
     }
