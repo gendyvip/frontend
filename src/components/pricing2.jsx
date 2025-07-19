@@ -1,6 +1,6 @@
 "use client";
 import { CircleCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -63,11 +63,28 @@ const Pricing2 = ({
   const navigate = useNavigate();
   const [iframeUrl, setIframeUrl] = useState(null);
   const [loadingPlan, setLoadingPlan] = useState(null);
+  const [paymentWindow, setPaymentWindow] = useState(null);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 
   const planIdMap = {
     Basic: "regular",
     pro: "premium",
   };
+
+  // Check if payment window is closed
+  useEffect(() => {
+    const checkWindowClosed = setInterval(() => {
+      if (paymentWindow && paymentWindow.closed) {
+        setPaymentWindow(null);
+        setIsPaymentProcessing(false);
+        toast.success(
+          "Payment window closed. Please check your subscription status."
+        );
+      }
+    }, 1000);
+
+    return () => clearInterval(checkWindowClosed);
+  }, [paymentWindow]);
 
   const handleSubscribe = async (planId) => {
     if (!user || !token) {
@@ -77,19 +94,28 @@ const Pricing2 = ({
     }
     try {
       setLoadingPlan(planId);
+      setIsPaymentProcessing(true);
       const res = await subscribe({
         planName: planIdMap[planId],
         planType: isYearly ? "yearly" : "monthly",
         token,
       });
       if (res && res.iframeUrl) {
-        window.open(res.iframeUrl, "_blank");
-        toast.success("Subscription initiated successfully!");
+        // Open popup window with specific dimensions
+        const popup = window.open(
+          res.iframeUrl,
+          "payment_popup",
+          "width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no"
+        );
+        setPaymentWindow(popup);
+        toast.success("Payment window opened. Please complete your payment.");
       } else {
+        setIsPaymentProcessing(false);
         toast.success("تم الاشتراك بنجاح!");
       }
     } catch (err) {
       console.error("Subscription error:", err);
+      setIsPaymentProcessing(false);
       toast.error("Failed to subscribe", {
         description: err.response?.data?.message || "Please try again later",
       });
@@ -114,6 +140,26 @@ const Pricing2 = ({
             />
             Yearly
           </div>
+
+          {/* Payment Processing Overlay */}
+          {isPaymentProcessing && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-8 text-center max-w-md mx-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Processing Payment
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Please complete your payment in the popup window. This page
+                  will remain active until payment is completed.
+                </p>
+                <p className="text-sm text-gray-500">
+                  If the popup was blocked, please allow popups and try again.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col items-stretch gap-6 md:flex-row">
             {plans.map((plan) => (
               <Card
@@ -153,7 +199,7 @@ const Pricing2 = ({
                 <CardFooter className="mt-auto">
                   <Button
                     className="w-full text-white"
-                    disabled={loadingPlan === plan.id}
+                    disabled={loadingPlan === plan.id || isPaymentProcessing}
                     onClick={() => handleSubscribe(plan.id)}
                   >
                     {loadingPlan === plan.id ? "Loading..." : "Purchase"}
