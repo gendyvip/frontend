@@ -51,8 +51,14 @@ export function LoginForm({ className, ...props }) {
             className="p-6 md:p-8 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden"
           >
             {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-10" style={{ background: 'var(--primary)' }}></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-10" style={{ background: 'var(--primary)' }}></div>
+            <div
+              className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-10"
+              style={{ background: "var(--primary)" }}
+            ></div>
+            <div
+              className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-100 rounded-full -ml-20 -mb-20 opacity-10"
+              style={{ background: "var(--primary)" }}
+            ></div>
             <div className="flex flex-col gap-6">
               <div className="flex flex-row items-center justify-center text-center gap-4 mb-2">
                 <img
@@ -67,7 +73,7 @@ export function LoginForm({ className, ...props }) {
                   </p>
                 </div>
               </div>
-              
+
               {/* Error Display */}
               <ErrorDisplay error={error} />
 
@@ -76,8 +82,18 @@ export function LoginForm({ className, ...props }) {
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                     {/* Envelope icon */}
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
                     </svg>
                   </span>
                   <Input
@@ -96,16 +112,33 @@ export function LoginForm({ className, ...props }) {
                     )}
                   />
                 </div>
-                <ErrorMessage className="-mt-1" error={formik.touched.email && formik.errors.email ? formik.errors.email : null} />
+                <ErrorMessage
+                  className="-mt-1"
+                  error={
+                    formik.touched.email && formik.errors.email
+                      ? formik.errors.email
+                      : null
+                  }
+                />
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
                     {/* Lock icon */}
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
                       <rect width="12" height="8" x="6" y="11" rx="2" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-4-6V9a4 4 0 118 0v2" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 15v2m-4-6V9a4 4 0 118 0v2"
+                      />
                     </svg>
                   </span>
                   <Input
@@ -127,32 +160,69 @@ export function LoginForm({ className, ...props }) {
                     type="button"
                     className={cn(
                       "absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition",
-                      showPassword
-                        ? "text-primary"
-                        : "text-gray-500"
+                      showPassword ? "text-primary" : "text-gray-500"
                     )}
                     onClick={() => setShowPassword((prev) => !prev)}
                     tabIndex={-1}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       // Eye-off (crossed) icon, outline style (Heroicons)
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3.11-10.5-7.5a10.05 10.05 0 012.563-4.568m2.1-1.933A9.956 9.956 0 0112 5c5 0 9.27 3.11 10.5 7.5a9.956 9.956 0 01-4.198 5.568M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3l18 18" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9.27-3.11-10.5-7.5a10.05 10.05 0 012.563-4.568m2.1-1.933A9.956 9.956 0 0112 5c5 0 9.27 3.11 10.5 7.5a9.956 9.956 0 01-4.198 5.568M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 3l18 18"
+                        />
                       </svg>
                     ) : (
                       // Eye icon (outlined)
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     )}
                   </button>
                 </div>
-                <ErrorMessage className="-mt-1" error={formik.touched.password && formik.errors.password ? formik.errors.password : null} />
+                <ErrorMessage
+                  className="-mt-1"
+                  error={
+                    formik.touched.password && formik.errors.password
+                      ? formik.errors.password
+                      : null
+                  }
+                />
                 <div className="text-right text-sm">
-                  Forgot your password?{' '}
+                  Forgot your password?{" "}
                   <Link
                     to="/auth/reset-password"
                     className="font-semibold text-primary hover:text-primary-hover transition-colors duration-150 focus:outline-none  rounded underline-offset-2 hover:underline"
@@ -190,20 +260,23 @@ export function LoginForm({ className, ...props }) {
         </CardContent>
       </Card>
       <div className="text-muted-foreground text-center -mt-3 text-xs text-balance">
-        By clicking continue, you agree to our 
-        <a 
-          href="#" 
+        By clicking continue, you agree to our
+        <a
+          href="#"
           className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
         >
-           {" "}Terms of Service
+          {" "}
+          Terms of Service
         </a>{" "}
-        and 
-        <a 
-          href="#" 
+        and
+        <a
+          href="#"
           className="font-bold text-primary hover:text-primary-hover underline-offset-2 hover:underline transition-colors duration-150"
         >
-           {" "}Privacy Policy
-        </a>.
+          {" "}
+          Privacy Policy
+        </a>
+        .
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import {
   X,
   MapPin,
   MessagesSquare,
+  Lock,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
@@ -53,6 +54,9 @@ export default function Chat() {
     getCurrentUserId,
     isWidgetOpen,
     setIsWidgetOpen,
+    isRoomClosed,
+    error,
+    clearError,
   } = useChat();
 
   const unreadCount = useChat((state) => state.totalUnreadCount);
@@ -92,6 +96,15 @@ export default function Chat() {
   useEffect(() => {
     // No longer leaving rooms on widget close or unmount
   }, []);
+
+  useEffect(() => {
+    if (!isWidgetOpen) {
+      // Reset room closed state when widget closes
+      if (isRoomClosed) {
+        clearError();
+      }
+    }
+  }, [isWidgetOpen, isRoomClosed, clearError]);
 
   const handleSendMessage = async () => {
     if (message.trim()) {
@@ -554,17 +567,36 @@ export default function Chat() {
                   <Paperclip className="h-5 w-5" />
                 </Button>
                 <div className="flex-1 min-w-0">
-                  <ChatInput
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="min-h-[40px] max-h-32 bg-white border border-border text-foreground placeholder-muted-foreground focus:bg-blue-50 focus:border-primary transition-all resize-none w-full backdrop-blur-md rounded-2xl"
-                  />
+                  {/* In chat mode, disable input and show message if room is closed */}
+                  {isRoomClosed ? (
+                    <div
+                      className="flex flex-col items-center justify-center p-3 my-2 rounded-xl bg-blue-50 border border-blue-100 shadow-sm max-w-xs mx-auto"
+                      style={{ minHeight: "unset" }}
+                    >
+                      <Lock className="w-6 h-6 text-primary mb-1" />
+                      <div className="text-base font-semibold text-primary mb-0.5">
+                        Chat Closed
+                      </div>
+                      <div className="text-xs text-gray-600 text-center">
+                        This chat is no longer available.
+                        <br />
+                        You can view previous messages, but cannot send new
+                        ones.
+                      </div>
+                    </div>
+                  ) : (
+                    <ChatInput
+                      placeholder="Type your message..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="min-h-[40px] max-h-32 bg-white border border-border text-foreground placeholder-muted-foreground focus:bg-blue-50 focus:border-primary transition-all resize-none w-full backdrop-blur-md rounded-2xl"
+                    />
+                  )}
                 </div>
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!message.trim()}
+                  disabled={!message.trim() || loading}
                   className="bg-gradient-to-r mb-3 from-primary to-primary-hover text-white shadow-lg hover:from-primary-hover hover:to-primary transition-all duration-200 shrink-0 rounded-2xl"
                 >
                   <Send className="h-5 w-5" />
@@ -576,6 +608,13 @@ export default function Chat() {
       )}
     </div>
   );
+
+  // Error display
+  const errorDisplay = error ? (
+    <div className="bg-red-100 text-red-700 p-2 rounded mb-2 text-sm font-semibold text-center">
+      {error}
+    </div>
+  ) : null;
 
   // Responsive: on mobile, widget is full screen, on desktop it's floating
   const mobileWidgetStyle = isMobile

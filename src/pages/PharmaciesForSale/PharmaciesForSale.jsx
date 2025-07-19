@@ -208,7 +208,7 @@ export default function PharmaciesForSale() {
 
   // Only show pharmacies not owned by the current user
   const filteredPharmacies = pharmacies.filter(
-    (pharmacy) => !(pharmacy.owner && pharmacy.owner.id === user)
+    (pharmacy) => !(pharmacy.owner && user && pharmacy.owner.id === user.id)
   );
 
   // Pagination page numbers (with ellipsis) - copied from deals page

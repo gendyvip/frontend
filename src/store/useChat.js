@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   getSocket,
   startChat,
@@ -27,6 +27,7 @@ const useChat = create(
       totalUnreadCount: 0, // Add this for reactive updates
       isWidgetOpen: false,
       setIsWidgetOpen: (open) => set({ isWidgetOpen: open }),
+      isRoomClosed: false,
 
       // Helper function to get current user ID
       getCurrentUserId: () => {
@@ -72,6 +73,7 @@ const useChat = create(
         socket.off("roomMarkedAsSeen");
         socket.off("lastMessageUpdated");
         socket.off("newChatRoom"); // Remove previous newChatRoom listener
+        socket.off("roomClosed"); // Remove previous roomClosed listener
 
         // Listen for new messages
         socket.on("newMessage", (message) => {
@@ -100,10 +102,13 @@ const useChat = create(
                       {
                         id: Date.now().toString(),
                         content: message.text,
-                        timestamp: new Date(message.sentAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }),
+                        timestamp: new Date(message.sentAt).toLocaleTimeString(
+                          [],
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        ),
                         sender: message.senderName || "Unknown",
                         senderId: message.senderId,
                         isOwn: message.senderId === currentUserId,
@@ -123,10 +128,13 @@ const useChat = create(
                     {
                       id: Date.now().toString(),
                       content: message.text,
-                      timestamp: new Date(message.sentAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }),
+                      timestamp: new Date(message.sentAt).toLocaleTimeString(
+                        [],
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      ),
                       sender: message.senderName || "Unknown",
                       senderId: message.senderId,
                       isOwn: message.senderId === currentUserId,
@@ -209,9 +217,10 @@ const useChat = create(
           set((state) => ({
             messages: {
               ...state.messages,
-              [roomId]: state.messages[roomId]?.map((msg) =>
-                msg.id === messageId ? { ...msg, status: "read" } : msg
-              ) || [],
+              [roomId]:
+                state.messages[roomId]?.map((msg) =>
+                  msg.id === messageId ? { ...msg, status: "read" } : msg
+                ) || [],
             },
           }));
         });
@@ -224,22 +233,23 @@ const useChat = create(
             ),
             messages: {
               ...state.messages,
-              [roomId]: state.messages[roomId]?.map((msg) => ({
-                ...msg,
-                status: "read",
-              })) || [],
+              [roomId]:
+                state.messages[roomId]?.map((msg) => ({
+                  ...msg,
+                  status: "read",
+                })) || [],
             },
           }));
         });
 
         // Listen for last message updates
-        socket.on("lastMessageUpdated", ({ roomId, lastMessage }) => {
+        socket.on("lastMessageUpdated", ({ roomId, text, sentAt }) => {
           set((state) => ({
             chats: state.chats.map((chat) =>
               chat.roomId === roomId
                 ? {
                     ...chat,
-                    lastMessage,
+                    lastMessage: { text, sentAt },
                     updatedAt: new Date().toISOString(),
                   }
                 : chat
@@ -248,10 +258,23 @@ const useChat = create(
         });
 
         // Listen for new chat room creation
-        socket.on("newChatRoom", (newChat) => {
-          set((state) => ({
-            chats: [newChat, ...state.chats],
-          }));
+        socket.on("newChatRoom", async (newChat) => {
+          // If newChat is just an ID, reload all chats
+          if (!newChat || !newChat.id) {
+            await get().loadUserChats();
+          } else {
+            set((state) => ({
+              chats: [newChat, ...state.chats],
+            }));
+          }
+        });
+
+        // Listen for room closed event
+        socket.on("roomClosed", ({ roomId }) => {
+          const { activeChat } = get();
+          if (activeChat && activeChat.roomId === roomId) {
+            set({ isRoomClosed: true });
+          }
         });
 
         // Listen for errors
@@ -259,9 +282,29 @@ const useChat = create(
           console.error("Socket error:", error);
           set({ error: error.message || "Socket connection error" });
         });
+
+        socket.on("connect", () => {
+          console.log("Connected to chat server:", socket.id);
+          // On reconnect, reload chats and re-join active chat
+          const { loadUserChats, activeChat, getCurrentUserId } = get();
+          loadUserChats();
+          if (activeChat && activeChat.roomId && getCurrentUserId()) {
+            joinRoom(activeChat.roomId, getCurrentUserId());
+          }
+        });
+        socket.on("disconnect", () => {
+          console.log("Disconnected from chat server");
+          // Clean up listeners if needed
+        });
       },
 
-      startChat: async (user1Id, user2Id, targetId, targetType, otherUserInfo) => {
+      startChat: async (
+        user1Id,
+        user2Id,
+        targetId,
+        targetType,
+        otherUserInfo
+      ) => {
         set({ loading: true, error: null });
 
         try {
@@ -363,7 +406,8 @@ const useChat = create(
               pharmacy: room.pharmacy,
               otherUser: {
                 id: otherUser.id,
-                fullName: otherUser.fullName || otherUser.name || "Unknown User",
+                fullName:
+                  otherUser.fullName || otherUser.name || "Unknown User",
                 profilePhotoUrl: otherUser.profilePhotoUrl || otherUser.avatar,
                 role: otherUser.role || "User",
               },
@@ -390,7 +434,7 @@ const useChat = create(
       },
 
       selectChat: async (chat) => {
-        set({ loading: true, error: null });
+        set({ loading: true, error: null, isRoomClosed: false });
 
         try {
           // Initialize socket if not already done
@@ -415,14 +459,25 @@ const useChat = create(
             isOwn: msg.senderId === currentUserId,
           }));
 
-          set((state) => ({
-            activeChat: chat,
-            messages: {
-              ...state.messages,
-              [chat.roomId]: processedMessages,
-            },
-            loading: false,
-          }));
+          // Optimistically set unreadCount to 0 and update totalUnreadCount
+          set((state) => {
+            const updatedChats = state.chats.map((c) =>
+              c.roomId === chat.roomId ? { ...c, unreadCount: 0 } : c
+            );
+            const newTotalUnread = updatedChats.filter(
+              (c) => (c.unreadCount || 0) > 0
+            ).length;
+            return {
+              activeChat: chat,
+              messages: {
+                ...state.messages,
+                [chat.roomId]: processedMessages,
+              },
+              chats: updatedChats,
+              totalUnreadCount: newTotalUnread,
+              loading: false,
+            };
+          });
         } catch (error) {
           set({ error: error.message, loading: false });
           console.error("Error selecting chat:", error);
@@ -440,9 +495,15 @@ const useChat = create(
       disconnect: () => {
         const { socket } = get();
         if (socket) {
+          socket.off(); // Remove all listeners
           socket.disconnect();
         }
-        set({ socket: null, activeChat: null, messages: {} });
+        set({
+          socket: null,
+          activeChat: null,
+          messages: {},
+          isRoomClosed: false,
+        });
       },
 
       getTotalUnread: () => {
@@ -451,7 +512,7 @@ const useChat = create(
       },
     }),
     {
-      name: 'chat-storage', // unique name for localStorage key
+      name: "chat-storage", // unique name for localStorage key
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         // Only persist these fields, exclude loading states, errors, and socket

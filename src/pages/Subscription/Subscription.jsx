@@ -6,6 +6,9 @@ import {
   CardTitle,
   CardContent,
 } from "../../components/ui/card";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 const accordionItems = [
   {
@@ -46,6 +49,63 @@ const accordionItems = [
 ];
 
 export default function Subscription() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check for success parameters in URL
+    const success = searchParams.get('success');
+    const paymentStatus = searchParams.get('payment_status');
+    const orderId = searchParams.get('order_id');
+    const transactionId = searchParams.get('transaction_id');
+    const status = searchParams.get('status');
+    const result = searchParams.get('result');
+
+    // Check if any success indicators are present
+    const isSuccess = 
+      success === 'true' || 
+      paymentStatus === 'success' || 
+      status === 'success' ||
+      result === 'success' ||
+      orderId ||
+      transactionId;
+
+    // Also check if URL contains 'success' anywhere
+    const urlContainsSuccess = location.search.includes('success') || 
+                              location.pathname.includes('success') ||
+                              location.hash.includes('success');
+
+    if (isSuccess || urlContainsSuccess) {
+      // Show success message
+      toast.success("Payment completed successfully! Redirecting to profile...");
+      
+      // Redirect to profile after a short delay
+      setTimeout(() => {
+        navigate('/profile');
+      }, 2000);
+    } else {
+      // No success parameters, show normal subscription page
+      setIsLoading(false);
+    }
+  }, [searchParams, navigate, location]);
+
+  // Show loading state while checking URL parameters
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-8 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-lg font-medium text-gray-700">Processing payment...</p>
+            <p className="text-sm text-gray-500 mt-2">Please wait while we verify your payment</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 py-8">
       <Pricing2 />
