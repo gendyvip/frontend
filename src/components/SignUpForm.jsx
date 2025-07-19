@@ -451,30 +451,7 @@ export function SignUpForm({ className, ...props }) {
                     </div>
                     <ErrorMessage
                       error={
-                        formik.touched.name && formik.errors.name ? (
-                          <span
-                            id="name-error"
-                            className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                            role="alert"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.name}
-                          </span>
-                        ) : null
+                        formik.touched.name && formik.errors.name ? formik.errors.name : null
                       }
                     />
                   </div>
@@ -518,26 +495,7 @@ export function SignUpForm({ className, ...props }) {
                     </div>
                     <ErrorMessage
                       error={
-                        formik.touched.email && formik.errors.email ? (
-                          <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.email}
-                          </span>
-                        ) : null
+                        formik.touched.email && formik.errors.email ? formik.errors.email : null
                       }
                     />
                   </div>
@@ -578,26 +536,7 @@ export function SignUpForm({ className, ...props }) {
                     </div>
                     <ErrorMessage
                       error={
-                        formik.touched.phone && formik.errors.phone ? (
-                          <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.phone}
-                          </span>
-                        ) : null
+                        formik.touched.phone && formik.errors.phone ? formik.errors.phone : null
                       }
                     />
                   </div>
@@ -662,26 +601,7 @@ export function SignUpForm({ className, ...props }) {
                   </div>
                   <ErrorMessage
                     error={
-                      formik.touched.gender && formik.errors.gender ? (
-                        <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {formik.errors.gender}
-                        </span>
-                      ) : null
+                      formik.touched.gender && formik.errors.gender ? formik.errors.gender : null
                     }
                   />
                 </div>
@@ -749,26 +669,7 @@ export function SignUpForm({ className, ...props }) {
                     </div>
                     <ErrorMessage
                       error={
-                        formik.touched.password && formik.errors.password ? (
-                          <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.password}
-                          </span>
-                        ) : null
+                        formik.touched.password && formik.errors.password ? formik.errors.password : null
                       }
                     />
                   </div>
@@ -856,30 +757,7 @@ export function SignUpForm({ className, ...props }) {
                     <ErrorMessage
                       error={
                         formik.touched.confirmPassword &&
-                        formik.errors.confirmPassword ? (
-                          <span
-                            id="confirmPassword-error"
-                            className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                            role="alert"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 flex-shrink-0"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {formik.errors.confirmPassword}
-                          </span>
-                        ) : null
+                        formik.errors.confirmPassword ? formik.errors.confirmPassword : null
                       }
                     />
                   </div>
@@ -982,26 +860,7 @@ export function SignUpForm({ className, ...props }) {
                   <ErrorMessage
                     error={
                       formik.touched.uploadFrontId &&
-                      formik.errors.uploadFrontId ? (
-                        <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {formik.errors.uploadFrontId}
-                        </span>
-                      ) : null
+                      formik.errors.uploadFrontId ? formik.errors.uploadFrontId : null
                     }
                   />
                 </div>
@@ -1094,26 +953,7 @@ export function SignUpForm({ className, ...props }) {
                   <ErrorMessage
                     error={
                       formik.touched.uploadBackId &&
-                      formik.errors.uploadBackId ? (
-                        <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {formik.errors.uploadBackId}
-                        </span>
-                      ) : null
+                      formik.errors.uploadBackId ? formik.errors.uploadBackId : null
                     }
                   />
                 </div>
@@ -1206,26 +1046,7 @@ export function SignUpForm({ className, ...props }) {
                   <ErrorMessage
                     error={
                       formik.touched.uploadWorkId &&
-                      formik.errors.uploadWorkId ? (
-                        <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {formik.errors.uploadWorkId}
-                        </span>
-                      ) : null
+                      formik.errors.uploadWorkId ? formik.errors.uploadWorkId : null
                     }
                   />
                 </div>
@@ -1261,26 +1082,7 @@ export function SignUpForm({ className, ...props }) {
                 </div>
                 <ErrorMessage
                   error={
-                    formik.touched.nationalId && formik.errors.nationalId ? (
-                      <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 flex-shrink-0"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {formik.errors.nationalId}
-                      </span>
-                    ) : null
+                    formik.touched.nationalId && formik.errors.nationalId ? formik.errors.nationalId : null
                   }
                 />
               </div>
@@ -1336,26 +1138,7 @@ export function SignUpForm({ className, ...props }) {
                 <ErrorMessage
                   error={
                     formik.touched.acceptPolicy &&
-                    formik.errors.acceptPolicy ? (
-                      <span className="flex items-center gap-1 text-red-500 text-sm mt-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 flex-shrink-0"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 9v2m0 4h.01M21 12A9 9 0 11 3 12a9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {formik.errors.acceptPolicy}
-                      </span>
-                    ) : null
+                    formik.errors.acceptPolicy ? formik.errors.acceptPolicy : null
                   }
                 />
               </div>

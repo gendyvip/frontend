@@ -125,7 +125,7 @@ export default function ConfirmPassword() {
                         )}
                       </button>
                     </div>
-                    <ErrorMessage error={errors.password && touched.password ? errors.password : null} />
+                    <ErrorMessage className="-mt-1" error={errors.password && touched.password ? errors.password : null} />
                   </div>
                   <div className="grid gap-3">
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
@@ -176,7 +176,7 @@ export default function ConfirmPassword() {
                         )}
                       </button>
                     </div>
-                    <ErrorMessage error={errors.confirmPassword && touched.confirmPassword ? errors.confirmPassword : null} />
+                    <ErrorMessage className="-mt-1" error={errors.confirmPassword && touched.confirmPassword ? errors.confirmPassword : null} />
                   </div>
                   <Button
                     type="submit"
