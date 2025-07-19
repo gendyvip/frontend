@@ -27,8 +27,8 @@ export const useAuth = create((set, get) => ({
       const userData = response.data || response;
       const token = userData.token || userData.accessToken;
 
-      // Save to localStorage
-      localStorage.setItem("user", JSON.stringify(userData.id));
+      // Save to localStorage - store the full user object, not just the ID
+      localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("token", JSON.stringify(token));
 
       set({
@@ -158,11 +158,18 @@ export const useAuth = create((set, get) => ({
     const token = localStorage.getItem("token");
 
     if (user && token) {
-      set({
-        user: JSON.parse(user),
-        token: JSON.parse(token),
-        isAuthenticated: true,
-      });
+      try {
+        set({
+          user: JSON.parse(user),
+          token: JSON.parse(token),
+          isAuthenticated: true,
+        });
+      } catch (error) {
+        console.error("Error parsing stored auth data:", error);
+        // Clear corrupted data
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
   },
 

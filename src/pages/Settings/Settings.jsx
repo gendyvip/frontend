@@ -23,7 +23,7 @@ export default function Settings() {
   // Simple state for active tab
   const [activeTab, setActiveTab] = useState("info");
   
-  const { user, token } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
   const { 
     pharmacistDetails, 
     isLoading, 
@@ -32,17 +32,31 @@ export default function Settings() {
     clearError 
   } = usePharmacist();
 
-  // Fetch data only once on mount
+  // Fetch data when user and token are available
   useEffect(() => {
-    if (user && token) {
-      fetchPharmacistDetails(user, token);
+    if (user && token && !authLoading) {
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      
+      if (userId) {
+        // Small delay to ensure auth state is properly set
+        const timer = setTimeout(() => {
+          fetchPharmacistDetails(userId, token);
+        }, 100);
+        
+        return () => clearTimeout(timer);
+      }
     }
-  }, []);
+  }, [user, token, authLoading]);
 
   const handleRetry = () => {
     clearError();
     if (user && token) {
-      fetchPharmacistDetails(user, token);
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      if (userId) {
+        fetchPharmacistDetails(userId, token);
+      }
     }
   };
 
@@ -50,6 +64,27 @@ export default function Settings() {
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
+
+  // Show loading while auth is initializing
+  if (authLoading) {
+    return <LoadingPage message="Loading settings..." />;
+  }
+
+  // Show error if no user or token
+  if (!user || !token) {
+    return (
+      <div className="max-w-4xl mx-auto py-8 px-2 md:px-0">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-red-500 mb-4">
+              <FaUserMd size={32} className="mx-auto" />
+            </div>
+            <p className="text-red-600 mb-4 text-sm">Please log in to access settings</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-2 md:px-0">

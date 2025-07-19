@@ -92,9 +92,9 @@ export default function MainLayout() {
 
             {/* Subscription Routes */}
             <Route path="subscription">
-              <Route index element={<Subscription />} />
-              <Route path=":id/success" element={<SuccessPayment />} />
-              <Route path=":id/failed" element={<FailedPayment />} />
+              <Route index element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+              <Route path=":id/success" element={<ProtectedRoute><SuccessPayment /></ProtectedRoute>} />
+              <Route path=":id/failed" element={<ProtectedRoute><FailedPayment /></ProtectedRoute>} />
             </Route>
 
             {/* Protected User Routes */}

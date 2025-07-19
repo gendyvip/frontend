@@ -35,6 +35,7 @@ import { shallow } from "zustand/shallow";
 import useChat from "../../store/useChat";
 import { useAuth } from "../../store/useAuth";
 import CornerAd from "@/components/ui/CornerAd";
+import { LoadingPage } from "@/components/ui/loading";
 
 export default function DealDetails() {
   const { id } = useParams();
@@ -71,14 +72,7 @@ export default function DealDetails() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">
-            Loading deal details...
-          </p>
-        </div>
-      </div>
+      <LoadingPage message="Loading deal details..." />
     );
   }
   if (error) {

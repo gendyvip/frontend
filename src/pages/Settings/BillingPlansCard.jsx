@@ -100,7 +100,6 @@ export default function BillingPlansCard({ pharmacistDetails }) {
               </div>
             </div>
             <Button 
-              variant="outline" 
               onClick={() => handleUpgrade({ name: 'Premium Plan' })}
               className="bg-primary text-white hover:bg-primary-hover border-primary px-4 py-2 rounded-md shadow-sm w-full sm:w-auto"
             >
@@ -154,12 +153,12 @@ export default function BillingPlansCard({ pharmacistDetails }) {
               <div className="p-3 bg-purple-100 rounded-full w-14 h-14 mx-auto mb-3 flex items-center justify-center">
                 <FaGem className="text-purple-600" size={22} />
               </div>
-              <h4 className="font-semibold text-purple-900 mb-1">Storage</h4>
-              <p className="text-2xl font-bold text-purple-600 mb-1">2.1 GB</p>
+              <h4 className="font-semibold text-purple-900 mb-1">Deals</h4>
+              <p className="text-2xl font-bold text-purple-600 mb-1">3 / 5</p>
               <div className="w-full bg-purple-200 rounded-full h-2 mb-2">
-                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '42%' }}></div>
+                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '60%' }}></div>
               </div>
-              <p className="text-xs text-purple-700">Of 5 GB used</p>
+              <p className="text-xs text-purple-700">60% used</p>
             </div>
           </div>
         </CardContent>

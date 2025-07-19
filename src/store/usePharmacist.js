@@ -11,8 +11,8 @@ export const usePharmacist = create(
 
       // Get pharmacist details action - stabilized to prevent recreation
       fetchPharmacistDetails: async (id, token) => {
-        if (!token) {
-          set({ error: 'No authentication token available', isLoading: false });
+        if (!id || !token) {
+          set({ error: 'Missing user ID or authentication token', isLoading: false });
           return;
         }
 

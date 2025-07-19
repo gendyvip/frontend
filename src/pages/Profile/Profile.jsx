@@ -89,7 +89,7 @@ export default function Profile() {
   }, [id]);
 
   if (loading) {
-    return <LoadingPage />;
+    return <LoadingPage message="Loading profile..." />;
   }
 
   if (error) {

@@ -5,7 +5,7 @@ export default function PharmaciesList({ pharmacies, loading, onViewDetails }) {
   if (loading) {
     return (
       <>
-        {Array.from({ length: 9 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
             className="bg-white rounded-xl shadow-md border border-gray-100 w-full min-w-[300px] max-w-[400px] mx-auto overflow-hidden flex flex-col animate-pulse"

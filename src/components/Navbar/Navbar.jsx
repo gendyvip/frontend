@@ -103,6 +103,10 @@ export default function Navbar() {
     navigate("/auth/login");
   };
 
+  const handleMenuClick = () => {
+    setIsUserMenuOpen(false);
+  };
+
   const mobileMenuVariants = {
     closed: {
       opacity: 0,
@@ -273,7 +277,12 @@ export default function Navbar() {
                         <li>
                           <Link
                             to="/me"
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            onClick={handleMenuClick}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm ${
+                              location.pathname === "/me" || location.pathname.startsWith("/me/")
+                                ? "bg-primary text-white"
+                                : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            }`}
                           >
                             Profile
                           </Link>
@@ -281,7 +290,12 @@ export default function Navbar() {
                         <li>
                           <Link
                             to="/deals"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            onClick={handleMenuClick}
+                            className={`block px-4 py-2 text-sm ${
+                              location.pathname === "/deals"
+                                ? "bg-primary text-white"
+                                : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            }`}
                           >
                             Deals
                           </Link>
@@ -289,7 +303,12 @@ export default function Navbar() {
                         <li>
                           <Link
                             to="/pharmacies"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            onClick={handleMenuClick}
+                            className={`block px-4 py-2 text-sm ${
+                              location.pathname === "/pharmacies"
+                                ? "bg-primary text-white"
+                                : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            }`}
                           >
                             Pharmacies
                           </Link>
@@ -298,7 +317,12 @@ export default function Navbar() {
                         <li>
                           <Link
                             to="/settings"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            onClick={handleMenuClick}
+                            className={`block px-4 py-2 text-sm ${
+                              location.pathname === "/settings"
+                                ? "bg-primary text-white"
+                                : "text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                            }`}
                           >
                             Settings
                           </Link>
