@@ -66,14 +66,19 @@ export default function AvailableDeals() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Get current user ID from localStorage
-  const currentUserId = (() => {
+  // Get current user ID from localStorage - memoized to prevent infinite re-renders
+  const currentUserId = useMemo(() => {
     try {
-      return JSON.parse(localStorage.getItem("user"));
+      const userData = localStorage.getItem("user");
+      if (!userData) return null;
+      
+      const parsedUser = JSON.parse(userData);
+      // Handle both cases: user could be the full object or just the ID
+      return typeof parsedUser === 'object' ? parsedUser.id : parsedUser;
     } catch {
       return null;
     }
-  })();
+  }, []);
 
   // Debounce search input
   const setSearchCallback = useCallback((value) => {
@@ -159,8 +164,10 @@ export default function AvailableDeals() {
     type,
     location,
     dosageForm,
-    priceRange,
-    dateRange,
+    priceRange.min,
+    priceRange.max,
+    dateRange.from,
+    dateRange.to,
     sortBy,
     sortOrder,
     currentPage,
@@ -174,7 +181,7 @@ export default function AvailableDeals() {
   // Fetch deals from backend when filters/pagination change
   useEffect(() => {
     fetchDeals(buildQueryParams());
-  }, [buildQueryParams, fetchDeals]);
+  }, [buildQueryParams]);
 
   // Update available types and locations whenever deals change
   useEffect(() => {

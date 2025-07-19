@@ -155,7 +155,11 @@ export function DealForm({ className, ...props }) {
 
   React.useEffect(() => {
     if (token && user) {
-      fetchPharmacies(token, user);
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      if (userId) {
+        fetchPharmacies(token, userId);
+      }
     }
   }, [token, user, fetchPharmacies]);
 

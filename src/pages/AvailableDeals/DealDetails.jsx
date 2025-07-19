@@ -47,8 +47,13 @@ export default function DealDetails() {
   const { user } = useAuth();
   const currentUserId = (() => {
     try {
-      return JSON.parse(localStorage.getItem("user"));
-    } catch {
+      const userData = localStorage.getItem("user");
+      if (!userData) return null;
+      
+      const parsedUser = JSON.parse(userData);
+      // Handle both cases: user could be the full object or just the ID
+      return typeof parsedUser === 'object' ? parsedUser.id : parsedUser;
+    } catch (error) {
       return null;
     }
   })();

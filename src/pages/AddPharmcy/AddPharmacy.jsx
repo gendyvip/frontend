@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { LoadingPage } from "../../components/ui/loading";
 
 const containerStyle = {
   width: "100%",
@@ -138,7 +139,11 @@ export default function AddPharmacy() {
   // Fetch pharmacies when component mounts
   useEffect(() => {
     if (token && user) {
-      fetchPharmacies(token, user);
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      if (userId) {
+        fetchPharmacies(token, userId);
+      }
     }
   }, [token, user, fetchPharmacies]);
 
@@ -315,7 +320,8 @@ export default function AddPharmacy() {
   // Show loading state while pharmacies are loading or being fetched
   if (!pharmaciesLoaded || isLoading) {
     return (
-      <LoadingPage />)
+      <LoadingPage message="Loading pharmacy form..." />
+    )
   }
 
   // Show limit reached message

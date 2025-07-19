@@ -20,13 +20,13 @@ export const usePharmacies = create(
         
         try {
           const response = await getPharmacies(token, user);
+          
           const pharmaciesArray = Array.isArray(response.data.pharmacies) ? response.data.pharmacies : (Array.isArray(response) ? response : []);
           set({
             pharmacies: pharmaciesArray,
             isLoading: false,
             error: null,
           });
-          console.log(pharmaciesArray)
           return response.data.pharmacies;
         } catch (error) {
           set({

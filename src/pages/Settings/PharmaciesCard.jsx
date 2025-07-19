@@ -71,7 +71,12 @@ export default function PharmaciesCard({ pharmacistDetails }) {
   // Fetch pharmacies on component mount
   useEffect(() => {
     if (user && token) {
-      fetchPharmacies(token, user);
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      
+      if (userId) {
+        fetchPharmacies(token, userId);
+      }
     }
   }, [user, token, fetchPharmacies]);
 
@@ -79,7 +84,11 @@ export default function PharmaciesCard({ pharmacistDetails }) {
   const handleRetry = () => {
     clearError();
     if (user && token) {
-      fetchPharmacies(token, user);
+      // Extract user ID from user object
+      const userId = user?.id || user;
+      if (userId) {
+        fetchPharmacies(token, userId);
+      }
     }
   };
 
@@ -136,7 +145,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
 
       // Refresh the pharmacies list to show updated status
       if (user && token) {
-        await fetchPharmacies(token, user);
+        const userId = user?.id || user;
+        if (userId) {
+          await fetchPharmacies(token, userId);
+        }
       }
     } catch (error) {
       console.error("Failed to list pharmacy:", error);
@@ -152,7 +164,10 @@ export default function PharmaciesCard({ pharmacistDetails }) {
       await unlistPharmacyFromSaleJson(pharmacyId);
       toast.success("Pharmacy unlisted from sale successfully!");
       if (user && token) {
-        await fetchPharmacies(token, user);
+        const userId = user?.id || user;
+        if (userId) {
+          await fetchPharmacies(token, userId);
+        }
       }
     } catch (error) {
       toast.error(error.message || "Failed to unlist pharmacy from sale");
