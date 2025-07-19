@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = 'https://backend.dawaback.com/api/v1';
 
 export const getPharmacistDetails = async (id, token) => {
   try {

@@ -7,9 +7,12 @@ export async function getAllAds() {
   if (token) {
     headers["Authorization"] = `Bearer ${JSON.parse(token)}`;
   }
-  const res = await axios.get("http://localhost:3000/api/v1/advertisement", {
-    headers,
-  });
+  const res = await axios.get(
+    "https://backend.dawaback.com/api/v1/advertisement",
+    {
+      headers,
+    }
+  );
   if (
     res.data &&
     res.data.success &&

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+const API_BASE_URL = "https://backend.dawaback.com";
 
 // Get user pharmacies
 export const getPharmacies = async (token,user) => {

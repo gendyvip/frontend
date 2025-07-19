@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const baseURL = "https://backend.dawaback.com";
 
 // Create axios instance with default config
 const api = axios.create({

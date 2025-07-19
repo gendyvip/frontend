@@ -169,8 +169,15 @@ export default function Navbar() {
             <>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" className="mr-2 hidden md:inline-flex" style={{ width: 46, height: 46 }}>
-                    <FiBell className="text-zinc-600" style={{ width: 30, height: 30 }} />
+                  <Button
+                    variant="ghost"
+                    className="mr-2 hidden md:inline-flex"
+                    style={{ width: 46, height: 46 }}
+                  >
+                    <FiBell
+                      className="text-zinc-600"
+                      style={{ width: 30, height: 30 }}
+                    />
                     <span className="sr-only">Notifications</span>
                   </Button>
                 </PopoverTrigger>
@@ -204,9 +211,19 @@ export default function Navbar() {
               </Popover>
 
               {/* Favorites Icon */}
-              <Link to="/favorites" className="relative font-bold mr-4 hidden md:inline-flex">
-                <Button variant="ghost" className="" style={{ width: 46, height: 46 }}>
-                  <Heart className="text-zinc-600" style={{ width: 30, height: 30 }} />
+              <Link
+                to="/favorites"
+                className="relative font-bold mr-4 hidden md:inline-flex"
+              >
+                <Button
+                  variant="ghost"
+                  className=""
+                  style={{ width: 46, height: 46 }}
+                >
+                  <Heart
+                    className="text-zinc-600"
+                    style={{ width: 30, height: 30 }}
+                  />
                   <span className="sr-only">Favorites</span>
                 </Button>
                 {favorites.deals.length + favorites.pharmacies.length > 0 && (
@@ -410,7 +427,8 @@ export default function Navbar() {
                         <Heart className={location.pathname === "/favorites" ? "text-white w-5 h-5" : "w-5 h-5 text-zinc-600"}  />
                         {(favorites.deals.length + favorites.pharmacies.length > 0) && (
                           <Badge className="absolute bottom-3 left-3 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs font-semibold min-w-[18px] h-[18px] flex items-center justify-center">
-                            {favorites.deals.length + favorites.pharmacies.length}
+                            {favorites.deals.length +
+                              favorites.pharmacies.length}
                           </Badge>
                         )}
                       </span>
